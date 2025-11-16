@@ -1,0 +1,78 @@
+{
+    "name": "cooper/filament-dcat-filters",
+    "description": "Bring Dcat Admin's powerful filter features to Filament - including Scope filters, Range filters, SelectTable, and more quick filters",
+    "keywords": [
+        "laravel",
+        "filament",
+        "filament-plugin",
+        "filament-filter",
+        "dcat-admin",
+        "filters",
+        "admin-panel",
+        "scope-filter",
+        "range-filter"
+    ],
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Cooper",
+            "email": "myxiaoao@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "homepage": "https://github.com/myxiaoao/filament-dcat-filters",
+    "support": {
+        "issues": "https://github.com/myxiaoao/filament-dcat-filters/issues",
+        "source": "https://github.com/myxiaoao/filament-dcat-filters"
+    },
+    "require": {
+        "php": "^8.2",
+        "filament/filament": "^4.0"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.0",
+        "nunomaduro/larastan": "^3.0",
+        "orchestra/testbench": "^10.0",
+        "pestphp/pest": "^3.0",
+        "pestphp/pest-plugin-arch": "^3.0",
+        "pestphp/pest-plugin-laravel": "^4.0",
+        "phpstan/phpstan": "^2.0",
+        "phpstan/phpstan-deprecation-rules": "^2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Cooper\\FilamentDcatFilters\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Cooper\\FilamentDcatFilters\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/pest",
+        "test-coverage": "vendor/bin/pest --coverage",
+        "format": "vendor/bin/pint",
+        "analyse": "vendor/bin/phpstan analyse"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "phpstan/extension-installer": true
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Cooper\\FilamentDcatFilters\\FilamentDcatFiltersServiceProvider"
+            ],
+            "aliases": {
+                "FilamentDcatFilters": "Cooper\\FilamentDcatFilters\\Facades\\FilamentDcatFilters"
+            }
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

@@ -1,0 +1,56 @@
+<?php
+
+namespace Cooper\FilamentDcatFilters\Http\Controllers;
+
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Validator;
+
+class ModalSelectController extends Controller
+{
+    /**
+     * 获取模型记录的标签
+     */
+    public function fetchLabels(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'model' => ['required', 'string'],
+            'ids' => ['required', 'array'],
+            'column' => ['required', 'string'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => 'Invalid request',
+                'labels' => [],
+            ], 400);
+        }
+
+        $modelClass = $request->input('model');
+        $ids = $request->input('ids');
+        $column = $request->input('column');
+
+        // 验证模型类是否存在
+        if (! class_exists($modelClass)) {
+            return response()->json([
+                'error' => 'Model class not found',
+                'labels' => [],
+            ], 404);
+        }
+
+        try {
+            $records = $modelClass::whereIn('id', $ids)->get();
+            $labels = $records->pluck($column)->toArray();
+
+            return response()->json([
+                'labels' => $labels,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+                'labels' => [],
+            ], 500);
+        }
+    }
+}
