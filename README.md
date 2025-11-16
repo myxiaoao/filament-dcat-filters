@@ -32,7 +32,7 @@ English Documentation | [中文文档](README_CN.md)
 
 | Filament | Filament Dcat Filters | PHP    | Laravel |
 |----------|----------------------|--------|---------|
-| 4.x      | 1.x                  | ^8.2   | ^12.0   |
+| 4.x      | 1.x                  | ^8.3   | ^12.0   |
 
 ## Installation
 
