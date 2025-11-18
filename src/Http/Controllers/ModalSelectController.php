@@ -18,6 +18,7 @@ class ModalSelectController extends Controller
             'model' => ['required', 'string'],
             'ids' => ['required', 'array'],
             'column' => ['required', 'string'],
+            'keyColumn' => ['sometimes', 'string'],
         ]);
 
         if ($validator->fails()) {
@@ -30,6 +31,7 @@ class ModalSelectController extends Controller
         $modelClass = $request->input('model');
         $ids = $request->input('ids');
         $column = $request->input('column');
+        $keyColumn = $request->input('keyColumn', 'id');
 
         // 验证模型类是否存在
         if (! class_exists($modelClass)) {
@@ -40,7 +42,7 @@ class ModalSelectController extends Controller
         }
 
         try {
-            $records = $modelClass::whereIn('id', $ids)->get();
+            $records = $modelClass::whereIn($keyColumn, $ids)->get();
             $labels = $records->pluck($column)->toArray();
 
             return response()->json([

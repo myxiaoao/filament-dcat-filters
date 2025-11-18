@@ -6,7 +6,9 @@ use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
+use Filament\Support\Enums\Alignment;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
@@ -40,6 +42,8 @@ class ModalSelectTable extends Component implements HasActions, HasForms, HasTab
     public array $selected = [];
 
     public string $filterKey = '';
+
+    public int $renderKey = 0;
 
     /**
      * 挂载组件
@@ -101,6 +105,19 @@ class ModalSelectTable extends Component implements HasActions, HasForms, HasTab
     {
         $columns = [];
 
+        // 添加选择列（第一列）
+        $columns[] = ViewColumn::make('_select')
+            ->label('')
+            ->view('filament-dcat-filters::components.select-column')
+            ->state(fn ($record) => [
+                'key' => $record->{$this->keyColumn},
+                'selected' => in_array($record->{$this->keyColumn}, $this->selected),
+                'multiple' => $this->multiple,
+                'renderKey' => $this->renderKey,
+            ])
+            ->alignment(Alignment::Center)
+            ->width('60px');
+
         // 如果没有指定显示列，使用默认列
         if (empty($this->displayColumns)) {
             $columns[] = TextColumn::make($this->keyColumn)
@@ -151,12 +168,13 @@ class ModalSelectTable extends Component implements HasActions, HasForms, HasTab
      */
     public function confirm(): void
     {
-        $this->dispatch('modal-select-confirmed', [
-            'filterKey' => $this->filterKey,
-            'selected' => $this->selected,
-            'modelClass' => $this->modelClass,
-            'titleColumn' => $this->titleColumn,
-        ]);
+        $this->dispatch('modal-select-confirmed',
+            filterKey: $this->filterKey,
+            selected: $this->selected,
+            modelClass: $this->modelClass,
+            titleColumn: $this->titleColumn,
+            keyColumn: $this->keyColumn,
+        );
 
         $this->dispatch('close-modal', id: 'modal-select-'.$this->filterKey);
     }
@@ -175,6 +193,9 @@ class ModalSelectTable extends Component implements HasActions, HasForms, HasTab
     public function clearSelection(): void
     {
         $this->selected = [];
+
+        // 递增 renderKey 强制重新渲染所有 checkbox
+        $this->renderKey++;
     }
 
     /**

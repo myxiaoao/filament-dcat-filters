@@ -93,8 +93,17 @@ class ModalSelectFilter extends Filter
     public function dialogTitle(string $title): static
     {
         $this->dialogTitle = $title;
+        $this->configureForm();
 
         return $this;
+    }
+
+    /**
+     * 设置弹窗标题 (别名)
+     */
+    public function modalTitle(string $title): static
+    {
+        return $this->dialogTitle($title);
     }
 
     /**
@@ -105,8 +114,19 @@ class ModalSelectFilter extends Filter
     public function dialogWidth(string $width): static
     {
         $this->dialogWidth = $width;
+        $this->configureForm();
 
         return $this;
+    }
+
+    /**
+     * 设置弹窗宽度 (别名)
+     *
+     * @param  string  $width  如 '900px', '80%', '5xl'等 Tailwind 尺寸类名
+     */
+    public function modalWidth(string $width): static
+    {
+        return $this->dialogWidth($width);
     }
 
     /**
@@ -115,6 +135,7 @@ class ModalSelectFilter extends Filter
     public function multiple(bool $multiple = true): static
     {
         $this->multiple = $multiple;
+        $this->configureForm();
 
         return $this;
     }
@@ -125,6 +146,7 @@ class ModalSelectFilter extends Filter
     public function searchable(array $columns): static
     {
         $this->searchColumns = $columns;
+        $this->configureForm();
 
         return $this;
     }
@@ -137,6 +159,7 @@ class ModalSelectFilter extends Filter
     public function displayColumns(array $columns): static
     {
         $this->displayColumns = $columns;
+        $this->configureForm();
 
         return $this;
     }
@@ -174,7 +197,7 @@ class ModalSelectFilter extends Filter
                     'dialogWidth' => $this->dialogWidth,
                     'searchColumns' => $this->searchColumns,
                     'displayColumns' => $this->displayColumns,
-                    'filterLabel' => $this->getLabel() ?? $this->getName(),
+                    'fieldLabel' => $this->getLabel() ?? $this->getName(),
                 ])
                 ->columnSpanFull(),
         ]);
