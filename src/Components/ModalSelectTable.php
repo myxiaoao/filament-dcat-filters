@@ -17,9 +17,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Livewire\Component;
 
 /**
- * ModalSelectTable Livewire 组件
+ * ModalSelectTable Livewire Component
  *
- * 用于 ModalSelectFilter 的模态弹窗表格选择组件
+ * Modal table selection component for ModalSelectFilter
  */
 class ModalSelectTable extends Component implements HasActions, HasForms, HasTable
 {
@@ -46,7 +46,7 @@ class ModalSelectTable extends Component implements HasActions, HasForms, HasTab
     public int $renderKey = 0;
 
     /**
-     * 挂载组件
+     * Mount the component.
      */
     public function mount(
         string $modelClass,
@@ -69,7 +69,7 @@ class ModalSelectTable extends Component implements HasActions, HasForms, HasTab
     }
 
     /**
-     * 配置表格
+     * Configure the table.
      */
     public function table(Table $table): Table
     {
@@ -81,13 +81,13 @@ class ModalSelectTable extends Component implements HasActions, HasForms, HasTab
             ->paginated([10, 25, 50])
             ->defaultPaginationPageOption(10)
             ->searchable($this->searchColumns ? true : false)
-            ->searchPlaceholder('搜索...')
+            ->searchPlaceholder('Search...')
             ->striped()
             ->extremePaginationLinks();
     }
 
     /**
-     * 获取查询构建器
+     * Get the query builder.
      */
     protected function getQuery(): Builder
     {
@@ -99,13 +99,13 @@ class ModalSelectTable extends Component implements HasActions, HasForms, HasTab
     }
 
     /**
-     * 构建表格列
+     * Build table columns.
      */
     protected function buildColumns(): array
     {
         $columns = [];
 
-        // 添加选择列（第一列）
+        // Add selection column (first column)
         $columns[] = ViewColumn::make('_select')
             ->label('')
             ->view('filament-dcat-filters::components.select-column')
@@ -118,24 +118,24 @@ class ModalSelectTable extends Component implements HasActions, HasForms, HasTab
             ->alignment(Alignment::Center)
             ->width('60px');
 
-        // 如果没有指定显示列，使用默认列
+        // Use default columns if no display columns specified
         if (empty($this->displayColumns)) {
             $columns[] = TextColumn::make($this->keyColumn)
                 ->label('ID')
                 ->sortable();
 
             $columns[] = TextColumn::make($this->titleColumn)
-                ->label('名称')
+                ->label('Name')
                 ->searchable()
                 ->sortable();
         } else {
-            // 使用指定的显示列
+            // Use specified display columns
             foreach ($this->displayColumns as $column => $label) {
                 $col = TextColumn::make($column)
                     ->label($label)
                     ->sortable();
 
-                // 如果列在搜索列中，则添加搜索功能
+                // Add search functionality if column is in search columns
                 if (in_array($column, $this->searchColumns)) {
                     $col->searchable();
                 }
@@ -148,7 +148,7 @@ class ModalSelectTable extends Component implements HasActions, HasForms, HasTab
     }
 
     /**
-     * 选择行
+     * Select a row.
      */
     public function selectRow(string|int $key): void
     {
@@ -164,7 +164,7 @@ class ModalSelectTable extends Component implements HasActions, HasForms, HasTab
     }
 
     /**
-     * 确认选择
+     * Confirm selection.
      */
     public function confirm(): void
     {
@@ -180,7 +180,7 @@ class ModalSelectTable extends Component implements HasActions, HasForms, HasTab
     }
 
     /**
-     * 取消选择
+     * Cancel selection.
      */
     public function cancel(): void
     {
@@ -188,18 +188,18 @@ class ModalSelectTable extends Component implements HasActions, HasForms, HasTab
     }
 
     /**
-     * 清空选择
+     * Clear selection.
      */
     public function clearSelection(): void
     {
         $this->selected = [];
 
-        // 递增 renderKey 强制重新渲染所有 checkbox
+        // Increment renderKey to force re-render all checkboxes
         $this->renderKey++;
     }
 
     /**
-     * 渲染组件
+     * Render the component.
      */
     public function render(): View
     {

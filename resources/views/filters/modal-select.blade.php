@@ -5,11 +5,11 @@
     $titleColumn = $titleColumn ?? 'name';
     $keyColumn = $keyColumn ?? 'id';
     $multiple = $multiple ?? false;
-    $dialogTitle = $dialogTitle ?? '选择';
+    $dialogTitle = $dialogTitle ?? __('filament-dcat-filters::filament-dcat-filters.modal_select.default_title');
     $dialogWidth = $dialogWidth ?? '900px';
     $searchColumns = $searchColumns ?? [];
     $displayColumns = $displayColumns ?? [];
-    $placeholder = $placeholder ?? ($multiple ? 'Select items...' : 'Select item...');
+    $placeholder = $placeholder ?? ($multiple ? __('filament-dcat-filters::filament-dcat-filters.modal_select.placeholder_multiple') : __('filament-dcat-filters::filament-dcat-filters.modal_select.placeholder_single'));
     $label = $fieldLabel ?? null;
 @endphp
 
@@ -20,7 +20,7 @@
         open: false,
 
         init() {
-            // 监听选择确认事件 (Livewire 3 语法)
+            // Listen for selection confirmation event (Livewire 3 syntax)
             window.addEventListener('modal-select-confirmed', (event) => {
                 const detail = event.detail;
 
@@ -31,7 +31,7 @@
         },
 
         openModal(event) {
-            // 阻止 disabled select 的默认行为
+            // Prevent default behavior of disabled select
             if (event) {
                 event.preventDefault();
                 event.stopPropagation();
@@ -43,7 +43,7 @@
         updateSelection(selected, modelClass, titleColumn, keyColumn) {
             this.selected = Array.isArray(selected) ? selected : [selected];
 
-            // 通过 Livewire 获取选中项的标签
+            // Fetch selected item labels via Livewire
             @if($modelClass)
                 fetch('{{ route('filament-dcat-filters.fetch-labels') }}', {
                     method: 'POST',
@@ -90,8 +90,8 @@
         }
     }"
 >
-    {{-- 使用与标准 Filament Select 相同的两列布局 --}}
-    {{-- Label 列 --}}
+    {{-- Use the same two-column layout as standard Filament Select --}}
+    {{-- Label column --}}
     @if($label)
         <div class="fi-fo-field-label-col">
             <div class="fi-fo-field-label-ctn">
@@ -104,12 +104,12 @@
         </div>
     @endif
 
-    {{-- 内容列 --}}
+    {{-- Content column --}}
     <div class="fi-fo-field-content-col">
         <div class="flex items-center gap-x-3 justify-between">
-            {{-- Select 输入包装器 --}}
+            {{-- Select input wrapper --}}
             <div class="fi-input-wrp fi-fo-select flex rounded-lg shadow-sm ring-1 transition duration-75 bg-white dark:bg-white/5 [&:not(:has(.fi-ac-action:focus))]:focus-within:ring-2 ring-gray-950/10 dark:ring-white/20 [&:not(:has(.fi-ac-action:focus))]:focus-within:ring-primary-600 dark:[&:not(:has(.fi-ac-action:focus))]:focus-within:ring-primary-500 min-w-0 flex-1 relative">
-                {{-- 透明的点击层 --}}
+                {{-- Transparent click layer --}}
                 <div
                     @click="openModal($event)"
                     class="absolute inset-0 z-10 cursor-pointer"
@@ -132,7 +132,7 @@
                 </div>
             </div>
 
-        {{-- 清空按钮 --}}
+        {{-- Clear button --}}
         <div
             x-show="selected.length > 0"
             x-cloak
@@ -151,7 +151,7 @@
         </div>
     </div>
 
-    {{-- 隐藏输入框用于存储值 --}}
+    {{-- Hidden input for storing value --}}
     <input
         type="hidden"
         name="value"
@@ -160,7 +160,7 @@
     />
 </div>
 
-{{-- 模态弹窗 --}}
+{{-- Modal dialog --}}
 <x-filament::modal
     id="{{ $modalId }}"
     width="{{ $dialogWidth }}"

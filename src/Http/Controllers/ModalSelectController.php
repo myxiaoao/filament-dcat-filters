@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Validator;
 class ModalSelectController extends Controller
 {
     /**
-     * 获取模型记录的标签
+     * Fetch labels for model records.
      */
     public function fetchLabels(Request $request): JsonResponse
     {
@@ -33,7 +33,7 @@ class ModalSelectController extends Controller
         $column = $request->input('column');
         $keyColumn = $request->input('keyColumn', 'id');
 
-        // 验证模型类是否存在
+        // Verify if model class exists
         if (! class_exists($modelClass)) {
             return response()->json([
                 'error' => 'Model class not found',

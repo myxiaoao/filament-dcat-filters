@@ -56,4 +56,14 @@ return [
     'months.11' => '十一月',
     'months.12' => '十二月',
 
+    // Modal select filter
+    'modal_select.default_title' => '選擇',
+    'modal_select.placeholder_multiple' => '選擇項目...',
+    'modal_select.placeholder_single' => '選擇項目...',
+    'modal_select.selected' => '已選擇',
+    'modal_select.no_items_selected' => '未選擇任何項',
+    'modal_select.clear_selection' => '清空選擇',
+    'modal_select.cancel' => '取消',
+    'modal_select.confirm' => '確定',
+
 ];

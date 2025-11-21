@@ -10,15 +10,15 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * ModalSelectFilter - Dcat Admin 风格的模态弹窗选择过滤器
+ * ModalSelectFilter - Dcat Admin style modal selection filter
  *
- * 参考 Dcat Admin 的 SelectTable 实现，提供模态弹窗表格选择功能。
+ * Referenced from Dcat Admin's SelectTable implementation, provides modal table selection functionality.
  *
  * @example
  * ModalSelectFilter::make('user_id')
- *     ->label('用户')
+ *     ->label('User')
  *     ->model(User::class, 'name', 'id')
- *     ->dialogTitle('选择用户')
+ *     ->dialogTitle('Select User')
  *     ->dialogWidth('900px')
  *     ->multiple()
  */
@@ -58,11 +58,11 @@ class ModalSelectFilter extends Filter
     }
 
     /**
-     * 设置模型类
+     * Set the model class.
      *
-     * @param  class-string<Model>  $modelClass  模型类名
-     * @param  string  $titleColumn  显示字段名（如 'name'）
-     * @param  string  $keyColumn  键字段名（默认 'id'）
+     * @param  class-string<Model>  $modelClass  Model class name
+     * @param  string  $titleColumn  Display column name (e.g., 'name')
+     * @param  string  $keyColumn  Key column name (default 'id')
      */
     public function model(string $modelClass, string $titleColumn = 'name', string $keyColumn = 'id'): static
     {
@@ -75,7 +75,7 @@ class ModalSelectFilter extends Filter
     }
 
     /**
-     * 设置关联关系
+     * Set the relationship.
      */
     public function relationship(string $relationship, string $titleColumn = 'name', string $keyColumn = 'id'): static
     {
@@ -88,7 +88,7 @@ class ModalSelectFilter extends Filter
     }
 
     /**
-     * 设置弹窗标题
+     * Set the dialog title.
      */
     public function dialogTitle(string $title): static
     {
@@ -99,7 +99,7 @@ class ModalSelectFilter extends Filter
     }
 
     /**
-     * 设置弹窗标题 (别名)
+     * Set the dialog title (alias).
      */
     public function modalTitle(string $title): static
     {
@@ -107,9 +107,9 @@ class ModalSelectFilter extends Filter
     }
 
     /**
-     * 设置弹窗宽度
+     * Set the dialog width.
      *
-     * @param  string  $width  如 '900px', '80%'
+     * @param  string  $width  e.g., '900px', '80%'
      */
     public function dialogWidth(string $width): static
     {
@@ -120,9 +120,9 @@ class ModalSelectFilter extends Filter
     }
 
     /**
-     * 设置弹窗宽度 (别名)
+     * Set the dialog width (alias).
      *
-     * @param  string  $width  如 '900px', '80%', '5xl'等 Tailwind 尺寸类名
+     * @param  string  $width  e.g., '900px', '80%', '5xl' etc. Tailwind size class names
      */
     public function modalWidth(string $width): static
     {
@@ -130,7 +130,7 @@ class ModalSelectFilter extends Filter
     }
 
     /**
-     * 启用多选
+     * Enable multiple selection.
      */
     public function multiple(bool $multiple = true): static
     {
@@ -141,7 +141,7 @@ class ModalSelectFilter extends Filter
     }
 
     /**
-     * 设置可搜索的字段
+     * Set searchable columns.
      */
     public function searchable(array $columns): static
     {
@@ -152,9 +152,9 @@ class ModalSelectFilter extends Filter
     }
 
     /**
-     * 设置表格显示的字段
+     * Set table display columns.
      *
-     * @param  array  $columns  字段数组，如 ['id' => 'ID', 'name' => '名称', 'email' => '邮箱']
+     * @param  array  $columns  Columns array, e.g., ['id' => 'ID', 'name' => 'Name', 'email' => 'Email']
      */
     public function displayColumns(array $columns): static
     {
@@ -165,7 +165,7 @@ class ModalSelectFilter extends Filter
     }
 
     /**
-     * 自定义表格查询
+     * Customize table query.
      */
     public function modifyQueryUsing(?Closure $callback): static
     {
@@ -175,7 +175,7 @@ class ModalSelectFilter extends Filter
     }
 
     /**
-     * 配置表单组件
+     * Configure form component.
      */
     protected function configureForm(): void
     {
@@ -193,7 +193,7 @@ class ModalSelectFilter extends Filter
                     'titleColumn' => $this->titleColumn,
                     'keyColumn' => $this->keyColumn,
                     'multiple' => $this->multiple,
-                    'dialogTitle' => $this->dialogTitle ?? ($this->getLabel() ?? '选择'),
+                    'dialogTitle' => $this->dialogTitle ?? ($this->getLabel() ?? __('filament-dcat-filters::filament-dcat-filters.modal_select.default_title')),
                     'dialogWidth' => $this->dialogWidth,
                     'searchColumns' => $this->searchColumns,
                     'displayColumns' => $this->displayColumns,
@@ -206,7 +206,7 @@ class ModalSelectFilter extends Filter
     }
 
     /**
-     * 配置查询逻辑
+     * Configure query logic.
      */
     protected function configureQuery(): void
     {
@@ -219,7 +219,7 @@ class ModalSelectFilter extends Filter
 
             $column = $this->getName();
 
-            // 处理关联关系过滤
+            // Handle relationship filtering
             if ($this->relationship) {
                 if ($this->multiple) {
                     $values = is_array($value) ? $value : explode(',', $value);
@@ -236,7 +236,7 @@ class ModalSelectFilter extends Filter
                 );
             }
 
-            // 处理直接字段过滤
+            // Handle direct column filtering
             if ($this->multiple) {
                 $values = is_array($value) ? $value : explode(',', $value);
 
@@ -284,7 +284,7 @@ class ModalSelectFilter extends Filter
     }
 
     /**
-     * 获取模型类
+     * Get the model class.
      */
     public function getModelClass(): ?string
     {
@@ -292,7 +292,7 @@ class ModalSelectFilter extends Filter
     }
 
     /**
-     * 获取显示字段
+     * Get the title column.
      */
     public function getTitleColumn(): string
     {
@@ -300,7 +300,7 @@ class ModalSelectFilter extends Filter
     }
 
     /**
-     * 获取键字段
+     * Get the key column.
      */
     public function getKeyColumn(): string
     {
@@ -308,7 +308,7 @@ class ModalSelectFilter extends Filter
     }
 
     /**
-     * 是否多选
+     * Check if multiple selection is enabled.
      */
     public function isMultiple(): bool
     {
@@ -316,15 +316,15 @@ class ModalSelectFilter extends Filter
     }
 
     /**
-     * 获取弹窗标题
+     * Get the dialog title.
      */
     public function getDialogTitle(): string
     {
-        return $this->dialogTitle ?? ($this->getLabel() ?? '选择');
+        return $this->dialogTitle ?? ($this->getLabel() ?? __('filament-dcat-filters::filament-dcat-filters.modal_select.default_title'));
     }
 
     /**
-     * 获取弹窗宽度
+     * Get the dialog width.
      */
     public function getDialogWidth(): string
     {

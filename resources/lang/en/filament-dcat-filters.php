@@ -56,4 +56,14 @@ return [
     'months.11' => 'November',
     'months.12' => 'December',
 
+    // Modal select filter
+    'modal_select.default_title' => 'Select',
+    'modal_select.placeholder_multiple' => 'Select items...',
+    'modal_select.placeholder_single' => 'Select item...',
+    'modal_select.selected' => 'selected',
+    'modal_select.no_items_selected' => 'No items selected',
+    'modal_select.clear_selection' => 'Clear Selection',
+    'modal_select.cancel' => 'Cancel',
+    'modal_select.confirm' => 'Confirm',
+
 ];
