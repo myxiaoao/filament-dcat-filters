@@ -96,6 +96,7 @@ class SelectTableFilter extends Filter
     public function multiple(bool $multiple = true): static
     {
         $this->multiple = $multiple;
+        $this->configureForm();
 
         return $this;
     }
@@ -135,7 +136,7 @@ class SelectTableFilter extends Filter
 
         // Use Select component with relationship as a simpler alternative
         $this->form([
-            Select::make('value')
+            Select::make($this->multiple ? 'values' : 'value')
                 ->label($label)
                 ->options(function () use ($modelClass, $titleColumn) {
                     if (! $modelClass) {
@@ -149,6 +150,7 @@ class SelectTableFilter extends Filter
                 })
                 ->searchable()
                 ->multiple($this->multiple)
+                ->native(false)
                 ->preload()
                 ->placeholder($this->multiple ? __('filament-dcat-filters::filament-dcat-filters.select_table.placeholder_multiple') : __('filament-dcat-filters::filament-dcat-filters.select_table.placeholder_single'))
                 ->columnSpanFull(),
@@ -163,23 +165,35 @@ class SelectTableFilter extends Filter
     protected function configureQuery(): void
     {
         $this->query(function (Builder $query, array $data): Builder {
+            $column = $this->getName();
+
+            if ($this->multiple) {
+                $values = $data['values'] ?? [];
+
+                if (empty($values)) {
+                    return $query;
+                }
+
+                // Handle relationship filtering
+                if ($this->relationship) {
+                    return $query->whereHas(
+                        $this->relationship,
+                        fn (Builder $query) => $query->whereIn('id', $values)
+                    );
+                }
+
+                // Handle direct column filtering
+                return $query->whereIn($column, $values);
+            }
+
             $value = $data['value'] ?? null;
 
             if (empty($value)) {
                 return $query;
             }
 
-            $column = $this->getName();
-
             // Handle relationship filtering
             if ($this->relationship) {
-                if ($this->multiple) {
-                    return $query->whereHas(
-                        $this->relationship,
-                        fn (Builder $query) => $query->whereIn('id', (array) $value)
-                    );
-                }
-
                 return $query->whereHas(
                     $this->relationship,
                     fn (Builder $query) => $query->where('id', $value)
@@ -187,20 +201,10 @@ class SelectTableFilter extends Filter
             }
 
             // Handle direct column filtering
-            if ($this->multiple) {
-                return $query->whereIn($column, (array) $value);
-            }
-
             return $query->where($column, $value);
         });
 
         $this->indicateUsing(function (array $data): array {
-            $value = $data['value'] ?? null;
-
-            if (empty($value)) {
-                return [];
-            }
-
             $label = $this->getLabel() ?? $this->getName();
             $model = $this->getModel();
 
@@ -209,13 +213,25 @@ class SelectTableFilter extends Filter
             }
 
             if ($this->multiple) {
-                $records = $model::whereIn('id', (array) $value)->get();
+                $values = $data['values'] ?? [];
+
+                if (empty($values)) {
+                    return [];
+                }
+
+                $records = $model::whereIn('id', $values)->get();
                 $names = $records->pluck($this->titleColumn ?? 'name')->implode(', ');
 
                 return [
                     Indicator::make("{$label}: {$names}")
-                        ->removeField('value'),
+                        ->removeField('values'),
                 ];
+            }
+
+            $value = $data['value'] ?? null;
+
+            if (empty($value)) {
+                return [];
             }
 
             $record = $model::find($value);
