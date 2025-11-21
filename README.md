@@ -5,6 +5,8 @@
 
 Bring [Dcat Admin](https://github.com/jqhph/dcat-admin)'s powerful filter features to [Filament](https://filamentphp.com). This package provides a collection of enhanced filters that make building admin panels faster and more intuitive.
 
+![Demo](./art/filters.png)
+
 English Documentation | [中文文档](README_CN.md)
 
 ## Features
