@@ -5,6 +5,18 @@
         : __('filament-dcat-filters::filament-dcat-filters.modal_select.placeholder_single');
 @endphp
 
+<div class="fi-fo-field-wrp">
+    {{-- Field Label --}}
+    @if($label)
+        <div class="fi-fo-field-wrp-label-ctn flex items-center gap-x-3 justify-between">
+            <label class="fi-fo-field-wrp-label inline-flex items-center gap-x-3">
+                <span class="text-sm font-medium leading-6 text-gray-950 dark:text-white">
+                    {{ $label }}
+                </span>
+            </label>
+        </div>
+    @endif
+
 <div
     x-data="{
         selected: [],
@@ -238,4 +250,5 @@
             />
         @endif
     </x-filament::modal>
+</div>
 </div>
