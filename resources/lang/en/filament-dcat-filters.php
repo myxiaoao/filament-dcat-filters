@@ -84,6 +84,11 @@ return [
     'cascading.category' => 'Category',
     'cascading.subcategory' => 'Subcategory',
 
+    // Full text filter
+    'fulltext.label' => 'Search',
+    'fulltext.placeholder' => 'Search...',
+    'fulltext.global_search' => 'Global Search',
+
     // Enum filter
     'enum.placeholder_single' => 'Select...',
     'enum.placeholder_multiple' => 'Select multiple...',

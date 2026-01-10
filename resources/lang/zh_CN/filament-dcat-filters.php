@@ -84,6 +84,11 @@ return [
     'cascading.category' => '分类',
     'cascading.subcategory' => '子分类',
 
+    // Full text filter
+    'fulltext.label' => '搜索',
+    'fulltext.placeholder' => '搜索...',
+    'fulltext.global_search' => '全局搜索',
+
     // Enum filter
     'enum.placeholder_single' => '请选择...',
     'enum.placeholder_multiple' => '选择多个...',

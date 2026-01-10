@@ -66,6 +66,11 @@ return [
     'modal_select.cancel' => '取消',
     'modal_select.confirm' => '確定',
 
+    // Full text filter
+    'fulltext.label' => '搜尋',
+    'fulltext.placeholder' => '搜尋...',
+    'fulltext.global_search' => '全域搜尋',
+
     // Enum filter
     'enum.placeholder_single' => '請選擇...',
     'enum.placeholder_multiple' => '選擇多個...',
