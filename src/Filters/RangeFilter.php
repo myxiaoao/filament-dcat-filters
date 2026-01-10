@@ -42,6 +42,7 @@ class RangeFilter extends Filter
         $this->dateFormat = config('filament-dcat-filters.range.date_format', 'Y-m-d');
 
         $label = $this->getLabel() ?? ucfirst($this->getName());
+        $displayFormat = config('filament-dcat-filters.range.date_display_format', 'M j, Y');
 
         $this->form([
             Grid::make(2)
@@ -51,6 +52,7 @@ class RangeFilter extends Filter
                         ->label($label)
                         ->placeholder($this->placeholders['from'] ?? __('filament-dcat-filters::filament-dcat-filters.range.from'))
                         ->format($this->dateFormat)
+                        ->displayFormat($displayFormat)
                         ->native(false)
                         ->live(onBlur: true)
                         ->maxDate(fn (callable $get): ?string => $get('to') ?: null),
@@ -58,6 +60,7 @@ class RangeFilter extends Filter
                         ->label(new \Illuminate\Support\HtmlString('&nbsp;'))
                         ->placeholder($this->placeholders['to'] ?? __('filament-dcat-filters::filament-dcat-filters.range.to'))
                         ->format($this->dateFormat)
+                        ->displayFormat($displayFormat)
                         ->native(false)
                         ->live(onBlur: true)
                         ->minDate(fn (callable $get): ?string => $get('from') ?: null),
@@ -78,6 +81,7 @@ class RangeFilter extends Filter
         $this->dateFormat = $format ?? config('filament-dcat-filters.range.datetime_format', 'Y-m-d H:i:s');
 
         $label = $this->getLabel() ?? ucfirst($this->getName());
+        $displayFormat = config('filament-dcat-filters.range.datetime_display_format', 'M j, Y H:i');
 
         $this->form([
             Grid::make(2)
@@ -87,6 +91,7 @@ class RangeFilter extends Filter
                         ->label($label)
                         ->placeholder($this->placeholders['from'] ?? __('filament-dcat-filters::filament-dcat-filters.range.from'))
                         ->format($this->dateFormat)
+                        ->displayFormat($displayFormat)
                         ->seconds(str_contains($this->dateFormat, ':s'))
                         ->native(false)
                         ->live(onBlur: true)
@@ -95,6 +100,7 @@ class RangeFilter extends Filter
                         ->label(new \Illuminate\Support\HtmlString('&nbsp;'))
                         ->placeholder($this->placeholders['to'] ?? __('filament-dcat-filters::filament-dcat-filters.range.to'))
                         ->format($this->dateFormat)
+                        ->displayFormat($displayFormat)
                         ->seconds(str_contains($this->dateFormat, ':s'))
                         ->native(false)
                         ->live(onBlur: true)

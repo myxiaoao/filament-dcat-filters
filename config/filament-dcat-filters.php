@@ -10,11 +10,17 @@ return [
     |
     */
     'range' => [
-        // Default date format
+        // Default date format (storage format)
         'date_format' => 'Y-m-d',
 
-        // Default datetime format
+        // Default date display format (UI display)
+        'date_display_format' => 'M j, Y',
+
+        // Default datetime format (storage format)
         'datetime_format' => 'Y-m-d H:i:s',
+
+        // Default datetime display format (UI display)
+        'datetime_display_format' => 'M j, Y H:i',
 
         // Default time format
         'time_format' => 'H:i:s',
