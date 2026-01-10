@@ -84,6 +84,18 @@ return [
     'cascading.category' => '分类',
     'cascading.subcategory' => '子分类',
 
+    // Null filter
+    'null.placeholder' => '请选择...',
+    'null.is_null' => '为空',
+    'null.is_not_null' => '不为空',
+    'null.all' => '全部',
+    'null.not_deleted' => '未删除',
+    'null.deleted' => '已删除',
+    'null.unassigned' => '未分配',
+    'null.assigned' => '已分配',
+    'null.empty' => '空值',
+    'null.filled' => '有值',
+
     // Boolean filter
     'boolean.placeholder' => '请选择...',
     'boolean.yes' => '是',

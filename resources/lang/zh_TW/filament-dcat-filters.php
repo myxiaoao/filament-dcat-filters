@@ -66,6 +66,18 @@ return [
     'modal_select.cancel' => '取消',
     'modal_select.confirm' => '確定',
 
+    // Null filter
+    'null.placeholder' => '請選擇...',
+    'null.is_null' => '為空',
+    'null.is_not_null' => '不為空',
+    'null.all' => '全部',
+    'null.not_deleted' => '未刪除',
+    'null.deleted' => '已刪除',
+    'null.unassigned' => '未分配',
+    'null.assigned' => '已分配',
+    'null.empty' => '空值',
+    'null.filled' => '有值',
+
     // Boolean filter
     'boolean.placeholder' => '請選擇...',
     'boolean.yes' => '是',

@@ -84,6 +84,18 @@ return [
     'cascading.category' => 'Category',
     'cascading.subcategory' => 'Subcategory',
 
+    // Null filter
+    'null.placeholder' => 'Select...',
+    'null.is_null' => 'Is Null',
+    'null.is_not_null' => 'Is Not Null',
+    'null.all' => 'All',
+    'null.not_deleted' => 'Not Deleted',
+    'null.deleted' => 'Deleted',
+    'null.unassigned' => 'Unassigned',
+    'null.assigned' => 'Assigned',
+    'null.empty' => 'Empty',
+    'null.filled' => 'Filled',
+
     // Boolean filter
     'boolean.placeholder' => 'Select...',
     'boolean.yes' => 'Yes',
