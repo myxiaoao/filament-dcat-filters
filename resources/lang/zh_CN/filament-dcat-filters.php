@@ -65,5 +65,9 @@ return [
     'modal_select.clear_selection' => '清空选择',
     'modal_select.cancel' => '取消',
     'modal_select.confirm' => '确定',
+    'modal_select.loading' => '加载中...',
+    'modal_select.fetch_error' => '加载选项失败',
+    'modal_select.empty_state' => '未找到记录',
+    'modal_select.empty_state_description' => '请尝试调整搜索条件',
 
 ];

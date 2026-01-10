@@ -197,6 +197,22 @@ class ModalSelectFilter extends Filter
     }
 
     /**
+     * Check if a filter value is considered empty.
+     */
+    protected function isValueEmpty(mixed $value): bool
+    {
+        if ($value === null || $value === '') {
+            return true;
+        }
+
+        if (is_array($value) && count($value) === 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Configure query logic.
      */
     protected function configureQuery(): void
@@ -204,7 +220,7 @@ class ModalSelectFilter extends Filter
         $this->query(function (Builder $query, array $data): Builder {
             $value = $data['value'] ?? null;
 
-            if (empty($value)) {
+            if ($this->isValueEmpty($value)) {
                 return $query;
             }
 
@@ -213,7 +229,7 @@ class ModalSelectFilter extends Filter
             // Handle relationship filtering
             if ($this->relationship) {
                 if ($this->multiple) {
-                    $values = is_array($value) ? $value : explode(',', $value);
+                    $values = is_array($value) ? $value : explode(',', (string) $value);
 
                     return $query->whereHas(
                         $this->relationship,
@@ -229,7 +245,7 @@ class ModalSelectFilter extends Filter
 
             // Handle direct column filtering
             if ($this->multiple) {
-                $values = is_array($value) ? $value : explode(',', $value);
+                $values = is_array($value) ? $value : explode(',', (string) $value);
 
                 return $query->whereIn($column, $values);
             }
@@ -240,37 +256,45 @@ class ModalSelectFilter extends Filter
         $this->indicateUsing(function (array $data): array {
             $value = $data['value'] ?? null;
 
-            if (empty($value)) {
+            if ($this->isValueEmpty($value)) {
                 return [];
             }
 
             $label = $this->getLabel() ?? $this->getName();
             $model = $this->modelClass;
 
-            if (! $model) {
+            if (! $model || ! class_exists($model) || ! is_subclass_of($model, Model::class)) {
                 return [];
             }
 
-            if ($this->multiple) {
-                $values = is_array($value) ? $value : explode(',', $value);
-                $records = $model::whereIn($this->keyColumn, $values)->get();
-                $names = $records->pluck($this->titleColumn)->implode(', ');
+            try {
+                if ($this->multiple) {
+                    $values = is_array($value) ? $value : explode(',', (string) $value);
+                    $names = $model::query()
+                        ->whereIn($this->keyColumn, $values)
+                        ->pluck($this->titleColumn)
+                        ->implode(', ');
+
+                    return [
+                        Indicator::make("{$label}: {$names}")
+                            ->removeField('value')
+                            ->removeField('modal_select'),
+                    ];
+                }
+
+                $record = $model::query()->where($this->keyColumn, $value)->first();
+                $name = $record ? $record->{$this->titleColumn} : $value;
 
                 return [
-                    Indicator::make("{$label}: {$names}")
+                    Indicator::make("{$label}: {$name}")
                         ->removeField('value')
                         ->removeField('modal_select'),
                 ];
+            } catch (\Exception $e) {
+                report($e);
+
+                return [];
             }
-
-            $record = $model::where($this->keyColumn, $value)->first();
-            $name = $record ? $record->{$this->titleColumn} : $value;
-
-            return [
-                Indicator::make("{$label}: {$name}")
-                    ->removeField('value')
-                    ->removeField('modal_select'),
-            ];
         });
     }
 

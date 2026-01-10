@@ -28,6 +28,8 @@ class SelectTableFilter extends Filter
 
     protected ?Closure $modifyQueryUsing = null;
 
+    protected ?int $optionsLimit = null;
+
     /**
      * Setup default configuration.
      */
@@ -122,6 +124,25 @@ class SelectTableFilter extends Filter
     }
 
     /**
+     * Set the maximum number of options to load.
+     */
+    public function optionsLimit(int $limit): static
+    {
+        $this->optionsLimit = $limit;
+        $this->configureForm();
+
+        return $this;
+    }
+
+    /**
+     * Get the options limit from config or property.
+     */
+    protected function getOptionsLimit(): int
+    {
+        return $this->optionsLimit ?? config('filament-dcat-filters.select_table.options_limit', 100);
+    }
+
+    /**
      * Configure the form component.
      */
     protected function configureForm(): void
@@ -135,16 +156,18 @@ class SelectTableFilter extends Filter
         $titleColumn = $this->titleColumn;
 
         // Use Select component with relationship as a simpler alternative
+        $limit = $this->getOptionsLimit();
+
         $this->form([
             Select::make($this->multiple ? 'values' : 'value')
                 ->label($label)
-                ->options(function () use ($modelClass, $titleColumn) {
+                ->options(function () use ($modelClass, $titleColumn, $limit) {
                     if (! $modelClass) {
                         return [];
                     }
 
                     return $modelClass::query()
-                        ->limit(100)
+                        ->limit($limit)
                         ->pluck($titleColumn ?? 'name', 'id')
                         ->toArray();
                 })
@@ -170,7 +193,7 @@ class SelectTableFilter extends Filter
             if ($this->multiple) {
                 $values = $data['values'] ?? [];
 
-                if (empty($values)) {
+                if (! is_array($values) || count($values) === 0) {
                     return $query;
                 }
 
@@ -188,7 +211,7 @@ class SelectTableFilter extends Filter
 
             $value = $data['value'] ?? null;
 
-            if (empty($value)) {
+            if ($value === null || $value === '') {
                 return $query;
             }
 
@@ -208,39 +231,47 @@ class SelectTableFilter extends Filter
             $label = $this->getLabel() ?? $this->getName();
             $model = $this->getModel();
 
-            if (! $model) {
+            if (! $model || ! class_exists($model) || ! is_subclass_of($model, Model::class)) {
                 return [];
             }
 
-            if ($this->multiple) {
-                $values = $data['values'] ?? [];
+            try {
+                if ($this->multiple) {
+                    $values = $data['values'] ?? [];
 
-                if (empty($values)) {
+                    if (! is_array($values) || count($values) === 0) {
+                        return [];
+                    }
+
+                    $names = $model::query()
+                        ->whereIn('id', $values)
+                        ->pluck($this->titleColumn ?? 'name')
+                        ->implode(', ');
+
+                    return [
+                        Indicator::make("{$label}: {$names}")
+                            ->removeField('values'),
+                    ];
+                }
+
+                $value = $data['value'] ?? null;
+
+                if ($value === null || $value === '') {
                     return [];
                 }
 
-                $records = $model::whereIn('id', $values)->get();
-                $names = $records->pluck($this->titleColumn ?? 'name')->implode(', ');
+                $record = $model::query()->find($value);
+                $name = $record ? $record->{$this->titleColumn ?? 'name'} : $value;
 
                 return [
-                    Indicator::make("{$label}: {$names}")
-                        ->removeField('values'),
+                    Indicator::make("{$label}: {$name}")
+                        ->removeField('value'),
                 ];
-            }
+            } catch (\Exception $e) {
+                report($e);
 
-            $value = $data['value'] ?? null;
-
-            if (empty($value)) {
                 return [];
             }
-
-            $record = $model::find($value);
-            $name = $record ? $record->{$this->titleColumn ?? 'name'} : $value;
-
-            return [
-                Indicator::make("{$label}: {$name}")
-                    ->removeField('value'),
-            ];
         });
     }
 

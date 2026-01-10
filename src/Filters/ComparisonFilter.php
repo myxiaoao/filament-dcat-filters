@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 class ComparisonFilter extends Filter
 {
+    protected const ALLOWED_OPERATORS = ['=', '!=', '>', '>=', '<', '<='];
+
     protected string $operator = '=';
 
     protected string $inputType = 'numeric';
@@ -142,6 +144,23 @@ class ComparisonFilter extends Filter
     }
 
     /**
+     * Set a custom operator with validation.
+     */
+    public function operator(string $operator): static
+    {
+        if (! in_array($operator, self::ALLOWED_OPERATORS, true)) {
+            throw new \InvalidArgumentException(
+                "Invalid operator: {$operator}. Allowed: ".implode(', ', self::ALLOWED_OPERATORS)
+            );
+        }
+
+        $this->operator = $operator;
+        $this->configureQuery();
+
+        return $this;
+    }
+
+    /**
      * Configure the query logic for this filter.
      */
     protected function configureQuery(): void
@@ -154,6 +173,11 @@ class ComparisonFilter extends Filter
             }
 
             $column = $this->getName();
+
+            // Validate operator at query time as well
+            if (! in_array($this->operator, self::ALLOWED_OPERATORS, true)) {
+                return $query;
+            }
 
             return $query->where($column, $this->operator, $value);
         });

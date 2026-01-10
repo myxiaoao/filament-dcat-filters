@@ -51,12 +51,16 @@ class RangeFilter extends Filter
                         ->label($label)
                         ->placeholder($this->placeholders['from'] ?? __('filament-dcat-filters::filament-dcat-filters.range.from'))
                         ->format($this->dateFormat)
-                        ->native(false),
+                        ->native(false)
+                        ->live(onBlur: true)
+                        ->maxDate(fn (callable $get): ?string => $get('to') ?: null),
                     DatePicker::make('to')
                         ->label(new \Illuminate\Support\HtmlString('&nbsp;'))
                         ->placeholder($this->placeholders['to'] ?? __('filament-dcat-filters::filament-dcat-filters.range.to'))
                         ->format($this->dateFormat)
-                        ->native(false),
+                        ->native(false)
+                        ->live(onBlur: true)
+                        ->minDate(fn (callable $get): ?string => $get('from') ?: null),
                 ]),
         ]);
 
@@ -84,13 +88,17 @@ class RangeFilter extends Filter
                         ->placeholder($this->placeholders['from'] ?? __('filament-dcat-filters::filament-dcat-filters.range.from'))
                         ->format($this->dateFormat)
                         ->seconds(str_contains($this->dateFormat, ':s'))
-                        ->native(false),
+                        ->native(false)
+                        ->live(onBlur: true)
+                        ->maxDate(fn (callable $get): ?string => $get('to') ?: null),
                     DateTimePicker::make('to')
                         ->label(new \Illuminate\Support\HtmlString('&nbsp;'))
                         ->placeholder($this->placeholders['to'] ?? __('filament-dcat-filters::filament-dcat-filters.range.to'))
                         ->format($this->dateFormat)
                         ->seconds(str_contains($this->dateFormat, ':s'))
-                        ->native(false),
+                        ->native(false)
+                        ->live(onBlur: true)
+                        ->minDate(fn (callable $get): ?string => $get('from') ?: null),
                 ]),
         ]);
 
@@ -117,12 +125,20 @@ class RangeFilter extends Filter
                         ->label($label)
                         ->placeholder($this->placeholders['from'] ?? __('filament-dcat-filters::filament-dcat-filters.range.from'))
                         ->seconds(str_contains($this->dateFormat, ':s'))
-                        ->native(false),
+                        ->native(false)
+                        ->live(onBlur: true),
                     TimePicker::make('to')
                         ->label(new \Illuminate\Support\HtmlString('&nbsp;'))
                         ->placeholder($this->placeholders['to'] ?? __('filament-dcat-filters::filament-dcat-filters.range.to'))
                         ->seconds(str_contains($this->dateFormat, ':s'))
-                        ->native(false),
+                        ->native(false)
+                        ->live(onBlur: true)
+                        ->afterStateUpdated(function ($state, callable $get, callable $set): void {
+                            $from = $get('from');
+                            if ($from && $state && $state < $from) {
+                                $set('to', $from);
+                            }
+                        }),
                 ]),
         ]);
 
@@ -148,12 +164,16 @@ class RangeFilter extends Filter
                         ->label($label)
                         ->placeholder($this->placeholders['from'] ?? __('filament-dcat-filters::filament-dcat-filters.range.from'))
                         ->numeric()
-                        ->step('any'),
+                        ->step('any')
+                        ->live(onBlur: true)
+                        ->maxValue(fn (callable $get): ?float => $get('to') !== null && $get('to') !== '' ? (float) $get('to') : null),
                     TextInput::make('to')
                         ->label(new \Illuminate\Support\HtmlString('&nbsp;'))
                         ->placeholder($this->placeholders['to'] ?? __('filament-dcat-filters::filament-dcat-filters.range.to'))
                         ->numeric()
-                        ->step('any'),
+                        ->step('any')
+                        ->live(onBlur: true)
+                        ->minValue(fn (callable $get): ?float => $get('from') !== null && $get('from') !== '' ? (float) $get('from') : null),
                 ]),
         ]);
 
@@ -179,12 +199,16 @@ class RangeFilter extends Filter
                         ->label($label)
                         ->placeholder($this->placeholders['from'] ?? __('filament-dcat-filters::filament-dcat-filters.range.from'))
                         ->numeric()
-                        ->integer(),
+                        ->integer()
+                        ->live(onBlur: true)
+                        ->maxValue(fn (callable $get): ?int => $get('to') !== null && $get('to') !== '' ? (int) $get('to') : null),
                     TextInput::make('to')
                         ->label(new \Illuminate\Support\HtmlString('&nbsp;'))
                         ->placeholder($this->placeholders['to'] ?? __('filament-dcat-filters::filament-dcat-filters.range.to'))
                         ->numeric()
-                        ->integer(),
+                        ->integer()
+                        ->live(onBlur: true)
+                        ->minValue(fn (callable $get): ?int => $get('from') !== null && $get('from') !== '' ? (int) $get('from') : null),
                 ]),
         ]);
 
@@ -256,12 +280,18 @@ class RangeFilter extends Filter
             $from = $data['from'] ?? null;
             $to = $data['to'] ?? null;
 
-            if ($from) {
-                $from = Carbon::parse($from)->timestamp;
-            }
+            try {
+                if ($from) {
+                    $from = Carbon::parse($from)->timestamp;
+                }
 
-            if ($to) {
-                $to = Carbon::parse($to)->timestamp;
+                if ($to) {
+                    $to = Carbon::parse($to)->timestamp;
+                }
+            } catch (\Exception $e) {
+                report($e);
+
+                return $query;
             }
 
             return $this->applyRangeQuery($query, $column, [

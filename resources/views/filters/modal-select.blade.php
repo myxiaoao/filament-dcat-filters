@@ -10,6 +10,8 @@
         selected: [],
         selectedLabels: [],
         open: false,
+        loading: false,
+        error: null,
 
         init() {
             // Listen for selection confirmation event (Livewire 3 syntax)
@@ -29,14 +31,17 @@
                 event.stopPropagation();
             }
             this.open = true;
+            this.error = null;
             $dispatch('open-modal', { id: '{{ $modalId }}' });
         },
 
         updateSelection(selected, modelClass, titleColumn, keyColumn) {
             this.selected = Array.isArray(selected) ? selected : [selected];
+            this.error = null;
 
             // Fetch selected item labels via Livewire
             @if($modelClass)
+                this.loading = true;
                 fetch('{{ route('filament-dcat-filters.fetch-labels') }}', {
                     method: 'POST',
                     headers: {
@@ -50,13 +55,29 @@
                         keyColumn: keyColumn || '{{ $keyColumn }}'
                     })
                 })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('{{ __('filament-dcat-filters::filament-dcat-filters.modal_select.fetch_error') }}');
+                    }
+                    return response.json();
+                })
                 .then(data => {
-                    this.selectedLabels = data.labels || [];
+                    if (data.error) {
+                        this.error = data.error;
+                        this.selectedLabels = [];
+                    } else {
+                        this.selectedLabels = data.labels || [];
+                    }
                     this.updateHiddenInput();
                 })
                 .catch(error => {
                     console.error('Failed to fetch labels:', error);
+                    this.error = error.message || '{{ __('filament-dcat-filters::filament-dcat-filters.modal_select.fetch_error') }}';
+                    this.selectedLabels = this.selected.map(id => '#' + id);
+                    this.updateHiddenInput();
+                })
+                .finally(() => {
+                    this.loading = false;
                 });
             @endif
         },
@@ -78,6 +99,7 @@
         clear() {
             this.selected = [];
             this.selectedLabels = [];
+            this.error = null;
             this.updateHiddenInput();
         }
     }"
@@ -101,7 +123,8 @@
                                 disabled
                                 class="fi-select-input block w-full border-none py-1.5 pe-8 text-base text-gray-950 transition duration-75 focus:ring-0 disabled:text-gray-500 disabled:[-webkit-text-fill-color:theme(colors.gray.500)] dark:text-white dark:disabled:text-gray-400 dark:disabled:[-webkit-text-fill-color:theme(colors.gray.400)] sm:text-sm sm:leading-6 ps-3 min-h-[2.25rem] [&_optgroup]:bg-white [&_optgroup]:dark:bg-gray-900 [&_option]:bg-white [&_option]:dark:bg-gray-900"
                             >
-                                <option x-show="selectedLabels.length === 0">{{ $placeholder }}</option>
+                                <option x-show="selectedLabels.length === 0 && !loading">{{ $placeholder }}</option>
+                                <option x-show="loading" disabled>{{ __('filament-dcat-filters::filament-dcat-filters.modal_select.loading') }}</option>
                                 <template x-for="(label, index) in selectedLabels" :key="index">
                                     <option x-text="label" selected></option>
                                 </template>
@@ -109,11 +132,23 @@
                         </div>
                     </div>
                 </div>
+
+                {{-- Loading indicator --}}
+                <div
+                    x-show="loading"
+                    x-cloak
+                    class="absolute inset-y-0 end-0 flex items-center pe-3 pointer-events-none"
+                >
+                    <svg class="animate-spin h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </div>
             </div>
 
             {{-- Clear button --}}
             <div
-                x-show="selected.length > 0"
+                x-show="selected.length > 0 && !loading"
                 x-cloak
                 class="flex items-center gap-x-3 relative z-20"
             >
@@ -128,6 +163,14 @@
                 </button>
             </div>
         </div>
+
+        {{-- Error message --}}
+        <div
+            x-show="error"
+            x-cloak
+            class="mt-1 text-sm text-danger-600 dark:text-danger-400"
+            x-text="error"
+        ></div>
 
         {{-- Hidden input for storing value --}}
         <input

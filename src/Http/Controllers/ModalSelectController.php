@@ -2,9 +2,13 @@
 
 namespace Cooper\FilamentDcatFilters\Http\Controllers;
 
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class ModalSelectController extends Controller
@@ -17,8 +21,9 @@ class ModalSelectController extends Controller
         $validator = Validator::make($request->all(), [
             'model' => ['required', 'string'],
             'ids' => ['required', 'array'],
-            'column' => ['required', 'string'],
-            'keyColumn' => ['sometimes', 'string'],
+            'ids.*' => ['required', 'scalar'],
+            'column' => ['required', 'string', 'max:100'],
+            'keyColumn' => ['sometimes', 'string', 'max:100'],
         ]);
 
         if ($validator->fails()) {
@@ -33,24 +38,60 @@ class ModalSelectController extends Controller
         $column = $request->input('column');
         $keyColumn = $request->input('keyColumn', 'id');
 
-        // Verify if model class exists
-        if (! class_exists($modelClass)) {
+        // Verify model class exists and is a valid Eloquent model
+        if (! class_exists($modelClass) || ! is_subclass_of($modelClass, Model::class)) {
             return response()->json([
-                'error' => 'Model class not found',
+                'error' => 'Invalid model class',
                 'labels' => [],
-            ], 404);
+            ], 400);
+        }
+
+        // Check if model is in allowed list (if configured)
+        $allowedModels = config('filament-dcat-filters.allowed_models', []);
+        if (! empty($allowedModels) && ! in_array($modelClass, $allowedModels, true)) {
+            Log::warning('Unauthorized model access attempt', ['model' => $modelClass]);
+
+            return response()->json([
+                'error' => 'Model not allowed',
+                'labels' => [],
+            ], 403);
+        }
+
+        // Check authorization using Laravel Gate
+        if (Gate::getPolicyFor($modelClass) && Gate::denies('viewAny', $modelClass)) {
+            return response()->json([
+                'error' => 'Unauthorized',
+                'labels' => [],
+            ], 403);
         }
 
         try {
-            $records = $modelClass::whereIn($keyColumn, $ids)->get();
-            $labels = $records->pluck($column)->toArray();
+            $labels = $modelClass::query()
+                ->whereIn($keyColumn, $ids)
+                ->pluck($column)
+                ->toArray();
 
             return response()->json([
                 'labels' => $labels,
             ]);
-        } catch (\Exception $e) {
+        } catch (QueryException $e) {
+            Log::error('Database error in fetchLabels', [
+                'model' => $modelClass,
+                'exception' => $e->getMessage(),
+            ]);
+
             return response()->json([
-                'error' => $e->getMessage(),
+                'error' => 'Database error',
+                'labels' => [],
+            ], 500);
+        } catch (\Exception $e) {
+            Log::error('Unexpected error in fetchLabels', [
+                'model' => $modelClass,
+                'exception' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'error' => 'Server error',
                 'labels' => [],
             ], 500);
         }

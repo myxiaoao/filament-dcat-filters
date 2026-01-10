@@ -65,5 +65,9 @@ return [
     'modal_select.clear_selection' => 'Clear Selection',
     'modal_select.cancel' => 'Cancel',
     'modal_select.confirm' => 'Confirm',
+    'modal_select.loading' => 'Loading...',
+    'modal_select.fetch_error' => 'Failed to load selection',
+    'modal_select.empty_state' => 'No records found',
+    'modal_select.empty_state_description' => 'Try adjusting your search criteria',
 
 ];

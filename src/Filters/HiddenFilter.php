@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 class HiddenFilter extends Filter
 {
+    protected const ALLOWED_OPERATORS = ['=', '!=', '>', '>=', '<', '<=', 'like', 'not like'];
+
     protected mixed $defaultValue = null;
 
     protected string $operator = '=';
@@ -46,10 +48,16 @@ class HiddenFilter extends Filter
     }
 
     /**
-     * Set the comparison operator.
+     * Set the comparison operator with validation.
      */
     public function operator(string $operator): static
     {
+        if (! in_array($operator, self::ALLOWED_OPERATORS, true)) {
+            throw new \InvalidArgumentException(
+                "Invalid operator: {$operator}. Allowed: ".implode(', ', self::ALLOWED_OPERATORS)
+            );
+        }
+
         $this->operator = $operator;
         $this->configureQuery();
 
@@ -117,6 +125,11 @@ class HiddenFilter extends Filter
             }
 
             $column = $this->getName();
+
+            // Validate operator at query time as well
+            if (! in_array($this->operator, self::ALLOWED_OPERATORS, true)) {
+                return $query;
+            }
 
             return $query->where($column, $this->operator, $value);
         });

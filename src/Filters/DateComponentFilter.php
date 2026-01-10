@@ -116,6 +116,12 @@ class DateComponentFilter extends Filter
      */
     protected function configureQuery(string $sqlFunction): void
     {
+        // Whitelist allowed SQL functions to prevent injection
+        $allowedFunctions = ['YEAR', 'MONTH', 'DAY'];
+        if (! in_array($sqlFunction, $allowedFunctions, true)) {
+            throw new \InvalidArgumentException("Invalid SQL function: {$sqlFunction}");
+        }
+
         $this->query(function (Builder $query, array $data) use ($sqlFunction): Builder {
             $value = $data['value'] ?? null;
 
@@ -125,8 +131,10 @@ class DateComponentFilter extends Filter
 
             $column = $this->getName();
 
-            // Use SQL function to extract date component
-            return $query->whereRaw("{$sqlFunction}({$column}) = ?", [$value]);
+            // Use grammar to safely wrap column name
+            $wrappedColumn = $query->getGrammar()->wrap($column);
+
+            return $query->whereRaw("{$sqlFunction}({$wrappedColumn}) = ?", [$value]);
         });
 
         $this->indicateUsing(function (array $data): array {

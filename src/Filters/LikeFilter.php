@@ -32,7 +32,7 @@ class LikeFilter extends Filter
             TextInput::make('value')
                 ->label($filter->getLabel() ?? $filter->getName())
                 ->placeholder(__('filament-dcat-filters::filament-dcat-filters.like.placeholder'))
-                ->live()
+                ->live(debounce: 500)
                 ->columnSpanFull(),
         ]);
 
@@ -138,20 +138,21 @@ class LikeFilter extends Filter
         $this->query(function (Builder $query, array $data): Builder {
             $value = $data['value'] ?? null;
 
-            if (empty($value)) {
+            if ($value === null || $value === '') {
                 return $query;
             }
 
             $column = $this->getName();
-            $pattern = $this->buildPattern($value);
+            $pattern = $this->buildPattern((string) $value);
 
             if (! $this->caseSensitive && $this->operator === 'like') {
-                // Use whereRaw with LOWER() for case-insensitive search
-                if ($this->negate) {
-                    return $query->whereRaw("LOWER({$column}) NOT LIKE ?", [strtolower($pattern)]);
-                }
+                // Use query builder with case-insensitive comparison
+                $operator = $this->negate ? 'not like' : 'like';
 
-                return $query->whereRaw("LOWER({$column}) LIKE ?", [strtolower($pattern)]);
+                return $query->whereRaw(
+                    'LOWER('.$query->getGrammar()->wrap($column).') '.$operator.' ?',
+                    [strtolower($pattern)]
+                );
             }
 
             // Handle negation for case-sensitive search
@@ -165,7 +166,7 @@ class LikeFilter extends Filter
         $this->indicateUsing(function (array $data): array {
             $value = $data['value'] ?? null;
 
-            if (empty($value)) {
+            if ($value === null || $value === '') {
                 return [];
             }
 
@@ -179,15 +180,29 @@ class LikeFilter extends Filter
     }
 
     /**
+     * Escape special LIKE characters to prevent unintended pattern matching.
+     */
+    protected function escapeLikeValue(string $value): string
+    {
+        return str_replace(
+            ['\\', '%', '_'],
+            ['\\\\', '\\%', '\\_'],
+            $value
+        );
+    }
+
+    /**
      * Build the LIKE pattern with wildcards.
      */
     protected function buildPattern(string $value): string
     {
+        $escapedValue = $this->escapeLikeValue($value);
+
         return match ($this->wildcardPosition) {
-            'start' => "%{$value}",
-            'end' => "{$value}%",
-            'none' => $value,
-            default => "%{$value}%",
+            'start' => "%{$escapedValue}",
+            'end' => "{$escapedValue}%",
+            'none' => $escapedValue,
+            default => "%{$escapedValue}%",
         };
     }
 }

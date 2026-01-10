@@ -44,4 +44,33 @@ return [
         // Wrap LIKE pattern with wildcards
         'like_wildcards' => 'both', // 'both', 'start', 'end', 'none'
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Select Table Filter Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configure default behavior for SelectTableFilter.
+    |
+    */
+    'select_table' => [
+        // Maximum number of options to load
+        'options_limit' => 100,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Modal Select Filter Security
+    |--------------------------------------------------------------------------
+    |
+    | Configure security settings for ModalSelectFilter.
+    |
+    */
+    'allowed_models' => [
+        // Add model classes that are allowed to be queried via the modal select filter.
+        // If empty, all models are allowed (not recommended for production).
+        // Example:
+        // App\Models\User::class,
+        // App\Models\Category::class,
+    ],
 ];
