@@ -76,4 +76,12 @@ return [
     'reset_filters.confirm_description' => 'Are you sure you want to reset all filters? This will clear all current filter settings.',
     'reset_filters.confirm_button' => 'Reset',
 
+    // Cascading select filter
+    'cascading.select_placeholder' => 'Select...',
+    'cascading.country' => 'Country',
+    'cascading.state' => 'State/Province',
+    'cascading.city' => 'City',
+    'cascading.category' => 'Category',
+    'cascading.subcategory' => 'Subcategory',
+
 ];

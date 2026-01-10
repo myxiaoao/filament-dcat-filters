@@ -76,4 +76,12 @@ return [
     'reset_filters.confirm_description' => '确定要重置所有筛选器吗？这将清除所有当前筛选设置。',
     'reset_filters.confirm_button' => '重置',
 
+    // Cascading select filter
+    'cascading.select_placeholder' => '请选择...',
+    'cascading.country' => '国家',
+    'cascading.state' => '省份',
+    'cascading.city' => '城市',
+    'cascading.category' => '分类',
+    'cascading.subcategory' => '子分类',
+
 ];
