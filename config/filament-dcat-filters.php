@@ -14,13 +14,13 @@ return [
         'date_format' => 'Y-m-d',
 
         // Default date display format (UI display)
-        'date_display_format' => 'M j, Y',
+        'date_display_format' => 'Y-m-d',
 
         // Default datetime format (storage format)
         'datetime_format' => 'Y-m-d H:i:s',
 
         // Default datetime display format (UI display)
-        'datetime_display_format' => 'M j, Y H:i',
+        'datetime_display_format' => 'Y-m-d H:i:s',
 
         // Default time format
         'time_format' => 'H:i:s',
