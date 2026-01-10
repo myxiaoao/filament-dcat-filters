@@ -148,35 +148,10 @@ class ScopeFilter extends Filter
         // Configure query logic
         $this->query(function (Builder $query, array $data): Builder {
             $selectedScope = $data['scope'] ?? $this->defaultScope;
-
-            // If 'all' scope or no specific scope is selected, return unmodified query
-            if ($selectedScope === 'all' || $selectedScope === $this->defaultScope) {
-                $scopeConfig = $this->scopes[$selectedScope] ?? null;
-
-                // Even if it's the default, apply query if defined
-                if (is_array($scopeConfig) && isset($scopeConfig['query'])) {
-                    $queryCallback = $scopeConfig['query'];
-
-                    return $queryCallback($query);
-                }
-
-                // Check if default scope has no query (like 'all'), return unmodified
-                if (! is_array($scopeConfig) || ! isset($scopeConfig['query'])) {
-                    return $query;
-                }
-            }
-
-            // Apply the selected scope's query
             $scopeConfig = $this->scopes[$selectedScope] ?? null;
 
-            if (! $scopeConfig) {
-                return $query;
-            }
-
             if (is_array($scopeConfig) && isset($scopeConfig['query'])) {
-                $queryCallback = $scopeConfig['query'];
-
-                return $queryCallback($query);
+                return $scopeConfig['query']($query);
             }
 
             return $query;

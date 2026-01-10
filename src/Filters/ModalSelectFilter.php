@@ -201,15 +201,7 @@ class ModalSelectFilter extends Filter
      */
     protected function isValueEmpty(mixed $value): bool
     {
-        if ($value === null || $value === '') {
-            return true;
-        }
-
-        if (is_array($value) && count($value) === 0) {
-            return true;
-        }
-
-        return false;
+        return $value === null || $value === '' || $value === [];
     }
 
     /**

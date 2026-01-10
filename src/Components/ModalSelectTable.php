@@ -205,7 +205,6 @@ class ModalSelectTable extends Component implements HasActions, HasForms, HasTab
      */
     public function render(): View
     {
-        return view('filament-dcat-filters::components.modal-select-table')
-            ->layout('');
+        return view('filament-dcat-filters::components.modal-select-table');
     }
 }

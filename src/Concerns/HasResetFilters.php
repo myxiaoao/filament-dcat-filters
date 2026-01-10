@@ -8,14 +8,6 @@ use Filament\Tables\Table;
 trait HasResetFilters
 {
     /**
-     * Boot the trait and automatically add reset filters action.
-     */
-    public function bootHasResetFilters(): void
-    {
-        // This method is called automatically by Livewire traits
-    }
-
-    /**
      * Get the reset filters action instance.
      */
     protected function getResetFiltersAction(): ResetFiltersAction
