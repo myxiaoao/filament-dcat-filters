@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Blade;
-
 beforeEach(function () {
     // Ensure lang files are loaded
     $this->app->register(\Cooper\FilamentDcatFilters\FilamentDcatFiltersServiceProvider::class);
