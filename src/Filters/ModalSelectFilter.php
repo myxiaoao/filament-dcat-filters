@@ -176,12 +176,14 @@ class ModalSelectFilter extends Filter
     protected function getFilterSchema(): array
     {
         $filterKey = $this->getName();
+        $label = $this->evaluate($this->getLabel()) ?? $filterKey;
 
         $field = ViewField::make('value')
-            ->label($this->getLabel() ?? $filterKey)
+            ->label($label)
             ->view('filament-dcat-filters::filters.modal-select')
             ->viewData([
                 'filterName' => $filterKey,
+                'label' => $label,
                 'modelClass' => $this->modelClass,
                 'titleColumn' => $this->titleColumn,
                 'keyColumn' => $this->keyColumn,
@@ -252,7 +254,7 @@ class ModalSelectFilter extends Filter
                 return [];
             }
 
-            $label = $this->getLabel() ?? $this->getName();
+            $label = $this->evaluate($this->getLabel()) ?? $this->getName();
             $model = $this->modelClass;
 
             if (! $model || ! class_exists($model) || ! is_subclass_of($model, Model::class)) {
@@ -327,7 +329,13 @@ class ModalSelectFilter extends Filter
      */
     public function getDialogTitle(): string
     {
-        return $this->dialogTitle ?? ($this->getLabel() ?? __('filament-dcat-filters::filament-dcat-filters.modal_select.default_title'));
+        if ($this->dialogTitle) {
+            return $this->dialogTitle;
+        }
+
+        $label = $this->evaluate($this->getLabel());
+
+        return $label ?? __('filament-dcat-filters::filament-dcat-filters.modal_select.default_title');
     }
 
     /**
