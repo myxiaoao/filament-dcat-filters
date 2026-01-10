@@ -130,10 +130,7 @@
     :aria-expanded="open"
     aria-label="{{ $label ?? __('filament-dcat-filters::filament-dcat-filters.modal_select.default_title') }}"
 >
-    <x-filament-forms::field-wrapper
-        :field="$component"
-    >
-        <div class="flex items-center gap-x-3 justify-between">
+    <div class="flex items-center gap-x-3 justify-between">
             {{-- Select input wrapper --}}
             <div class="fi-input-wrp fi-fo-select flex rounded-lg shadow-sm ring-1 transition duration-75 bg-white dark:bg-white/5 [&:not(:has(.fi-ac-action:focus))]:focus-within:ring-2 ring-gray-950/10 dark:ring-white/20 [&:not(:has(.fi-ac-action:focus))]:focus-within:ring-primary-600 dark:[&:not(:has(.fi-ac-action:focus))]:focus-within:ring-primary-500 min-w-0 flex-1 relative">
                 {{-- Transparent click layer with keyboard support --}}
@@ -216,7 +213,6 @@
             x-ref="hiddenInput"
             value=""
         />
-    </x-filament-forms::field-wrapper>
 
     {{-- Modal dialog --}}
     <x-filament::modal
