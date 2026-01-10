@@ -12,6 +12,7 @@
         open: false,
         loading: false,
         error: null,
+        triggerElement: null,
 
         init() {
             // Listen for selection confirmation event (Livewire 3 syntax)
@@ -20,6 +21,7 @@
 
                 if (detail.filterKey === '{{ $filterName }}') {
                     this.updateSelection(detail.selected, detail.modelClass, detail.titleColumn, detail.keyColumn);
+                    this.announceToScreenReader('{{ __('filament-dcat-filters::filament-dcat-filters.accessibility.selection_updated') }}');
                 }
             });
         },
@@ -29,10 +31,29 @@
             if (event) {
                 event.preventDefault();
                 event.stopPropagation();
+                this.triggerElement = event.target;
             }
             this.open = true;
             this.error = null;
             $dispatch('open-modal', { id: '{{ $modalId }}' });
+        },
+
+        handleKeydown(event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                this.openModal(event);
+            }
+        },
+
+        announceToScreenReader(message) {
+            const announcement = document.createElement('div');
+            announcement.setAttribute('role', 'status');
+            announcement.setAttribute('aria-live', 'polite');
+            announcement.setAttribute('aria-atomic', 'true');
+            announcement.className = 'sr-only';
+            announcement.textContent = message;
+            document.body.appendChild(announcement);
+            setTimeout(() => announcement.remove(), 1000);
         },
 
         updateSelection(selected, modelClass, titleColumn, keyColumn) {
@@ -101,8 +122,13 @@
             this.selectedLabels = [];
             this.error = null;
             this.updateHiddenInput();
+            this.announceToScreenReader('{{ __('filament-dcat-filters::filament-dcat-filters.accessibility.selection_cleared') }}');
         }
     }"
+    role="combobox"
+    aria-haspopup="dialog"
+    :aria-expanded="open"
+    aria-label="{{ $label ?? __('filament-dcat-filters::filament-dcat-filters.modal_select.default_title') }}"
 >
     <x-filament-forms::field-wrapper
         :field="$component"
@@ -110,10 +136,14 @@
         <div class="flex items-center gap-x-3 justify-between">
             {{-- Select input wrapper --}}
             <div class="fi-input-wrp fi-fo-select flex rounded-lg shadow-sm ring-1 transition duration-75 bg-white dark:bg-white/5 [&:not(:has(.fi-ac-action:focus))]:focus-within:ring-2 ring-gray-950/10 dark:ring-white/20 [&:not(:has(.fi-ac-action:focus))]:focus-within:ring-primary-600 dark:[&:not(:has(.fi-ac-action:focus))]:focus-within:ring-primary-500 min-w-0 flex-1 relative">
-                {{-- Transparent click layer --}}
+                {{-- Transparent click layer with keyboard support --}}
                 <div
                     @click="openModal($event)"
-                    class="absolute inset-0 z-10 cursor-pointer"
+                    @keydown="handleKeydown($event)"
+                    tabindex="0"
+                    role="button"
+                    :aria-label="selectedLabels.length > 0 ? '{{ __('filament-dcat-filters::filament-dcat-filters.accessibility.change_selection') }}: ' + selectedLabels.join(', ') : '{{ __('filament-dcat-filters::filament-dcat-filters.accessibility.open_selection') }}'"
+                    class="absolute inset-0 z-10 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded-lg"
                 ></div>
 
                 <div class="fi-input-wrp-content-ctn">
@@ -155,14 +185,21 @@
                 <button
                     type="button"
                     @click.stop="clear()"
-                    class="fi-link group/link relative inline-flex items-center justify-center outline-none fi-size-md gap-1.5 text-sm fi-link-size-md fi-color-gray fi-ac-action fi-ac-link-action"
+                    aria-label="{{ __('filament-dcat-filters::filament-dcat-filters.accessibility.clear_selection') }}"
+                    class="fi-link group/link relative inline-flex items-center justify-center outline-none fi-size-md gap-1.5 text-sm fi-link-size-md fi-color-gray fi-ac-action fi-ac-link-action focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded"
                 >
-                    <svg class="fi-link-icon h-5 w-5 text-gray-400 group-hover/link:text-gray-500 dark:text-gray-500 dark:group-hover/link:text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <svg class="fi-link-icon h-5 w-5 text-gray-400 group-hover/link:text-gray-500 dark:text-gray-500 dark:group-hover/link:text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
+                    <span class="sr-only">{{ __('filament-dcat-filters::filament-dcat-filters.modal_select.clear_selection') }}</span>
                 </button>
             </div>
         </div>
+
+        {{-- Screen reader description --}}
+        <span id="filter-{{ $filterName }}-description" class="sr-only">
+            <span x-text="selected.length > 0 ? '{{ __('filament-dcat-filters::filament-dcat-filters.accessibility.items_selected') }}: ' + selected.length : '{{ __('filament-dcat-filters::filament-dcat-filters.accessibility.no_selection') }}'"></span>
+        </span>
 
         {{-- Error message --}}
         <div

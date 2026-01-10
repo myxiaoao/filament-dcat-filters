@@ -84,4 +84,17 @@ return [
     'cascading.category' => '分类',
     'cascading.subcategory' => '子分类',
 
+    // Accessibility
+    'accessibility.selection_updated' => '选择已更新',
+    'accessibility.selection_cleared' => '选择已清空',
+    'accessibility.change_selection' => '更改选择',
+    'accessibility.open_selection' => '打开选择对话框',
+    'accessibility.clear_selection' => '清空选择',
+    'accessibility.items_selected' => '项已选中',
+    'accessibility.no_selection' => '未选择任何项',
+    'accessibility.filter_applied' => '筛选器已应用',
+    'accessibility.filter_cleared' => '筛选器已清除',
+    'accessibility.loading' => '加载中',
+    'accessibility.error_occurred' => '发生错误',
+
 ];

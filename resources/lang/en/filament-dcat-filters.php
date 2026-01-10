@@ -84,4 +84,17 @@ return [
     'cascading.category' => 'Category',
     'cascading.subcategory' => 'Subcategory',
 
+    // Accessibility
+    'accessibility.selection_updated' => 'Selection updated',
+    'accessibility.selection_cleared' => 'Selection cleared',
+    'accessibility.change_selection' => 'Change selection',
+    'accessibility.open_selection' => 'Open selection dialog',
+    'accessibility.clear_selection' => 'Clear selection',
+    'accessibility.items_selected' => 'Items selected',
+    'accessibility.no_selection' => 'No items selected',
+    'accessibility.filter_applied' => 'Filter applied',
+    'accessibility.filter_cleared' => 'Filter cleared',
+    'accessibility.loading' => 'Loading',
+    'accessibility.error_occurred' => 'An error occurred',
+
 ];
