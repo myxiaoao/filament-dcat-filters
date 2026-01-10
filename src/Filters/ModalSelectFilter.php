@@ -36,7 +36,7 @@ class ModalSelectFilter extends Filter
 
     protected ?string $dialogTitle = null;
 
-    protected ?string $dialogWidth = '900px';
+    protected ?string $dialogWidth = '5xl';
 
     protected ?Closure $modifyQueryUsing = null;
 
@@ -53,9 +53,35 @@ class ModalSelectFilter extends Filter
 
         $this->columnSpan(1);
 
-        $this->schema(fn (): array => $this->getFilterSchema());
-
+        $this->configureForm();
         $this->configureQuery();
+    }
+
+    /**
+     * Configure the form component.
+     */
+    protected function configureForm(): void
+    {
+        $filterKey = $this->getName();
+
+        $this->form([
+            ViewField::make('value')
+                ->label(fn () => $this->evaluate($this->getLabel()) ?? $filterKey)
+                ->view('filament-dcat-filters::filters.modal-select')
+                ->viewData(fn () => [
+                    'filterName' => $filterKey,
+                    'label' => $this->evaluate($this->getLabel()) ?? $filterKey,
+                    'modelClass' => $this->modelClass,
+                    'titleColumn' => $this->titleColumn,
+                    'keyColumn' => $this->keyColumn,
+                    'multiple' => $this->multiple,
+                    'dialogTitle' => $this->getDialogTitle(),
+                    'dialogWidth' => $this->dialogWidth,
+                    'searchColumns' => $this->searchColumns,
+                    'displayColumns' => $this->displayColumns,
+                ])
+                ->columnSpanFull(),
+        ]);
     }
 
     /**
@@ -166,36 +192,6 @@ class ModalSelectFilter extends Filter
         $this->modifyQueryUsing = $callback;
 
         return $this;
-    }
-
-    /**
-     * Build the filter schema components.
-     *
-     * @return array<ViewField>
-     */
-    protected function getFilterSchema(): array
-    {
-        $filterKey = $this->getName();
-        $label = $this->evaluate($this->getLabel()) ?? $filterKey;
-
-        $field = ViewField::make('value')
-            ->label($label)
-            ->view('filament-dcat-filters::filters.modal-select')
-            ->viewData([
-                'filterName' => $filterKey,
-                'label' => $label,
-                'modelClass' => $this->modelClass,
-                'titleColumn' => $this->titleColumn,
-                'keyColumn' => $this->keyColumn,
-                'multiple' => $this->multiple,
-                'dialogTitle' => $this->getDialogTitle(),
-                'dialogWidth' => $this->dialogWidth,
-                'searchColumns' => $this->searchColumns,
-                'displayColumns' => $this->displayColumns,
-            ])
-            ->columnSpanFull();
-
-        return [$field];
     }
 
     /**

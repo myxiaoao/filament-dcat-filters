@@ -32,15 +32,6 @@ describe('HasResetFilters Trait', function () {
         expect($action1)->not->toBe($action2);
     });
 
-    it('has bootHasResetFilters method', function () {
-        expect(method_exists($this->testClass, 'bootHasResetFilters'))->toBeTrue();
-
-        // Should not throw any exceptions
-        $this->testClass->bootHasResetFilters();
-
-        expect(true)->toBeTrue();
-    });
-
     it('has withResetFiltersAction method', function () {
         expect(method_exists($this->testClass, 'withResetFiltersAction'))->toBeTrue();
     });

@@ -73,7 +73,7 @@ describe('Dialog Configuration', function () {
     it('has default dialog width', function () {
         $filter = ModalSelectFilter::make('user_id');
 
-        expect($filter->getDialogWidth())->toBe('900px');
+        expect($filter->getDialogWidth())->toBe('5xl');
     });
 });
 

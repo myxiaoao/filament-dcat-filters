@@ -21,7 +21,7 @@ class ModalSelectController extends Controller
         $validator = Validator::make($request->all(), [
             'model' => ['required', 'string'],
             'ids' => ['required', 'array'],
-            'ids.*' => ['required', 'scalar'],
+            'ids.*' => ['required'],
             'column' => ['required', 'string', 'max:100'],
             'keyColumn' => ['sometimes', 'string', 'max:100'],
         ]);

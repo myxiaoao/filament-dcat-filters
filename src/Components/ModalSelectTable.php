@@ -106,6 +106,8 @@ class ModalSelectTable extends Component implements HasActions, HasForms, HasTab
     protected function buildColumns(): array
     {
         $columns = [];
+        $keyColumn = $this->keyColumn;
+        $selectAction = fn ($record) => $this->selectRow($record->{$keyColumn});
 
         // Add selection column (first column)
         $columns[] = ViewColumn::make('_select')
@@ -124,18 +126,21 @@ class ModalSelectTable extends Component implements HasActions, HasForms, HasTab
         if (empty($this->displayColumns)) {
             $columns[] = TextColumn::make($this->keyColumn)
                 ->label('ID')
-                ->sortable();
+                ->sortable()
+                ->action($selectAction);
 
             $columns[] = TextColumn::make($this->titleColumn)
                 ->label('Name')
                 ->searchable()
-                ->sortable();
+                ->sortable()
+                ->action($selectAction);
         } else {
             // Use specified display columns
             foreach ($this->displayColumns as $column => $label) {
                 $col = TextColumn::make($column)
                     ->label($label)
-                    ->sortable();
+                    ->sortable()
+                    ->action($selectAction);
 
                 // Add search functionality if column is in search columns
                 if (in_array($column, $this->searchColumns)) {
