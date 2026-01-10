@@ -43,7 +43,10 @@
     "autoload": {
         "psr-4": {
             "Cooper\\FilamentDcatFilters\\": "src/"
-        }
+        },
+        "files": [
+            "src/helpers.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

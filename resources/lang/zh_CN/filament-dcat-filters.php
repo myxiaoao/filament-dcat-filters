@@ -70,4 +70,10 @@ return [
     'modal_select.empty_state' => '未找到记录',
     'modal_select.empty_state_description' => '请尝试调整搜索条件',
 
+    // Reset filters action
+    'reset_filters.label' => '重置筛选器',
+    'reset_filters.confirm_heading' => '重置所有筛选器',
+    'reset_filters.confirm_description' => '确定要重置所有筛选器吗？这将清除所有当前筛选设置。',
+    'reset_filters.confirm_button' => '重置',
+
 ];

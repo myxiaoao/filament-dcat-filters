@@ -70,4 +70,10 @@ return [
     'modal_select.empty_state' => 'No records found',
     'modal_select.empty_state_description' => 'Try adjusting your search criteria',
 
+    // Reset filters action
+    'reset_filters.label' => 'Reset Filters',
+    'reset_filters.confirm_heading' => 'Reset All Filters',
+    'reset_filters.confirm_description' => 'Are you sure you want to reset all filters? This will clear all current filter settings.',
+    'reset_filters.confirm_button' => 'Reset',
+
 ];
