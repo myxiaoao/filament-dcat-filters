@@ -84,6 +84,21 @@ return [
     'cascading.category' => 'Category',
     'cascading.subcategory' => 'Subcategory',
 
+    // Relative date filter
+    'relative_date.placeholder' => 'Select period...',
+    'relative_date.today' => 'Today',
+    'relative_date.yesterday' => 'Yesterday',
+    'relative_date.last_7_days' => 'Last 7 Days',
+    'relative_date.last_30_days' => 'Last 30 Days',
+    'relative_date.this_week' => 'This Week',
+    'relative_date.last_week' => 'Last Week',
+    'relative_date.this_month' => 'This Month',
+    'relative_date.last_month' => 'Last Month',
+    'relative_date.this_quarter' => 'This Quarter',
+    'relative_date.last_quarter' => 'Last Quarter',
+    'relative_date.this_year' => 'This Year',
+    'relative_date.last_year' => 'Last Year',
+
     // Full text filter
     'fulltext.label' => 'Search',
     'fulltext.placeholder' => 'Search...',

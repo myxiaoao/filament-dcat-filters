@@ -66,6 +66,21 @@ return [
     'modal_select.cancel' => '取消',
     'modal_select.confirm' => '確定',
 
+    // Relative date filter
+    'relative_date.placeholder' => '選擇時間段...',
+    'relative_date.today' => '今天',
+    'relative_date.yesterday' => '昨天',
+    'relative_date.last_7_days' => '最近7天',
+    'relative_date.last_30_days' => '最近30天',
+    'relative_date.this_week' => '本週',
+    'relative_date.last_week' => '上週',
+    'relative_date.this_month' => '本月',
+    'relative_date.last_month' => '上月',
+    'relative_date.this_quarter' => '本季度',
+    'relative_date.last_quarter' => '上季度',
+    'relative_date.this_year' => '今年',
+    'relative_date.last_year' => '去年',
+
     // Full text filter
     'fulltext.label' => '搜尋',
     'fulltext.placeholder' => '搜尋...',

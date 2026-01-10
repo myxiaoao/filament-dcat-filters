@@ -84,6 +84,21 @@ return [
     'cascading.category' => '分类',
     'cascading.subcategory' => '子分类',
 
+    // Relative date filter
+    'relative_date.placeholder' => '选择时间段...',
+    'relative_date.today' => '今天',
+    'relative_date.yesterday' => '昨天',
+    'relative_date.last_7_days' => '最近7天',
+    'relative_date.last_30_days' => '最近30天',
+    'relative_date.this_week' => '本周',
+    'relative_date.last_week' => '上周',
+    'relative_date.this_month' => '本月',
+    'relative_date.last_month' => '上月',
+    'relative_date.this_quarter' => '本季度',
+    'relative_date.last_quarter' => '上季度',
+    'relative_date.this_year' => '今年',
+    'relative_date.last_year' => '去年',
+
     // Full text filter
     'fulltext.label' => '搜索',
     'fulltext.placeholder' => '搜索...',
