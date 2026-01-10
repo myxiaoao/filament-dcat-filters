@@ -84,6 +84,18 @@ return [
     'cascading.category' => 'Category',
     'cascading.subcategory' => 'Subcategory',
 
+    // Boolean filter
+    'boolean.placeholder' => 'Select...',
+    'boolean.yes' => 'Yes',
+    'boolean.no' => 'No',
+    'boolean.all' => 'All',
+    'boolean.active' => 'Active',
+    'boolean.inactive' => 'Inactive',
+    'boolean.enabled' => 'Enabled',
+    'boolean.disabled' => 'Disabled',
+    'boolean.published' => 'Published',
+    'boolean.draft' => 'Draft',
+
     // Accessibility
     'accessibility.selection_updated' => 'Selection updated',
     'accessibility.selection_cleared' => 'Selection cleared',

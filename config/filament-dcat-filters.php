@@ -82,6 +82,24 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Boolean Filter Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configure default behavior for Boolean filters.
+    |
+    */
+    'boolean' => [
+        // Default display style: 'select', 'radio', or 'toggle'
+        'default_display_style' => 'select',
+
+        // Default labels
+        'default_true_label' => 'Yes',
+        'default_false_label' => 'No',
+        'default_all_label' => 'All',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Filter Persistence Configuration
     |--------------------------------------------------------------------------
     |

@@ -66,4 +66,16 @@ return [
     'modal_select.cancel' => '取消',
     'modal_select.confirm' => '確定',
 
+    // Boolean filter
+    'boolean.placeholder' => '請選擇...',
+    'boolean.yes' => '是',
+    'boolean.no' => '否',
+    'boolean.all' => '全部',
+    'boolean.active' => '啟用',
+    'boolean.inactive' => '停用',
+    'boolean.enabled' => '已啟用',
+    'boolean.disabled' => '已停用',
+    'boolean.published' => '已發佈',
+    'boolean.draft' => '草稿',
+
 ];

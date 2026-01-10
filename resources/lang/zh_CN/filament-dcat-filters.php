@@ -84,6 +84,18 @@ return [
     'cascading.category' => '分类',
     'cascading.subcategory' => '子分类',
 
+    // Boolean filter
+    'boolean.placeholder' => '请选择...',
+    'boolean.yes' => '是',
+    'boolean.no' => '否',
+    'boolean.all' => '全部',
+    'boolean.active' => '启用',
+    'boolean.inactive' => '禁用',
+    'boolean.enabled' => '已启用',
+    'boolean.disabled' => '已禁用',
+    'boolean.published' => '已发布',
+    'boolean.draft' => '草稿',
+
     // Accessibility
     'accessibility.selection_updated' => '选择已更新',
     'accessibility.selection_cleared' => '选择已清空',
