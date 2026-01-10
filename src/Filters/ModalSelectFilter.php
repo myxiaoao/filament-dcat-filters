@@ -40,8 +40,6 @@ class ModalSelectFilter extends Filter
 
     protected ?Closure $modifyQueryUsing = null;
 
-    protected ?Closure $tableCallback = null;
-
     protected array $searchColumns = [];
 
     protected array $displayColumns = [];
@@ -54,7 +52,10 @@ class ModalSelectFilter extends Filter
         parent::setUp();
 
         $this->columnSpan(1);
-        $this->configureForm();
+
+        $this->schema(fn (): array => $this->getFilterSchema());
+
+        $this->configureQuery();
     }
 
     /**
@@ -69,7 +70,6 @@ class ModalSelectFilter extends Filter
         $this->modelClass = $modelClass;
         $this->titleColumn = $titleColumn;
         $this->keyColumn = $keyColumn;
-        $this->configureForm();
 
         return $this;
     }
@@ -82,7 +82,6 @@ class ModalSelectFilter extends Filter
         $this->relationship = $relationship;
         $this->titleColumn = $titleColumn;
         $this->keyColumn = $keyColumn;
-        $this->configureForm();
 
         return $this;
     }
@@ -93,7 +92,6 @@ class ModalSelectFilter extends Filter
     public function dialogTitle(string $title): static
     {
         $this->dialogTitle = $title;
-        $this->configureForm();
 
         return $this;
     }
@@ -114,7 +112,6 @@ class ModalSelectFilter extends Filter
     public function dialogWidth(string $width): static
     {
         $this->dialogWidth = $width;
-        $this->configureForm();
 
         return $this;
     }
@@ -135,7 +132,6 @@ class ModalSelectFilter extends Filter
     public function multiple(bool $multiple = true): static
     {
         $this->multiple = $multiple;
-        $this->configureForm();
 
         return $this;
     }
@@ -146,7 +142,6 @@ class ModalSelectFilter extends Filter
     public function searchable(array $columns): static
     {
         $this->searchColumns = $columns;
-        $this->configureForm();
 
         return $this;
     }
@@ -159,7 +154,6 @@ class ModalSelectFilter extends Filter
     public function displayColumns(array $columns): static
     {
         $this->displayColumns = $columns;
-        $this->configureForm();
 
         return $this;
     }
@@ -175,34 +169,31 @@ class ModalSelectFilter extends Filter
     }
 
     /**
-     * Configure form component.
+     * Build the filter schema components.
+     *
+     * @return array<ViewField>
      */
-    protected function configureForm(): void
+    protected function getFilterSchema(): array
     {
         $filterKey = $this->getName();
-        $modalId = 'modal-select-'.$filterKey;
 
-        $this->form([
-            ViewField::make('value')
-                ->label($this->getLabel() ?? $this->getName())
-                ->view('filament-dcat-filters::filters.modal-select')
-                ->viewData([
-                    'filterName' => $filterKey,
-                    'modalId' => $modalId,
-                    'modelClass' => $this->modelClass,
-                    'titleColumn' => $this->titleColumn,
-                    'keyColumn' => $this->keyColumn,
-                    'multiple' => $this->multiple,
-                    'dialogTitle' => $this->dialogTitle ?? ($this->getLabel() ?? __('filament-dcat-filters::filament-dcat-filters.modal_select.default_title')),
-                    'dialogWidth' => $this->dialogWidth,
-                    'searchColumns' => $this->searchColumns,
-                    'displayColumns' => $this->displayColumns,
-                    'fieldLabel' => $this->getLabel() ?? $this->getName(),
-                ])
-                ->columnSpanFull(),
-        ]);
+        $field = ViewField::make('value')
+            ->label($this->getLabel() ?? $filterKey)
+            ->view('filament-dcat-filters::filters.modal-select')
+            ->viewData([
+                'filterName' => $filterKey,
+                'modelClass' => $this->modelClass,
+                'titleColumn' => $this->titleColumn,
+                'keyColumn' => $this->keyColumn,
+                'multiple' => $this->multiple,
+                'dialogTitle' => $this->getDialogTitle(),
+                'dialogWidth' => $this->dialogWidth,
+                'searchColumns' => $this->searchColumns,
+                'displayColumns' => $this->displayColumns,
+            ])
+            ->columnSpanFull();
 
-        $this->configureQuery();
+        return [$field];
     }
 
     /**
@@ -296,7 +287,7 @@ class ModalSelectFilter extends Filter
      */
     public function getTitleColumn(): string
     {
-        return $this->titleColumn ?? 'name';
+        return $this->titleColumn;
     }
 
     /**
@@ -304,7 +295,7 @@ class ModalSelectFilter extends Filter
      */
     public function getKeyColumn(): string
     {
-        return $this->keyColumn ?? 'id';
+        return $this->keyColumn;
     }
 
     /**
@@ -328,6 +319,6 @@ class ModalSelectFilter extends Filter
      */
     public function getDialogWidth(): string
     {
-        return $this->dialogWidth ?? '900px';
+        return $this->dialogWidth;
     }
 }

@@ -1,16 +1,8 @@
 @php
-    $filterKey = $filterName ?? 'modal_select';
-    $modalId = 'modal-select-' . $filterKey;
-    $modelClass = $modelClass ?? null;
-    $titleColumn = $titleColumn ?? 'name';
-    $keyColumn = $keyColumn ?? 'id';
-    $multiple = $multiple ?? false;
-    $dialogTitle = $dialogTitle ?? __('filament-dcat-filters::filament-dcat-filters.modal_select.default_title');
-    $dialogWidth = $dialogWidth ?? '900px';
-    $searchColumns = $searchColumns ?? [];
-    $displayColumns = $displayColumns ?? [];
-    $placeholder = $placeholder ?? ($multiple ? __('filament-dcat-filters::filament-dcat-filters.modal_select.placeholder_multiple') : __('filament-dcat-filters::filament-dcat-filters.modal_select.placeholder_single'));
-    $label = $fieldLabel ?? null;
+    $modalId = 'modal-select-' . $filterName;
+    $placeholder = $multiple
+        ? __('filament-dcat-filters::filament-dcat-filters.modal_select.placeholder_multiple')
+        : __('filament-dcat-filters::filament-dcat-filters.modal_select.placeholder_single');
 @endphp
 
 <div
@@ -24,7 +16,7 @@
             window.addEventListener('modal-select-confirmed', (event) => {
                 const detail = event.detail;
 
-                if (detail.filterKey === '{{ $filterKey }}') {
+                if (detail.filterKey === '{{ $filterName }}') {
                     this.updateSelection(detail.selected, detail.modelClass, detail.titleColumn, detail.keyColumn);
                 }
             });
@@ -90,22 +82,9 @@
         }
     }"
 >
-    {{-- Use the same two-column layout as standard Filament Select --}}
-    {{-- Label column --}}
-    @if($label)
-        <div class="fi-fo-field-label-col">
-            <div class="fi-fo-field-label-ctn">
-                <label class="fi-fo-field-label">
-                    <span class="fi-fo-field-label-content">
-                        {{ $label }}
-                    </span>
-                </label>
-            </div>
-        </div>
-    @endif
-
-    {{-- Content column --}}
-    <div class="fi-fo-field-content-col">
+    <x-filament-forms::field-wrapper
+        :field="$component"
+    >
         <div class="flex items-center gap-x-3 justify-between">
             {{-- Select input wrapper --}}
             <div class="fi-input-wrp fi-fo-select flex rounded-lg shadow-sm ring-1 transition duration-75 bg-white dark:bg-white/5 [&:not(:has(.fi-ac-action:focus))]:focus-within:ring-2 ring-gray-950/10 dark:ring-white/20 [&:not(:has(.fi-ac-action:focus))]:focus-within:ring-primary-600 dark:[&:not(:has(.fi-ac-action:focus))]:focus-within:ring-primary-500 min-w-0 flex-1 relative">
@@ -132,55 +111,55 @@
                 </div>
             </div>
 
-        {{-- Clear button --}}
-        <div
-            x-show="selected.length > 0"
-            x-cloak
-            class="flex items-center gap-x-3 relative z-20"
-        >
-            <button
-                type="button"
-                @click.stop="clear()"
-                class="fi-link group/link relative inline-flex items-center justify-center outline-none fi-size-md gap-1.5 text-sm fi-link-size-md fi-color-gray fi-ac-action fi-ac-link-action"
+            {{-- Clear button --}}
+            <div
+                x-show="selected.length > 0"
+                x-cloak
+                class="flex items-center gap-x-3 relative z-20"
             >
-                <svg class="fi-link-icon h-5 w-5 text-gray-400 group-hover/link:text-gray-500 dark:text-gray-500 dark:group-hover/link:text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
+                <button
+                    type="button"
+                    @click.stop="clear()"
+                    class="fi-link group/link relative inline-flex items-center justify-center outline-none fi-size-md gap-1.5 text-sm fi-link-size-md fi-color-gray fi-ac-action fi-ac-link-action"
+                >
+                    <svg class="fi-link-icon h-5 w-5 text-gray-400 group-hover/link:text-gray-500 dark:text-gray-500 dark:group-hover/link:text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
         </div>
-        </div>
-    </div>
 
-    {{-- Hidden input for storing value --}}
-    <input
-        type="hidden"
-        name="value"
-        x-ref="hiddenInput"
-        value=""
-    />
-</div>
-
-{{-- Modal dialog --}}
-<x-filament::modal
-    id="{{ $modalId }}"
-    width="{{ $dialogWidth }}"
-    :close-by-clicking-away="false"
->
-    <x-slot name="heading">
-        {{ $dialogTitle }}
-    </x-slot>
-
-    @if($modelClass)
-        <livewire:cooper.filament-dcat-filters.modal-select-table
-            :modelClass="$modelClass"
-            :titleColumn="$titleColumn"
-            :keyColumn="$keyColumn"
-            :multiple="$multiple"
-            :displayColumns="$displayColumns"
-            :searchColumns="$searchColumns"
-            :selected="[]"
-            :filterKey="$filterKey"
-            :key="$filterKey"
+        {{-- Hidden input for storing value --}}
+        <input
+            type="hidden"
+            name="value"
+            x-ref="hiddenInput"
+            value=""
         />
-    @endif
-</x-filament::modal>
+    </x-filament-forms::field-wrapper>
+
+    {{-- Modal dialog --}}
+    <x-filament::modal
+        id="{{ $modalId }}"
+        width="{{ $dialogWidth }}"
+        :close-by-clicking-away="false"
+    >
+        <x-slot name="heading">
+            {{ $dialogTitle }}
+        </x-slot>
+
+        @if($modelClass)
+            <livewire:cooper.filament-dcat-filters.modal-select-table
+                :modelClass="$modelClass"
+                :titleColumn="$titleColumn"
+                :keyColumn="$keyColumn"
+                :multiple="$multiple"
+                :displayColumns="$displayColumns"
+                :searchColumns="$searchColumns"
+                :selected="[]"
+                :filterKey="$filterName"
+                :key="$filterName"
+            />
+        @endif
+    </x-filament::modal>
+</div>
