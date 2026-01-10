@@ -66,6 +66,10 @@ return [
     'modal_select.cancel' => '取消',
     'modal_select.confirm' => '確定',
 
+    // Enum filter
+    'enum.placeholder_single' => '請選擇...',
+    'enum.placeholder_multiple' => '選擇多個...',
+
     // Null filter
     'null.placeholder' => '請選擇...',
     'null.is_null' => '為空',

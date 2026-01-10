@@ -84,6 +84,10 @@ return [
     'cascading.category' => '分类',
     'cascading.subcategory' => '子分类',
 
+    // Enum filter
+    'enum.placeholder_single' => '请选择...',
+    'enum.placeholder_multiple' => '选择多个...',
+
     // Null filter
     'null.placeholder' => '请选择...',
     'null.is_null' => '为空',

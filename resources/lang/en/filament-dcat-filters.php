@@ -84,6 +84,10 @@ return [
     'cascading.category' => 'Category',
     'cascading.subcategory' => 'Subcategory',
 
+    // Enum filter
+    'enum.placeholder_single' => 'Select...',
+    'enum.placeholder_multiple' => 'Select multiple...',
+
     // Null filter
     'null.placeholder' => 'Select...',
     'null.is_null' => 'Is Null',
