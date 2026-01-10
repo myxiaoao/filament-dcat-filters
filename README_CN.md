@@ -1,11 +1,28 @@
+<div align="center">
+
 # Filament Dcat Filters
+
+**将 Dcat Admin 强大的过滤器功能带到 Filament**
+
+基于 PHP 8.3+ 构建，适用于 Laravel 12 和 Filament v4
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/cooper/filament-dcat-filters.svg?style=flat-square)](https://packagist.org/packages/cooper/filament-dcat-filters)
 [![Total Downloads](https://img.shields.io/packagist/dt/cooper/filament-dcat-filters.svg?style=flat-square)](https://packagist.org/packages/cooper/filament-dcat-filters)
+[![run-tests](https://github.com/myxiaoao/filament-dcat-filters/actions/workflows/run-tests.yml/badge.svg)](https://github.com/myxiaoao/filament-dcat-filters/actions/workflows/run-tests.yml)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![PHP](https://img.shields.io/badge/php-8.3+-purple.svg)](https://www.php.net)
+[![Laravel](https://img.shields.io/badge/laravel-12.x-red.svg)](https://laravel.com)
+[![Filament](https://img.shields.io/badge/filament-4.x-orange.svg)](https://filamentphp.com)
 
-将 [Dcat Admin](https://github.com/jqhph/dcat-admin) 强大的过滤器功能带到 [Filament](https://filamentphp.com)。这个包提供了一系列增强的过滤器，使构建后台管理面板更快速、更直观。
+<img src="./art/filters.png" alt="Filament Dcat Filters 截图" width="800">
 
-[English Documentation](README.md) | 中文文档
+---
+
+一套现代化的增强过滤器集合，灵感来自 [Dcat Admin](https://github.com/jqhph/dcat-admin)，将直观的 UI 组件与强大的过滤功能相结合，为 [Filament](https://filamentphp.com) 后台管理面板提供卓越的用户体验。
+
+[English Documentation](README.md) | [中文文档](#功能特性)
+
+</div>
 
 ## 功能特性
 
@@ -23,10 +40,18 @@
 - 📋 **IN 过滤器** - 多值选择（支持 NOT IN）
 - 🔢 **比较过滤器** - 比较运算符（>、<、>=、<=、=、!=）
 
+### 高级功能
+- 🔄 **重置所有过滤器** - 一键重置所有活动过滤器
+- 💾 **过滤器状态持久化** - 跨会话记住过滤器状态
+- 🔗 **URL 查询参数同步** - 可分享的过滤器 URL，无需页面刷新
+- 🔗 **级联选择过滤器** - 动态依赖下拉菜单
+- ♿ **无障碍支持** - ARIA 标签和键盘导航
+
 ### 其他特性
 - 🎨 **高度可定制** - 每个过滤器都有丰富的自定义选项
 - 📱 **移动端友好** - 响应式设计，适配所有屏幕尺寸
 - 🌐 **双语文档** - 完整的中英文文档
+- ✅ **全面测试** - 200+ 测试用例的全面覆盖
 
 ## 版本兼容性
 
@@ -170,6 +195,88 @@ HiddenFilter::make('tenant_id')
 
 **[查看详细文档 →](docs/zh_CN/advanced-features.md#hiddenfilter-使用说明)**
 
+### 重置所有过滤器
+
+添加一键重置按钮：
+
+```php
+use Cooper\FilamentDcatFilters\Concerns\HasResetFilters;
+
+class ListUsers extends ListRecords
+{
+    use HasResetFilters;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            $this->getResetFiltersAction(),
+        ];
+    }
+}
+```
+
+**[查看详细文档 →](docs/zh_CN/reset-filters.md)**
+
+### 过滤器状态持久化
+
+跨会话记住过滤器状态：
+
+```php
+use Cooper\FilamentDcatFilters\Concerns\HasFilterPersistence;
+
+class ListUsers extends ListRecords
+{
+    use HasFilterPersistence;
+
+    protected string $filterPersistenceKey = 'users-list-filters';
+}
+```
+
+**[查看详细文档 →](docs/zh_CN/filter-persistence.md)**
+
+### URL 查询参数同步
+
+可分享的过滤器 URL：
+
+```php
+use Cooper\FilamentDcatFilters\Concerns\SyncsFiltersToUrlWithoutHistory;
+
+class ListUsers extends ListRecords
+{
+    use SyncsFiltersToUrlWithoutHistory;
+}
+```
+
+**[查看详细文档 →](docs/zh_CN/url-sync.md)**
+
+### 级联选择过滤器
+
+动态依赖下拉菜单：
+
+```php
+use Cooper\FilamentDcatFilters\Filters\CascadingSelectFilter;
+
+CascadingSelectFilter::make('location')
+    ->levels([
+        'country' => [
+            'label' => '国家',
+            'options' => fn () => Country::pluck('name', 'id'),
+        ],
+        'state' => [
+            'label' => '省份',
+            'options' => fn ($country) => State::where('country_id', $country)->pluck('name', 'id'),
+            'dependsOn' => 'country',
+        ],
+        'city' => [
+            'label' => '城市',
+            'options' => fn ($state) => City::where('state_id', $state)->pluck('name', 'id'),
+            'dependsOn' => 'state',
+        ],
+    ])
+```
+
+**[查看详细文档 →](docs/zh_CN/cascading-filters.md)**
+
 ## 文档
 
 ### 核心过滤器
@@ -180,13 +287,21 @@ HiddenFilter::make('tenant_id')
 - 📖 [模态选择过滤器](docs/zh_CN/modal-select-filter.md) - Dcat Admin 风格的模态表格选择器
 - 📖 [快速过滤器](docs/zh_CN/quick-filters.md) - LIKE、IN、GT、LT、BETWEEN 过滤器
 
+### 高级功能
+- 📖 [重置所有过滤器](docs/zh_CN/reset-filters.md) - 一键重置功能
+- 📖 [过滤器状态持久化](docs/zh_CN/filter-persistence.md) - 基于会话的过滤器记忆
+- 📖 [URL 查询参数同步](docs/zh_CN/url-sync.md) - 可分享的过滤器 URL
+- 📖 [级联选择过滤器](docs/zh_CN/cascading-filters.md) - 动态依赖下拉菜单
+- 📖 [无障碍访问](docs/zh_CN/accessibility.md) - ARIA 标签和键盘支持
+- 📖 [高级功能](docs/zh_CN/advanced-features.md) - API 支持、InputMask、FindInSet、Hidden 过滤器
+
 ### 指南和参考
 - 📖 [使用示例](docs/zh_CN/usage-example.md) - 完整的工作示例
 - 📖 [演示指南](docs/zh_CN/demo-guide.md) - 交互式演示
-- 📖 [高级功能](docs/zh_CN/advanced-features.md) - API 支持、InputMask、FindInSet、Hidden 过滤器
 - 📖 [与 Dcat Admin 对比](docs/zh_CN/comparison.md) - 功能对比
 - 📖 [包结构](docs/zh_CN/package-structure.md) - 包架构
 - 📖 [文档结构](docs/zh_CN/documentation-structure.md) - 文档组织
+- 📖 [未来改进](docs/zh_CN/future-improvements.md) - 路线图和计划功能
 
 ## Facade 用法
 

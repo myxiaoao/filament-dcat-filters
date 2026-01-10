@@ -1,13 +1,28 @@
+<div align="center">
+
 # Filament Dcat Filters
+
+**Bring Dcat Admin's powerful filter features to Filament**
+
+Built with PHP 8.3+ for Laravel 12 and Filament v4
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/cooper/filament-dcat-filters.svg?style=flat-square)](https://packagist.org/packages/cooper/filament-dcat-filters)
 [![Total Downloads](https://img.shields.io/packagist/dt/cooper/filament-dcat-filters.svg?style=flat-square)](https://packagist.org/packages/cooper/filament-dcat-filters)
+[![run-tests](https://github.com/myxiaoao/filament-dcat-filters/actions/workflows/run-tests.yml/badge.svg)](https://github.com/myxiaoao/filament-dcat-filters/actions/workflows/run-tests.yml)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![PHP](https://img.shields.io/badge/php-8.3+-purple.svg)](https://www.php.net)
+[![Laravel](https://img.shields.io/badge/laravel-12.x-red.svg)](https://laravel.com)
+[![Filament](https://img.shields.io/badge/filament-4.x-orange.svg)](https://filamentphp.com)
 
-Bring [Dcat Admin](https://github.com/jqhph/dcat-admin)'s powerful filter features to [Filament](https://filamentphp.com). This package provides a collection of enhanced filters that make building admin panels faster and more intuitive.
+<img src="./art/filters.png" alt="Filament Dcat Filters Screenshot" width="800">
 
-![Demo](./art/filters.png)
+---
 
-English Documentation | [中文文档](README_CN.md)
+A modern collection of enhanced filters inspired by [Dcat Admin](https://github.com/jqhph/dcat-admin), combining intuitive UI components with powerful filtering capabilities for [Filament](https://filamentphp.com) admin panels.
+
+[English Documentation](#features) | [中文文档](README_CN.md)
+
+</div>
 
 ## Features
 
@@ -25,10 +40,18 @@ English Documentation | [中文文档](README_CN.md)
 - 📋 **IN Filter** - Multiple value selection (supports NOT IN)
 - 🔢 **Comparison Filter** - Comparison operators (>, <, >=, <=, =, !=)
 
+### Advanced Features
+- 🔄 **Reset All Filters** - One-click reset button for all active filters
+- 💾 **Filter State Persistence** - Remember filter states across sessions
+- 🔗 **URL Query Parameter Sync** - Shareable filter URLs without page reload
+- 🔗 **Cascading Select Filter** - Dynamic dependent dropdowns
+- ♿ **Accessibility Support** - ARIA labels and keyboard navigation
+
 ### Additional Features
 - 🎨 **Highly Customizable** - Extensive customization options for each filter
 - 📱 **Mobile Friendly** - Responsive design for all screen sizes
 - 🌐 **Bilingual Docs** - Complete English and Chinese documentation
+- ✅ **Fully Tested** - Comprehensive test coverage with 200+ tests
 
 ## Version Compatibility
 
@@ -172,6 +195,88 @@ HiddenFilter::make('tenant_id')
 
 **[View detailed documentation →](docs/en/advanced-features.md#hiddenfilter-usage-guide)**
 
+### Reset All Filters
+
+Add a one-click reset button:
+
+```php
+use Cooper\FilamentDcatFilters\Concerns\HasResetFilters;
+
+class ListUsers extends ListRecords
+{
+    use HasResetFilters;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            $this->getResetFiltersAction(),
+        ];
+    }
+}
+```
+
+**[View detailed documentation →](docs/en/reset-filters.md)**
+
+### Filter State Persistence
+
+Remember filter states across sessions:
+
+```php
+use Cooper\FilamentDcatFilters\Concerns\HasFilterPersistence;
+
+class ListUsers extends ListRecords
+{
+    use HasFilterPersistence;
+
+    protected string $filterPersistenceKey = 'users-list-filters';
+}
+```
+
+**[View detailed documentation →](docs/en/filter-persistence.md)**
+
+### URL Query Parameter Sync
+
+Shareable filter URLs:
+
+```php
+use Cooper\FilamentDcatFilters\Concerns\SyncsFiltersToUrlWithoutHistory;
+
+class ListUsers extends ListRecords
+{
+    use SyncsFiltersToUrlWithoutHistory;
+}
+```
+
+**[View detailed documentation →](docs/en/url-sync.md)**
+
+### Cascading Select Filter
+
+Dynamic dependent dropdowns:
+
+```php
+use Cooper\FilamentDcatFilters\Filters\CascadingSelectFilter;
+
+CascadingSelectFilter::make('location')
+    ->levels([
+        'country' => [
+            'label' => 'Country',
+            'options' => fn () => Country::pluck('name', 'id'),
+        ],
+        'state' => [
+            'label' => 'State',
+            'options' => fn ($country) => State::where('country_id', $country)->pluck('name', 'id'),
+            'dependsOn' => 'country',
+        ],
+        'city' => [
+            'label' => 'City',
+            'options' => fn ($state) => City::where('state_id', $state)->pluck('name', 'id'),
+            'dependsOn' => 'state',
+        ],
+    ])
+```
+
+**[View detailed documentation →](docs/en/cascading-filters.md)**
+
 ## Documentation
 
 ### Core Filters
@@ -182,13 +287,21 @@ HiddenFilter::make('tenant_id')
 - 📖 [Modal Select Filter](docs/en/modal-select-filter.md) - Dcat Admin style modal table selector
 - 📖 [Quick Filters](docs/en/quick-filters.md) - LIKE, IN, GT, LT, BETWEEN filters
 
+### Advanced Features
+- 📖 [Reset All Filters](docs/en/reset-filters.md) - One-click reset functionality
+- 📖 [Filter State Persistence](docs/en/filter-persistence.md) - Session-based filter memory
+- 📖 [URL Query Parameter Sync](docs/en/url-sync.md) - Shareable filter URLs
+- 📖 [Cascading Select Filter](docs/en/cascading-filters.md) - Dynamic dependent dropdowns
+- 📖 [Accessibility](docs/en/accessibility.md) - ARIA labels and keyboard support
+- 📖 [Advanced Features](docs/en/advanced-features.md) - API support, InputMask, FindInSet, Hidden filters
+
 ### Guides & References
 - 📖 [Usage Examples](docs/en/usage-example.md) - Complete working examples
 - 📖 [Demo Guide](docs/en/demo-guide.md) - Interactive demonstrations
-- 📖 [Advanced Features](docs/en/advanced-features.md) - API support, InputMask, FindInSet, Hidden filters
 - 📖 [Comparison with Dcat Admin](docs/en/comparison.md) - Feature comparison
 - 📖 [Package Structure](docs/en/package-structure.md) - Package architecture
 - 📖 [Documentation Structure](docs/en/documentation-structure.md) - Documentation organization
+- 📖 [Future Improvements](docs/en/future-improvements.md) - Roadmap and planned features
 
 ## Facade Usage
 
