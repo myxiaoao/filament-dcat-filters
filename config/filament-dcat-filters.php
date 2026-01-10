@@ -73,4 +73,29 @@ return [
         // App\Models\User::class,
         // App\Models\Category::class,
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Filter Persistence Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configure default behavior for filter state persistence.
+    |
+    */
+    'persistence' => [
+        // Enable session persistence by default
+        'session_enabled' => true,
+
+        // Session key prefix
+        'session_prefix' => 'filament-dcat-filters',
+
+        // Enable LocalStorage persistence by default
+        'local_storage_enabled' => false,
+
+        // LocalStorage key prefix
+        'local_storage_prefix' => 'filament-dcat-filters',
+
+        // Automatically clear persistence on filter reset
+        'clear_on_reset' => true,
+    ],
 ];
