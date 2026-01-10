@@ -3,6 +3,8 @@
     $placeholder = $multiple
         ? __('filament-dcat-filters::filament-dcat-filters.modal_select.placeholder_multiple')
         : __('filament-dcat-filters::filament-dcat-filters.modal_select.placeholder_single');
+    $statePath = $getStatePath();
+    $wireModelAttribute = $applyStateBindingModifiers('wire:model');
 @endphp
 
 <x-dynamic-component
@@ -209,8 +211,12 @@
             @endif
         </x-filament::input.wrapper>
 
-        {{-- Hidden input --}}
-        <input type="hidden" name="value" x-ref="hiddenInput" value="" />
+        {{-- Hidden input with Livewire binding --}}
+        <input
+            type="hidden"
+            x-ref="hiddenInput"
+            {{ $wireModelAttribute }}="{{ $statePath }}"
+        />
 
         {{-- Modal --}}
         <x-filament::modal
