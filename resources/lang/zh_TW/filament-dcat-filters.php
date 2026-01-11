@@ -66,6 +66,11 @@ return [
     'modal_select.cancel' => '取消',
     'modal_select.confirm' => '確定',
 
+    // JSON filter
+    'json.placeholder' => '輸入值...',
+    'json.contains' => '包含',
+    'json.not_contains' => '不包含',
+
     // Relative date filter
     'relative_date.placeholder' => '選擇時間段...',
     'relative_date.today' => '今天',

@@ -84,6 +84,11 @@ return [
     'cascading.category' => 'Category',
     'cascading.subcategory' => 'Subcategory',
 
+    // JSON filter
+    'json.placeholder' => 'Enter value...',
+    'json.contains' => 'contains',
+    'json.not_contains' => 'does not contain',
+
     // Relative date filter
     'relative_date.placeholder' => 'Select period...',
     'relative_date.today' => 'Today',

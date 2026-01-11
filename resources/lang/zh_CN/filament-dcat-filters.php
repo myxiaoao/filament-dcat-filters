@@ -84,6 +84,11 @@ return [
     'cascading.category' => '分类',
     'cascading.subcategory' => '子分类',
 
+    // JSON filter
+    'json.placeholder' => '输入值...',
+    'json.contains' => '包含',
+    'json.not_contains' => '不包含',
+
     // Relative date filter
     'relative_date.placeholder' => '选择时间段...',
     'relative_date.today' => '今天',
