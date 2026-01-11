@@ -184,7 +184,7 @@ class FullTextFilter extends Filter
 
         return $query->whereRaw(
             "MATCH ({$columns}) AGAINST (? IN BOOLEAN MODE)",
-            [$search . '*']
+            [$search.'*']
         );
     }
 
