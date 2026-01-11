@@ -4,7 +4,6 @@ namespace Cooper\FilamentDcatFilters\Filters;
 
 use BackedEnum;
 use Closure;
-use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
@@ -249,7 +248,7 @@ class EnumFilter extends Filter
                 $labels = array_map(fn ($value) => $options[$value] ?? $value, $values);
 
                 return [
-                    Indicator::make("{$label}: " . implode(', ', $labels))
+                    Indicator::make("{$label}: ".implode(', ', $labels))
                         ->removeField('values'),
                 ];
             }
