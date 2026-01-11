@@ -45,18 +45,29 @@ A modern collection of enhanced filters inspired by [Dcat Admin](https://github.
 - 🔍 **FullText Filter** - Search across multiple fields simultaneously
 - 📆 **Relative Date Filter** - Pre-defined date range shortcuts
 
+### Specialized Filters
+- 🗄️ **JSON Filter** - Query JSON/JSONB columns with path access
+- 🏷️ **FindInSet Filter** - Query comma-separated values using FIND_IN_SET
+- 🔤 **Regex Filter** - Pattern matching with regular expressions
+- 📱 **InputMask Filter** - Formatted input with masks (phone, credit card, etc.)
+- 📍 **GeoLocation Filter** - Geographic proximity filtering with Haversine formula
+- 🔗 **Filter Group** - Combine filters with AND/OR logic
+
 ### Advanced Features
 - 🔄 **Reset All Filters** - One-click reset button for all active filters
 - 💾 **Filter State Persistence** - Remember filter states across sessions
 - 🔗 **URL Query Parameter Sync** - Shareable filter URLs without page reload
 - 🔗 **Cascading Select Filter** - Dynamic dependent dropdowns
 - ♿ **Accessibility Support** - ARIA labels and keyboard navigation
+- 📋 **Filter Presets** - Save and load filter combinations
+- 🔢 **Scope Badge Counts** - Display record counts on scope tabs
+- 📤 **Filter Export/Import** - Share filter configurations via URL or JSON
 
 ### Additional Features
 - 🎨 **Highly Customizable** - Extensive customization options for each filter
 - 📱 **Mobile Friendly** - Responsive design for all screen sizes
 - 🌐 **Bilingual Docs** - Complete English and Chinese documentation
-- ✅ **Fully Tested** - Comprehensive test coverage with 200+ tests
+- ✅ **Fully Tested** - Comprehensive test coverage with 400+ tests
 
 ## Version Compatibility
 
@@ -370,13 +381,22 @@ CascadingSelectFilter::make('location')
 - 📖 [Modal Select Filter](docs/en/modal-select-filter.md) - Dcat Admin style modal table selector
 - 📖 [Quick Filters](docs/en/quick-filters.md) - LIKE, IN, GT, LT, BETWEEN filters
 
+### Specialized Filters
+- 📖 [JSON Filter](docs/en/json-filter.md) - Query JSON/JSONB columns with path access
+- 📖 [FindInSet Filter](docs/en/find-in-set-filter.md) - Query comma-separated values
+- 📖 [Regex Filter](docs/en/regex-filter.md) - Pattern matching with regular expressions
+- 📖 [InputMask Filter](docs/en/input-mask-filter.md) - Formatted input with masks
+- 📖 [GeoLocation Filter](docs/en/geo-location-filter.md) - Geographic proximity filtering
+- 📖 [Filter Group](docs/en/filter-group.md) - Combine filters with AND/OR logic
+
 ### Advanced Features
 - 📖 [Reset All Filters](docs/en/reset-filters.md) - One-click reset functionality
 - 📖 [Filter State Persistence](docs/en/filter-persistence.md) - Session-based filter memory
 - 📖 [URL Query Parameter Sync](docs/en/url-sync.md) - Shareable filter URLs
 - 📖 [Cascading Select Filter](docs/en/cascading-filters.md) - Dynamic dependent dropdowns
 - 📖 [Accessibility](docs/en/accessibility.md) - ARIA labels and keyboard support
-- 📖 [Advanced Features](docs/en/advanced-features.md) - API support, InputMask, FindInSet, Hidden filters
+- 📖 [Advanced Features](docs/en/advanced-features.md) - API support, Hidden filters
+- 📖 [Concerns (Traits)](docs/en/concerns-traits.md) - Filter presets, badge counts, export/import
 
 ### Guides & References
 - 📖 [Usage Examples](docs/en/usage-example.md) - Complete working examples

@@ -45,18 +45,29 @@
 - 🔍 **全文过滤器** - 同时搜索多个字段
 - 📆 **相对日期过滤器** - 预定义日期范围快捷方式
 
+### 专用过滤器
+- 🗄️ **JSON 过滤器** - 使用路径访问查询 JSON/JSONB 列
+- 🏷️ **FindInSet 过滤器** - 使用 FIND_IN_SET 查询逗号分隔值
+- 🔤 **正则过滤器** - 正则表达式模式匹配
+- 📱 **输入掩码过滤器** - 格式化输入（电话、信用卡等）
+- 📍 **地理位置过滤器** - 使用 Haversine 公式进行地理距离筛选
+- 🔗 **过滤器组** - 使用 AND/OR 逻辑组合过滤器
+
 ### 高级功能
 - 🔄 **重置所有过滤器** - 一键重置所有活动过滤器
 - 💾 **过滤器状态持久化** - 跨会话记住过滤器状态
 - 🔗 **URL 查询参数同步** - 可分享的过滤器 URL，无需页面刷新
 - 🔗 **级联选择过滤器** - 动态依赖下拉菜单
 - ♿ **无障碍支持** - ARIA 标签和键盘导航
+- 📋 **过滤器预设** - 保存和加载过滤器组合
+- 🔢 **范围徽章计数** - 在范围标签上显示记录数
+- 📤 **过滤器导出/导入** - 通过 URL 或 JSON 分享过滤器配置
 
 ### 其他特性
 - 🎨 **高度可定制** - 每个过滤器都有丰富的自定义选项
 - 📱 **移动端友好** - 响应式设计，适配所有屏幕尺寸
 - 🌐 **双语文档** - 完整的中英文文档
-- ✅ **全面测试** - 200+ 测试用例的全面覆盖
+- ✅ **全面测试** - 400+ 测试用例的全面覆盖
 
 ## 版本兼容性
 
@@ -370,13 +381,22 @@ CascadingSelectFilter::make('location')
 - 📖 [模态选择过滤器](docs/zh_CN/modal-select-filter.md) - Dcat Admin 风格的模态表格选择器
 - 📖 [快速过滤器](docs/zh_CN/quick-filters.md) - LIKE、IN、GT、LT、BETWEEN 过滤器
 
+### 专用过滤器
+- 📖 [JSON 过滤器](docs/zh_CN/json-filter.md) - 使用路径访问查询 JSON/JSONB 列
+- 📖 [FindInSet 过滤器](docs/zh_CN/find-in-set-filter.md) - 查询逗号分隔值
+- 📖 [正则过滤器](docs/zh_CN/regex-filter.md) - 正则表达式模式匹配
+- 📖 [输入掩码过滤器](docs/zh_CN/input-mask-filter.md) - 格式化输入
+- 📖 [地理位置过滤器](docs/zh_CN/geo-location-filter.md) - 地理距离筛选
+- 📖 [过滤器组](docs/zh_CN/filter-group.md) - 使用 AND/OR 逻辑组合过滤器
+
 ### 高级功能
 - 📖 [重置所有过滤器](docs/zh_CN/reset-filters.md) - 一键重置功能
 - 📖 [过滤器状态持久化](docs/zh_CN/filter-persistence.md) - 基于会话的过滤器记忆
 - 📖 [URL 查询参数同步](docs/zh_CN/url-sync.md) - 可分享的过滤器 URL
 - 📖 [级联选择过滤器](docs/zh_CN/cascading-filters.md) - 动态依赖下拉菜单
 - 📖 [无障碍访问](docs/zh_CN/accessibility.md) - ARIA 标签和键盘支持
-- 📖 [高级功能](docs/zh_CN/advanced-features.md) - API 支持、InputMask、FindInSet、Hidden 过滤器
+- 📖 [高级功能](docs/zh_CN/advanced-features.md) - API 支持、隐藏过滤器
+- 📖 [Concerns (Traits)](docs/zh_CN/concerns-traits.md) - 过滤器预设、徽章计数、导出/导入
 
 ### 指南和参考
 - 📖 [使用示例](docs/zh_CN/usage-example.md) - 完整的工作示例
