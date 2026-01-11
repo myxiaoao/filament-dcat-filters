@@ -161,6 +161,19 @@ return [
     'input_mask.ip' => 'IP address',
     'input_mask.zip_code' => 'ZIP code',
 
+    // Geo location filter
+    'geo.location' => 'Location',
+    'geo.latitude' => 'Latitude',
+    'geo.longitude' => 'Longitude',
+    'geo.radius' => 'Radius',
+    'geo.latitude_placeholder' => 'e.g. 40.7128',
+    'geo.longitude_placeholder' => 'e.g. -74.0060',
+    'geo.radius_placeholder' => 'e.g. 10',
+    'geo.from' => 'from',
+    'geo.km' => 'km',
+    'geo.mi' => 'mi',
+    'geo.m' => 'm',
+
     // Accessibility
     'accessibility.selection_updated' => 'Selection updated',
     'accessibility.selection_cleared' => 'Selection cleared',

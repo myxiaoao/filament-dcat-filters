@@ -161,6 +161,19 @@ return [
     'input_mask.ip' => 'IP地址',
     'input_mask.zip_code' => '邮政编码',
 
+    // Geo location filter
+    'geo.location' => '位置',
+    'geo.latitude' => '纬度',
+    'geo.longitude' => '经度',
+    'geo.radius' => '半径',
+    'geo.latitude_placeholder' => '例如 40.7128',
+    'geo.longitude_placeholder' => '例如 -74.0060',
+    'geo.radius_placeholder' => '例如 10',
+    'geo.from' => '从',
+    'geo.km' => '公里',
+    'geo.mi' => '英里',
+    'geo.m' => '米',
+
     // Accessibility
     'accessibility.selection_updated' => '选择已更新',
     'accessibility.selection_cleared' => '选择已清空',

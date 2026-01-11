@@ -143,4 +143,17 @@ return [
     'input_mask.ip' => 'IP地址',
     'input_mask.zip_code' => '郵遞區號',
 
+    // Geo location filter
+    'geo.location' => '位置',
+    'geo.latitude' => '緯度',
+    'geo.longitude' => '經度',
+    'geo.radius' => '半徑',
+    'geo.latitude_placeholder' => '例如 40.7128',
+    'geo.longitude_placeholder' => '例如 -74.0060',
+    'geo.radius_placeholder' => '例如 10',
+    'geo.from' => '從',
+    'geo.km' => '公里',
+    'geo.mi' => '英里',
+    'geo.m' => '米',
+
 ];
