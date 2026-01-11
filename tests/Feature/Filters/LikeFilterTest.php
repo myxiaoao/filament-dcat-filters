@@ -76,6 +76,30 @@ describe('Operator', function () {
     });
 });
 
+describe('Column Name', function () {
+    it('uses filter name as column by default', function () {
+        $filter = LikeFilter::make('title');
+
+        expect($filter)->toBeInstanceOf(LikeFilter::class);
+    });
+
+    it('can set custom column name', function () {
+        $filter = LikeFilter::make('search')
+            ->column('title');
+
+        expect($filter)->toBeInstanceOf(LikeFilter::class);
+    });
+
+    it('can combine column with other features', function () {
+        $filter = LikeFilter::make('keyword_search')
+            ->column('description')
+            ->insensitive()
+            ->startsWith();
+
+        expect($filter)->toBeInstanceOf(LikeFilter::class);
+    });
+});
+
 describe('Pattern Building', function () {
     it('escapes special LIKE characters', function () {
         $filter = LikeFilter::make('title');

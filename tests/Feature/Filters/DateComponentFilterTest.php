@@ -91,3 +91,27 @@ describe('SQL Function Validation', function () {
             ->toThrow(\InvalidArgumentException::class, 'Invalid SQL function');
     });
 });
+
+describe('Column Name', function () {
+    it('uses filter name as column by default', function () {
+        $filter = DateComponentFilter::make('created_at');
+
+        expect($filter)->toBeInstanceOf(DateComponentFilter::class);
+    });
+
+    it('can set custom column name', function () {
+        $filter = DateComponentFilter::make('year_filter')
+            ->column('created_at')
+            ->year();
+
+        expect($filter)->toBeInstanceOf(DateComponentFilter::class);
+    });
+
+    it('can combine column with month filter', function () {
+        $filter = DateComponentFilter::make('birth_month')
+            ->column('birth_date')
+            ->month();
+
+        expect($filter)->toBeInstanceOf(DateComponentFilter::class);
+    });
+});

@@ -15,6 +15,8 @@ class ComparisonFilter extends Filter
 
     protected string $inputType = 'numeric';
 
+    protected ?string $columnName = null;
+
     /**
      * Create a new comparison filter instance.
      */
@@ -104,6 +106,18 @@ class ComparisonFilter extends Filter
     }
 
     /**
+     * Set the column name for the comparison.
+     * This allows the filter name to differ from the actual database column.
+     */
+    public function column(string $column): static
+    {
+        $this->columnName = $column;
+        $this->configureQuery();
+
+        return $this;
+    }
+
+    /**
      * Set input type to integer.
      */
     public function integer(): static
@@ -172,7 +186,8 @@ class ComparisonFilter extends Filter
                 return $query;
             }
 
-            $column = $this->getName();
+            // Use custom column name if set, otherwise default to filter name
+            $column = $this->columnName ?? $this->getName();
 
             // Validate operator at query time as well
             if (! in_array($this->operator, self::ALLOWED_OPERATORS, true)) {

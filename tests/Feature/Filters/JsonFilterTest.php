@@ -138,6 +138,31 @@ describe('Default Value', function () {
     });
 });
 
+describe('Column Name', function () {
+    it('uses filter name as column by default', function () {
+        $filter = JsonFilter::make('metadata');
+
+        expect($filter)->toBeInstanceOf(JsonFilter::class);
+    });
+
+    it('can set custom column name', function () {
+        $filter = JsonFilter::make('theme_setting')
+            ->column('user_preferences')
+            ->path('theme');
+
+        expect($filter)->toBeInstanceOf(JsonFilter::class);
+    });
+
+    it('can combine column with path and operator', function () {
+        $filter = JsonFilter::make('config_search')
+            ->column('app_settings')
+            ->path('features.enabled')
+            ->eq();
+
+        expect($filter)->toBeInstanceOf(JsonFilter::class);
+    });
+});
+
 describe('Combined Features', function () {
     it('can combine path, operator, and default', function () {
         $filter = JsonFilter::make('settings')

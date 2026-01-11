@@ -90,3 +90,28 @@ describe('Operator Labels', function () {
         expect($label)->not->toBeEmpty();
     });
 });
+
+describe('Column Name', function () {
+    it('uses filter name as column by default', function () {
+        $filter = ComparisonFilter::make('quantity');
+
+        expect($filter)->toBeInstanceOf(ComparisonFilter::class);
+    });
+
+    it('can set custom column name', function () {
+        $filter = ComparisonFilter::make('min_price')
+            ->column('price')
+            ->gte();
+
+        expect($filter)->toBeInstanceOf(ComparisonFilter::class);
+    });
+
+    it('can combine column with other features', function () {
+        $filter = ComparisonFilter::make('stock_filter')
+            ->column('stock_quantity')
+            ->integer()
+            ->gt();
+
+        expect($filter)->toBeInstanceOf(ComparisonFilter::class);
+    });
+});

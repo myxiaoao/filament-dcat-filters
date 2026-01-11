@@ -83,3 +83,27 @@ describe('Timestamp Conversion', function () {
         expect($filter)->toBeInstanceOf(RangeFilter::class);
     });
 });
+
+describe('Column Name', function () {
+    it('uses filter name as column by default', function () {
+        $filter = RangeFilter::make('price');
+
+        expect($filter)->toBeInstanceOf(RangeFilter::class);
+    });
+
+    it('can set custom column name', function () {
+        $filter = RangeFilter::make('price_range')
+            ->column('price')
+            ->numeric();
+
+        expect($filter)->toBeInstanceOf(RangeFilter::class);
+    });
+
+    it('can combine column with date range', function () {
+        $filter = RangeFilter::make('date_filter')
+            ->column('created_at')
+            ->datetime();
+
+        expect($filter)->toBeInstanceOf(RangeFilter::class);
+    });
+});

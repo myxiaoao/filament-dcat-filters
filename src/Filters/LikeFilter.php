@@ -17,6 +17,8 @@ class LikeFilter extends Filter
 
     protected bool $negate = false;
 
+    protected ?string $columnName = null;
+
     /**
      * Create a new LIKE filter instance.
      */
@@ -131,6 +133,17 @@ class LikeFilter extends Filter
     }
 
     /**
+     * Set the column name for the comparison.
+     * This allows the filter name to differ from the actual database column.
+     */
+    public function column(string $column): static
+    {
+        $this->columnName = $column;
+
+        return $this;
+    }
+
+    /**
      * Configure the query logic for this filter.
      */
     protected function configureQuery(): void
@@ -142,7 +155,8 @@ class LikeFilter extends Filter
                 return $query;
             }
 
-            $column = $this->getName();
+            // Use custom column name if set, otherwise default to filter name
+            $column = $this->columnName ?? $this->getName();
             $pattern = $this->buildPattern((string) $value);
 
             if (! $this->caseSensitive && $this->operator === 'like') {

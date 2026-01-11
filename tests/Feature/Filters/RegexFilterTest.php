@@ -129,9 +129,49 @@ describe('Presets', function () {
     });
 });
 
+describe('Column Name', function () {
+    it('uses filter name as column by default', function () {
+        $filter = RegexFilter::make('phone_number');
+
+        expect($filter)->toBeInstanceOf(RegexFilter::class);
+    });
+
+    it('can set custom column name', function () {
+        $filter = RegexFilter::make('phone')
+            ->column('phone_number');
+
+        expect($filter)->toBeInstanceOf(RegexFilter::class);
+    });
+
+    it('can combine column with pattern mode', function () {
+        $filter = RegexFilter::make('mobile_search')
+            ->column('phone_number')
+            ->chinaMobile();
+
+        expect($filter)->toBeInstanceOf(RegexFilter::class);
+    });
+
+    it('can combine column with user pattern mode', function () {
+        $filter = RegexFilter::make('custom_search')
+            ->column('description')
+            ->placeholder('Enter regex pattern...');
+
+        expect($filter)->toBeInstanceOf(RegexFilter::class);
+    });
+});
+
 describe('Combined Features', function () {
     it('can combine pattern and case insensitivity', function () {
         $filter = RegexFilter::make('email')
+            ->pattern('^[a-z]+@example\\.com$')
+            ->caseInsensitive();
+
+        expect($filter)->toBeInstanceOf(RegexFilter::class);
+    });
+
+    it('can combine column, pattern and case insensitivity', function () {
+        $filter = RegexFilter::make('email_search')
+            ->column('user_email')
             ->pattern('^[a-z]+@example\\.com$')
             ->caseInsensitive();
 

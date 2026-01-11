@@ -121,6 +121,32 @@ describe('Options Limit', function () {
     });
 });
 
+describe('Column Name', function () {
+    it('uses filter name as column by default', function () {
+        $filter = SelectTableFilter::make('category_id');
+
+        expect($filter)->toBeInstanceOf(SelectTableFilter::class);
+    });
+
+    it('can set custom column name', function () {
+        $filter = SelectTableFilter::make('category_selector')
+            ->column('category_id')
+            ->model('App\\Models\\Category');
+
+        expect($filter)->toBeInstanceOf(SelectTableFilter::class);
+    });
+
+    it('can combine column with other features', function () {
+        $filter = SelectTableFilter::make('tag_picker')
+            ->column('tag_id')
+            ->model('App\\Models\\Tag')
+            ->multiple()
+            ->searchable(['name']);
+
+        expect($filter)->toBeInstanceOf(SelectTableFilter::class);
+    });
+});
+
 describe('Chained Configuration', function () {
     it('can chain all configuration methods', function () {
         $filter = SelectTableFilter::make('category_id')

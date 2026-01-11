@@ -17,6 +17,19 @@ class JsonFilter extends Filter
 
     protected ?string $defaultValue = null;
 
+    protected ?string $columnName = null;
+
+    /**
+     * Set the column name for the comparison.
+     * This allows the filter name to differ from the actual database column.
+     */
+    public function column(string $column): static
+    {
+        $this->columnName = $column;
+
+        return $this;
+    }
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -96,7 +109,7 @@ class JsonFilter extends Filter
 
     protected function buildJsonAccessor(): string
     {
-        $column = $this->getName();
+        $column = $this->columnName ?? $this->getName();
 
         if (! $this->jsonPath) {
             return $column;

@@ -14,6 +14,19 @@ class HiddenFilter extends Filter
 
     protected string $operator = '=';
 
+    protected ?string $columnName = null;
+
+    /**
+     * Set the column name for the comparison.
+     * This allows the filter name to differ from the actual database column.
+     */
+    public function column(string $column): static
+    {
+        $this->columnName = $column;
+
+        return $this;
+    }
+
     /**
      * Setup default configuration.
      */
@@ -124,7 +137,7 @@ class HiddenFilter extends Filter
                 return $query;
             }
 
-            $column = $this->getName();
+            $column = $this->columnName ?? $this->getName();
 
             // Validate operator at query time as well
             if (! in_array($this->operator, self::ALLOWED_OPERATORS, true)) {

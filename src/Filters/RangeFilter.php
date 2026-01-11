@@ -23,6 +23,19 @@ class RangeFilter extends Filter
 
     protected array $placeholders = [];
 
+    protected ?string $columnName = null;
+
+    /**
+     * Set the column name for the comparison.
+     * This allows the filter name to differ from the actual database column.
+     */
+    public function column(string $column): static
+    {
+        $this->columnName = $column;
+
+        return $this;
+    }
+
     /**
      * Setup default configuration.
      */
@@ -259,7 +272,7 @@ class RangeFilter extends Filter
     protected function configureQuery(): void
     {
         $this->query(function (Builder $query, array $data): Builder {
-            $column = $this->getName();
+            $column = $this->columnName ?? $this->getName();
 
             return $this->applyRangeQuery($query, $column, $data);
         });
@@ -282,7 +295,7 @@ class RangeFilter extends Filter
     public function toTimestamp(): static
     {
         $this->query(function (Builder $query, array $data): Builder {
-            $column = $this->getName();
+            $column = $this->columnName ?? $this->getName();
             $from = $data['from'] ?? null;
             $to = $data['to'] ?? null;
 

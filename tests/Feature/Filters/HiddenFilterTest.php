@@ -93,3 +93,29 @@ describe('Allowed Operators', function () {
         }
     });
 });
+
+describe('Column Name', function () {
+    it('uses filter name as column by default', function () {
+        $filter = HiddenFilter::make('tenant_id');
+
+        expect($filter)->toBeInstanceOf(HiddenFilter::class);
+    });
+
+    it('can set custom column name', function () {
+        $filter = HiddenFilter::make('tenant_filter')
+            ->column('tenant_id')
+            ->default(1)
+            ->eq();
+
+        expect($filter)->toBeInstanceOf(HiddenFilter::class);
+    });
+
+    it('can combine column with operator', function () {
+        $filter = HiddenFilter::make('active_filter')
+            ->column('is_active')
+            ->default(true)
+            ->eq();
+
+        expect($filter)->toBeInstanceOf(HiddenFilter::class);
+    });
+});

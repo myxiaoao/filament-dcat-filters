@@ -11,6 +11,19 @@ class DateComponentFilter extends Filter
 {
     protected string $component = 'year'; // 'year', 'month', 'day'
 
+    protected ?string $columnName = null;
+
+    /**
+     * Set the column name for the comparison.
+     * This allows the filter name to differ from the actual database column.
+     */
+    public function column(string $column): static
+    {
+        $this->columnName = $column;
+
+        return $this;
+    }
+
     /**
      * Setup default configuration.
      */
@@ -129,7 +142,7 @@ class DateComponentFilter extends Filter
                 return $query;
             }
 
-            $column = $this->getName();
+            $column = $this->columnName ?? $this->getName();
 
             // Use grammar to safely wrap column name
             $wrappedColumn = $query->getGrammar()->wrap($column);

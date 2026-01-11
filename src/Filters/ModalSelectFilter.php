@@ -44,6 +44,8 @@ class ModalSelectFilter extends Filter
 
     protected array $displayColumns = [];
 
+    protected ?string $columnName = null;
+
     /**
      * Setup default configuration.
      */
@@ -195,6 +197,17 @@ class ModalSelectFilter extends Filter
     }
 
     /**
+     * Set the column name for the comparison.
+     * This allows the filter name to differ from the actual database column.
+     */
+    public function column(string $column): static
+    {
+        $this->columnName = $column;
+
+        return $this;
+    }
+
+    /**
      * Check if a filter value is considered empty.
      */
     protected function isValueEmpty(mixed $value): bool
@@ -214,7 +227,8 @@ class ModalSelectFilter extends Filter
                 return $query;
             }
 
-            $column = $this->getName();
+            // Use custom column name if set, otherwise default to filter name
+            $column = $this->columnName ?? $this->getName();
 
             // Handle relationship filtering
             if ($this->relationship) {

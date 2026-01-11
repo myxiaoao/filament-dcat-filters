@@ -80,6 +80,32 @@ describe('Negation', function () {
     });
 });
 
+describe('Column Name', function () {
+    it('uses filter name as column by default', function () {
+        $filter = InFilter::make('status');
+
+        expect($filter)->toBeInstanceOf(InFilter::class);
+    });
+
+    it('can set custom column name', function () {
+        $filter = InFilter::make('status_filter')
+            ->column('status')
+            ->options(['active' => 'Active', 'inactive' => 'Inactive']);
+
+        expect($filter)->toBeInstanceOf(InFilter::class);
+    });
+
+    it('can combine column with other features', function () {
+        $filter = InFilter::make('tag_filter')
+            ->column('tag_id')
+            ->options(['1' => 'Tag 1', '2' => 'Tag 2'])
+            ->multiple()
+            ->searchable();
+
+        expect($filter)->toBeInstanceOf(InFilter::class);
+    });
+});
+
 describe('Combined Features', function () {
     it('can combine multiple, searchable, and negate', function () {
         $filter = InFilter::make('excluded_tags')

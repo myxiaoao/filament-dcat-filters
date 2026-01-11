@@ -30,6 +30,8 @@ class SelectTableFilter extends Filter
 
     protected ?int $optionsLimit = null;
 
+    protected ?string $columnName = null;
+
     /**
      * Setup default configuration.
      */
@@ -135,6 +137,18 @@ class SelectTableFilter extends Filter
     }
 
     /**
+     * Set the column name for the comparison.
+     * This allows the filter name to differ from the actual database column.
+     */
+    public function column(string $column): static
+    {
+        $this->columnName = $column;
+        $this->configureForm();
+
+        return $this;
+    }
+
+    /**
      * Get the options limit from config or property.
      */
     protected function getOptionsLimit(): int
@@ -188,7 +202,8 @@ class SelectTableFilter extends Filter
     protected function configureQuery(): void
     {
         $this->query(function (Builder $query, array $data): Builder {
-            $column = $this->getName();
+            // Use custom column name if set, otherwise default to filter name
+            $column = $this->columnName ?? $this->getName();
 
             if ($this->multiple) {
                 $values = $data['values'] ?? [];

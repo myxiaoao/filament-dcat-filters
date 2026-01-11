@@ -18,6 +18,19 @@ class RegexFilter extends Filter
 
     protected bool $patternMode = false;
 
+    protected ?string $columnName = null;
+
+    /**
+     * Set the column name for the comparison.
+     * This allows the filter name to differ from the actual database column.
+     */
+    public function column(string $column): static
+    {
+        $this->columnName = $column;
+
+        return $this;
+    }
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -115,7 +128,7 @@ class RegexFilter extends Filter
     protected function configureQuery(): void
     {
         $this->query(function (Builder $query, array $data): Builder {
-            $column = $this->getName();
+            $column = $this->columnName ?? $this->getName();
 
             if ($this->patternMode && $this->regexPattern) {
                 if (empty($data['enabled'])) {

@@ -150,6 +150,32 @@ describe('Value Empty Check', function () {
     });
 });
 
+describe('Column Name', function () {
+    it('uses filter name as column by default', function () {
+        $filter = ModalSelectFilter::make('user_id');
+
+        expect($filter)->toBeInstanceOf(ModalSelectFilter::class);
+    });
+
+    it('can set custom column name', function () {
+        $filter = ModalSelectFilter::make('user_selector')
+            ->column('user_id')
+            ->model('App\\Models\\User', 'name', 'id');
+
+        expect($filter)->toBeInstanceOf(ModalSelectFilter::class);
+    });
+
+    it('can combine column with other features', function () {
+        $filter = ModalSelectFilter::make('author_picker')
+            ->column('author_id')
+            ->model('App\\Models\\User', 'name', 'id')
+            ->multiple()
+            ->dialogTitle('Select Authors');
+
+        expect($filter)->toBeInstanceOf(ModalSelectFilter::class);
+    });
+});
+
 describe('Chained Configuration', function () {
     it('can chain all configuration methods', function () {
         $filter = ModalSelectFilter::make('user_id')

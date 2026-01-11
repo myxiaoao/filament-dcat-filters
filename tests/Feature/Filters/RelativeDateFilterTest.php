@@ -88,6 +88,29 @@ describe('Quick Presets', function () {
     });
 });
 
+describe('Column Name', function () {
+    it('uses filter name as column by default', function () {
+        $filter = RelativeDateFilter::make('created_at');
+
+        expect($filter)->toBeInstanceOf(RelativeDateFilter::class);
+    });
+
+    it('can set custom column name', function () {
+        $filter = RelativeDateFilter::make('date_filter')
+            ->column('created_at');
+
+        expect($filter)->toBeInstanceOf(RelativeDateFilter::class);
+    });
+
+    it('can combine column with presets', function () {
+        $filter = RelativeDateFilter::make('order_date')
+            ->column('ordered_at')
+            ->only(['today', 'yesterday', 'last_7_days']);
+
+        expect($filter)->toBeInstanceOf(RelativeDateFilter::class);
+    });
+});
+
 describe('Combined Features', function () {
     it('can combine only and add presets', function () {
         $filter = RelativeDateFilter::make('created_at')

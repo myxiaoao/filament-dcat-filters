@@ -14,6 +14,19 @@ class RelativeDateFilter extends Filter
 
     protected bool $includeCustomRange = false;
 
+    protected ?string $columnName = null;
+
+    /**
+     * Set the column name for the comparison.
+     * This allows the filter name to differ from the actual database column.
+     */
+    public function column(string $column): static
+    {
+        $this->columnName = $column;
+
+        return $this;
+    }
+
     /**
      * Setup default configuration.
      */
@@ -123,7 +136,7 @@ class RelativeDateFilter extends Filter
                 return $query;
             }
 
-            $column = $this->getName();
+            $column = $this->columnName ?? $this->getName();
             $range = $this->getDateRange($preset);
 
             if (! $range) {
