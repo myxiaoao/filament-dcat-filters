@@ -39,6 +39,11 @@ A modern collection of enhanced filters inspired by [Dcat Admin](https://github.
 - ⚡ **LIKE Filter** - Text search with wildcard control (supports NOT LIKE)
 - 📋 **IN Filter** - Multiple value selection (supports NOT IN)
 - 🔢 **Comparison Filter** - Comparison operators (>, <, >=, <=, =, !=)
+- ✅ **Boolean Filter** - True/false/all toggle for boolean fields
+- 🔘 **Null Filter** - NULL/NOT NULL value filtering
+- 📝 **Enum Filter** - Auto-generate options from PHP 8.1+ Enum classes
+- 🔍 **FullText Filter** - Search across multiple fields simultaneously
+- 📆 **Relative Date Filter** - Pre-defined date range shortcuts
 
 ### Advanced Features
 - 🔄 **Reset All Filters** - One-click reset button for all active filters
@@ -179,6 +184,84 @@ BetweenFilter::make('price')->label('Price Range'),
 ```
 
 **[View detailed documentation →](docs/en/quick-filters.md)**
+
+### Boolean Filter
+
+Dedicated true/false/all toggle for boolean fields:
+
+```php
+use Cooper\FilamentDcatFilters\Filters\BooleanFilter;
+
+BooleanFilter::make('is_active')
+    ->label('Status')
+    ->trueLabel('Active')
+    ->falseLabel('Inactive')
+
+// Quick presets
+BooleanFilter::active()      // is_active field
+BooleanFilter::published()   // is_published field
+BooleanFilter::enabled()     // is_enabled field
+```
+
+### Null Filter
+
+Filter for NULL or NOT NULL values:
+
+```php
+use Cooper\FilamentDcatFilters\Filters\NullFilter;
+
+NullFilter::make('deleted_at')
+    ->nullLabel('Not Deleted')
+    ->notNullLabel('Deleted')
+
+// Quick presets
+NullFilter::deleted()    // deleted_at field
+NullFilter::assigned()   // Check if field is assigned
+NullFilter::empty()      // Check if field is empty/filled
+```
+
+### Enum Filter
+
+Auto-generate options from PHP 8.1+ Enum classes:
+
+```php
+use Cooper\FilamentDcatFilters\Filters\EnumFilter;
+
+EnumFilter::make('status')
+    ->enum(OrderStatus::class)
+    ->multiple()
+    ->exclude([OrderStatus::Cancelled])
+```
+
+### FullText Filter
+
+Search across multiple fields simultaneously:
+
+```php
+use Cooper\FilamentDcatFilters\Filters\FullTextFilter;
+
+FullTextFilter::make('search')
+    ->searchIn(['name', 'email', 'phone'])
+    ->placeholder('Search users...')
+    ->minLength(2)
+    ->debounce(300)
+```
+
+### Relative Date Filter
+
+Pre-defined date range shortcuts:
+
+```php
+use Cooper\FilamentDcatFilters\Filters\RelativeDateFilter;
+
+RelativeDateFilter::make('created_at')
+    ->only(['today', 'yesterday', 'last_7_days', 'last_30_days', 'this_month'])
+
+// Quick presets
+RelativeDateFilter::common()     // Common date ranges
+RelativeDateFilter::weekly()     // Week/month focused
+RelativeDateFilter::reporting()  // Quarter/year focused
+```
 
 ### Hidden Filter
 

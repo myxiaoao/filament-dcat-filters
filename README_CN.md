@@ -39,6 +39,11 @@
 - ⚡ **LIKE 过滤器** - 文本搜索，支持通配符控制（支持 NOT LIKE）
 - 📋 **IN 过滤器** - 多值选择（支持 NOT IN）
 - 🔢 **比较过滤器** - 比较运算符（>、<、>=、<=、=、!=）
+- ✅ **布尔过滤器** - 布尔字段的 true/false/all 切换
+- 🔘 **空值过滤器** - NULL/NOT NULL 值过滤
+- 📝 **枚举过滤器** - 从 PHP 8.1+ 枚举类自动生成选项
+- 🔍 **全文过滤器** - 同时搜索多个字段
+- 📆 **相对日期过滤器** - 预定义日期范围快捷方式
 
 ### 高级功能
 - 🔄 **重置所有过滤器** - 一键重置所有活动过滤器
@@ -179,6 +184,84 @@ BetweenFilter::make('price')->label('价格范围'),
 ```
 
 **[查看详细文档 →](docs/zh_CN/quick-filters.md)**
+
+### 布尔过滤器
+
+专用的布尔字段 true/false/all 切换器：
+
+```php
+use Cooper\FilamentDcatFilters\Filters\BooleanFilter;
+
+BooleanFilter::make('is_active')
+    ->label('状态')
+    ->trueLabel('启用')
+    ->falseLabel('禁用')
+
+// 快捷预设
+BooleanFilter::active()      // is_active 字段
+BooleanFilter::published()   // is_published 字段
+BooleanFilter::enabled()     // is_enabled 字段
+```
+
+### 空值过滤器
+
+过滤 NULL 或 NOT NULL 值：
+
+```php
+use Cooper\FilamentDcatFilters\Filters\NullFilter;
+
+NullFilter::make('deleted_at')
+    ->nullLabel('未删除')
+    ->notNullLabel('已删除')
+
+// 快捷预设
+NullFilter::deleted()    // deleted_at 字段
+NullFilter::assigned()   // 检查字段是否已分配
+NullFilter::empty()      // 检查字段是否为空/有值
+```
+
+### 枚举过滤器
+
+从 PHP 8.1+ 枚举类自动生成选项：
+
+```php
+use Cooper\FilamentDcatFilters\Filters\EnumFilter;
+
+EnumFilter::make('status')
+    ->enum(OrderStatus::class)
+    ->multiple()
+    ->exclude([OrderStatus::Cancelled])
+```
+
+### 全文过滤器
+
+同时搜索多个字段：
+
+```php
+use Cooper\FilamentDcatFilters\Filters\FullTextFilter;
+
+FullTextFilter::make('search')
+    ->searchIn(['name', 'email', 'phone'])
+    ->placeholder('搜索用户...')
+    ->minLength(2)
+    ->debounce(300)
+```
+
+### 相对日期过滤器
+
+预定义日期范围快捷方式：
+
+```php
+use Cooper\FilamentDcatFilters\Filters\RelativeDateFilter;
+
+RelativeDateFilter::make('created_at')
+    ->only(['today', 'yesterday', 'last_7_days', 'last_30_days', 'this_month'])
+
+// 快捷预设
+RelativeDateFilter::common()     // 常用日期范围
+RelativeDateFilter::weekly()     // 周/月为主
+RelativeDateFilter::reporting()  // 季度/年为主
+```
 
 ### 隐藏过滤器
 
