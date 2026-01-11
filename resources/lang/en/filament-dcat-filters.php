@@ -137,6 +137,12 @@ return [
     'boolean.published' => 'Published',
     'boolean.draft' => 'Draft',
 
+    // Find in set filter
+    'find_in_set.placeholder_single' => 'Select value...',
+    'find_in_set.placeholder_multiple' => 'Select values...',
+    'find_in_set.and' => 'and',
+    'find_in_set.or' => 'or',
+
     // Accessibility
     'accessibility.selection_updated' => 'Selection updated',
     'accessibility.selection_cleared' => 'Selection cleared',

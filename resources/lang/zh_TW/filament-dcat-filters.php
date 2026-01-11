@@ -119,4 +119,10 @@ return [
     'boolean.published' => '已發佈',
     'boolean.draft' => '草稿',
 
+    // Find in set filter
+    'find_in_set.placeholder_single' => '選擇值...',
+    'find_in_set.placeholder_multiple' => '選擇多個值...',
+    'find_in_set.and' => '且',
+    'find_in_set.or' => '或',
+
 ];

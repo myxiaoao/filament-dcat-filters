@@ -137,6 +137,12 @@ return [
     'boolean.published' => '已发布',
     'boolean.draft' => '草稿',
 
+    // Find in set filter
+    'find_in_set.placeholder_single' => '选择值...',
+    'find_in_set.placeholder_multiple' => '选择多个值...',
+    'find_in_set.and' => '且',
+    'find_in_set.or' => '或',
+
     // Accessibility
     'accessibility.selection_updated' => '选择已更新',
     'accessibility.selection_cleared' => '选择已清空',
