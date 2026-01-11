@@ -1,12 +1,75 @@
 # 包结构优化
 
-本文档记录了参考 `tapp/filament-value-range-filter` 对 `filament-dcat-filters` 包结构的优化。
+本文档记录了 `filament-dcat-filters` 包的结构和优化内容。
 
-## 优化内容
+## 当前包结构 (v1.0.2)
 
-### 1. composer.json 优化
+```
+packages/filament-dcat-filters/
+├── composer.json (✅ 已优化)
+├── src/
+│   ├── FilamentDcatFiltersServiceProvider.php (✅ 使用 Spatie Package Tools)
+│   ├── FilamentDcatFilters.php (主类)
+│   ├── Facades/
+│   │   └── FilamentDcatFilters.php (Facade 类)
+│   ├── Filters/ (22 个筛选器类)
+│   │   ├── BetweenFilter.php
+│   │   ├── BooleanFilter.php
+│   │   ├── CascadingSelectFilter.php
+│   │   ├── ComparisonFilter.php
+│   │   ├── DateComponentFilter.php
+│   │   ├── EnumFilter.php
+│   │   ├── FilterGroup.php
+│   │   ├── FindInSetFilter.php
+│   │   ├── FullTextFilter.php
+│   │   ├── GeoLocationFilter.php
+│   │   ├── HiddenFilter.php
+│   │   ├── InFilter.php
+│   │   ├── InputMaskFilter.php
+│   │   ├── JsonFilter.php
+│   │   ├── LikeFilter.php
+│   │   ├── ModalSelectFilter.php
+│   │   ├── NullFilter.php
+│   │   ├── RangeFilter.php
+│   │   ├── RegexFilter.php
+│   │   ├── RelativeDateFilter.php
+│   │   ├── ScopeFilter.php
+│   │   └── SelectTableFilter.php
+│   ├── Concerns/ (6 个 traits)
+│   │   ├── HasFilterExportImport.php
+│   │   ├── HasFilterPersistence.php
+│   │   ├── HasFilterPresets.php
+│   │   ├── HasRangeQuery.php
+│   │   ├── HasResetFilters.php
+│   │   ├── HasScopeBadgeCounts.php
+│   │   └── SyncsFiltersToUrlWithoutHistory.php
+│   ├── Http/
+│   │   └── Controllers/
+│   │       └── ModalSelectController.php
+│   └── Components/
+│       └── ModalSelectTable.php
+├── config/
+│   └── filament-dcat-filters.php
+├── resources/
+│   ├── css/
+│   ├── js/
+│   ├── lang/ (en, zh_CN)
+│   └── views/
+├── docs/
+│   ├── en/ (英文文档)
+│   └── zh_CN/ (中文文档)
+├── tests/
+│   ├── Feature/
+│   │   ├── Filters/ (22 个筛选器测试文件)
+│   │   └── Concerns/ (6 个 concern 测试文件)
+│   └── Unit/
+├── phpstan.neon
+└── phpstan-baseline.neon
+```
 
-#### 新增内容
+## composer.json 优化
+
+### 新增内容
 - **keywords**：添加更多关键词提高包的可发现性
   - `filament-filter`
   - `scope-filter`
@@ -23,7 +86,7 @@
   - `sort-packages`：自动排序包依赖
   - `allow-plugins`：允许 Pest 和 PHPStan 插件
 
-#### 更新依赖
+### 依赖优化
 - **require**：
   - 仅保留 `filament/filament: ^4.0` (核心依赖)
   - ❌ 移除 `illuminate/contracts` - Filament 已包含
@@ -31,25 +94,17 @@
   - ❌ 移除 `spatie/laravel-package-tools` - Filament 已包含
 - **require-dev**：仅支持 Laravel 12+ (按字母顺序排序)
   - `laravel/pint: ^1.0`
-  - `nunomaduro/larastan: ^3.0` (仅支持 Laravel 12+)
-  - `orchestra/testbench: ^10.0` (对应 Laravel 12+)
+  - `nunomaduro/larastan: ^3.0`
+  - `orchestra/testbench: ^10.0`
   - `pestphp/pest: ^3.0`
   - `pestphp/pest-plugin-arch: ^3.0`
-  - `pestphp/pest-plugin-laravel: ^4.0` (仅支持 Laravel 12+)
-  - `phpstan/phpstan: ^2.0` (最新版本)
-  - `phpstan/phpstan-deprecation-rules: ^2.0` (最新版本)
+  - `pestphp/pest-plugin-laravel: ^4.0`
+  - `phpstan/phpstan: ^2.0`
+  - `phpstan/phpstan-deprecation-rules: ^2.0`
 
-### 2. Facade 实现
+## Facade 实现
 
 新增 Facade 支持，提供快捷的辅助方法：
-
-**文件结构**：
-```
-src/
-├── FilamentDcatFilters.php              # 主类
-└── Facades/
-    └── FilamentDcatFilters.php          # Facade 类
-```
 
 **Facade 提供的方法**：
 - `version()` - 获取包版本
@@ -78,34 +133,7 @@ FilamentDcatFilters::scopeFilter('status')->scopes([...]);
 FilamentDcatFilters::rangeFilter('created_at')->datetime();
 ```
 
-**composer.json 配置**：
-```json
-"extra": {
-    "laravel": {
-        "providers": [...],
-        "aliases": {
-            "FilamentDcatFilters": "Cooper\\FilamentDcatFilters\\Facades\\FilamentDcatFilters"
-        }
-    }
-}
-```
-
-### 3. ServiceProvider 重构
-
-**之前**：使用标准 Laravel ServiceProvider
-```php
-class FilamentDcatFiltersServiceProvider extends ServiceProvider
-{
-    public function register(): void {
-        $this->mergeConfigFrom(...);
-    }
-
-    public function boot(): void {
-        $this->publishes(...);
-        $this->loadViewsFrom(...);
-    }
-}
-```
+## ServiceProvider 重构
 
 **优化后**：使用 Spatie Package Tools
 ```php
@@ -130,9 +158,8 @@ class FilamentDcatFiltersServiceProvider extends PackageServiceProvider
 - ✅ 标准化的包结构
 - ✅ 更好的开发体验
 
-### 3. PHPStan 配置
+## PHPStan 配置
 
-新增 `phpstan.neon`：
 ```neon
 includes:
     - phpstan-baseline.neon
@@ -146,45 +173,7 @@ parameters:
     checkModelProperties: true
 ```
 
-新增 `phpstan-baseline.neon`：
-```neon
-parameters:
-    ignoreErrors:
-```
-
-### 4. 包结构对比
-
-#### 参考包 (tapp/filament-value-range-filter)
-```
-vendor/tapp/filament-value-range-filter/
-├── composer.json (完整的元数据和脚本)
-├── src/
-│   └── FilamentValueRangeFilterServiceProvider.php (使用 Spatie Package Tools)
-├── config/
-├── resources/
-├── tests/
-├── docs/
-└── phpstan配置
-```
-
-#### 优化后的包
-```
-packages/filament-dcat-filters/
-├── composer.json (✅ 已优化)
-├── src/
-│   ├── FilamentDcatFiltersServiceProvider.php (✅ 已重构)
-│   ├── Filters/ (9个筛选器类)
-│   ├── Traits/
-│   └── Components/
-├── config/
-├── resources/
-├── docs/
-├── tests/
-├── phpstan.neon (✅ 新增)
-└── phpstan-baseline.neon (✅ 新增)
-```
-
-## 使用新的开发脚本
+## 使用开发脚本
 
 ### 测试
 ```bash
@@ -198,13 +187,6 @@ composer test-coverage     # 运行带覆盖率的测试
 composer format           # 格式化代码
 composer analyse         # 静态分析
 ```
-
-## 注意事项
-
-1. **配置文件位置**：Spatie Package Tools 会自动在包根目录的 `config/` 目录查找配置文件
-2. **视图文件位置**：会在包根目录的 `resources/views/` 目录查找视图文件
-3. **迁移文件**：如需添加迁移，使用 `$package->hasMigrations()`
-4. **翻译文件**：如需添加翻译，使用 `$package->hasTranslations()`
 
 ## 验证结果
 
@@ -222,32 +204,16 @@ composer analyse         # 静态分析
    - 在 composer.json 中配置别名
    - 提供 10 个便捷方法快速创建各类过滤器
 
-3. ✅ **代码格式化**：运行 `composer format` 成功修复了 13 个文件中的 4 处代码风格问题
-   - 最终结果：**PASS 15 files** (包含新增的 Facade 文件)
+3. ✅ **代码格式化**：运行 `composer format` 成功
+   - 最终结果：**PASS**
 
 4. ✅ **静态分析**：配置并运行 PHPStan level 5 分析
-   - 修复了 PHPStan 配置问题（添加 Larastan 扩展）
-   - 移除了冗余的 `SelectTableModal` 类（已被 `ModalSelectTable` 替代）
-   - 生成了 26 个已知问题的 baseline
    - 最终结果：**0 errors**
 
-### 修复的关键问题
-
-1. **Components**：
-   - 移除了冗余的 `SelectTableModal.php`（功能已由 `ModalSelectTable.php` 完整实现）
-   - `ModalSelectTable` 提供了更完善的模态表格选择功能
-
-2. **phpstan.neon**：
-   - 添加了 Larastan 扩展引用
-   - 移除了不支持的配置项
-
-## 下一步建议
-
-1. ✅ 编写完整的单元测试和功能测试
-2. ✅ 运行 PHPStan 并修复发现的问题
-3. ✅ 完善 README.md 文档
-4. ✅ 添加 CHANGELOG.md
-5. ✅ 考虑发布到 Packagist
+5. ✅ **测试覆盖**：完整的测试套件
+   - **461 个测试**
+   - **630 个断言**
+   - 所有测试通过
 
 ## 参考资料
 

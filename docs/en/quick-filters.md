@@ -15,6 +15,23 @@ LikeFilter::make('title')
     ->label('Title');
 ```
 
+### Custom Column Name
+
+Use the `column()` method when the filter name differs from the database column:
+
+```php
+// Filter named 'search' but queries 'title' column
+LikeFilter::make('search')
+    ->column('title')
+    ->label('Search Title');
+
+// Combine with other options
+LikeFilter::make('keyword_search')
+    ->column('description')
+    ->insensitive()
+    ->startsWith();
+```
+
 ### Configuration Options
 
 #### Wildcard Position
@@ -124,6 +141,16 @@ InFilter::make('status')
         'published' => 'Published',
         'archived' => 'Archived',
     ]);
+```
+
+### Custom Column Name
+
+```php
+// Filter named 'category_selector' but queries 'category_id' column
+InFilter::make('category_selector')
+    ->column('category_id')
+    ->options(Category::pluck('name', 'id'))
+    ->multiple();
 ```
 
 ### Configuration Options
@@ -241,6 +268,22 @@ use Cooper\FilamentDcatFilters\Filters\ComparisonFilter;
 ComparisonFilter::make('price')
     ->gt() // Greater than
     ->label('Minimum Price');
+```
+
+### Custom Column Name
+
+```php
+// Filter named 'min_price' but queries 'price' column
+ComparisonFilter::make('min_price')
+    ->column('price')
+    ->gte()
+    ->numeric();
+
+// Filter named 'min_views' but queries 'view_count' column
+ComparisonFilter::make('min_views')
+    ->column('view_count')
+    ->gte()
+    ->integer();
 ```
 
 ### Operators
@@ -475,3 +518,34 @@ BetweenFilter::make('price');
 ```
 
 The API is very similar, making migration from Dcat Admin straightforward!
+
+---
+
+## Custom Column Names
+
+All Quick Filters support the `column()` method, allowing you to use a different filter name than the database column:
+
+```php
+// Syntax
+Filter::make('filter_name')
+    ->column('database_column');
+
+// Examples
+LikeFilter::make('search')
+    ->column('title');
+
+InFilter::make('category_picker')
+    ->column('category_id');
+
+ComparisonFilter::make('min_price')
+    ->column('price');
+
+BetweenFilter::make('price_range')
+    ->column('price');
+```
+
+**Use Cases**:
+- Multiple filters for the same column with different configurations
+- More descriptive filter names in the UI
+- Backward compatibility when renaming database columns
+- Cleaner filter naming conventions

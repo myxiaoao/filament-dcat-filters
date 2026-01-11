@@ -448,6 +448,88 @@ BetweenFilter::make('word_count')
 ],
 ```
 
+## 自定义列名 (column 方法)
+
+所有快速筛选器都支持 `column()` 方法，允许筛选器名称与数据库列名不同。这在以下场景非常有用：
+
+- 需要多个筛选器作用于同一列
+- 想要更友好的筛选器名称
+- 需要在 URL 参数中使用自定义名称
+
+### LikeFilter 使用 column()
+
+```php
+// 筛选器名为 'search'，但查询 'title' 列
+LikeFilter::make('search')
+    ->column('title')
+    ->label('搜索标题');
+
+// 同一列上的多个筛选器
+LikeFilter::make('title_contains')
+    ->column('title')
+    ->label('标题包含'),
+
+LikeFilter::make('title_excludes')
+    ->column('title')
+    ->notLike()
+    ->label('标题排除'),
+```
+
+### InFilter 使用 column()
+
+```php
+// 筛选器名为 'category_selector'，但查询 'category_id' 列
+InFilter::make('category_selector')
+    ->column('category_id')
+    ->options(Category::pluck('name', 'id'))
+    ->multiple();
+
+// 多选和排除使用同一列
+InFilter::make('include_categories')
+    ->column('category_id')
+    ->options(Category::pluck('name', 'id'))
+    ->multiple()
+    ->label('包含分类'),
+
+InFilter::make('exclude_categories')
+    ->column('category_id')
+    ->options(Category::pluck('name', 'id'))
+    ->multiple()
+    ->notIn()
+    ->label('排除分类'),
+```
+
+### ComparisonFilter 使用 column()
+
+```php
+// 最低和最高价格筛选器作用于同一 'price' 列
+ComparisonFilter::make('min_price')
+    ->column('price')
+    ->gte()
+    ->numeric()
+    ->label('最低价格'),
+
+ComparisonFilter::make('max_price')
+    ->column('price')
+    ->lte()
+    ->numeric()
+    ->label('最高价格'),
+```
+
+### 方法签名
+
+```php
+public function column(string $column): static
+```
+
+**参数：**
+- `$column` - 要筛选的数据库列名
+
+**返回：**
+- 返回筛选器实例以支持链式调用
+
+---
+
 ## 使用技巧
 
 1. **LikeFilter**：适合文本搜索字段
@@ -455,6 +537,7 @@ BetweenFilter::make('word_count')
 3. **ComparisonFilter**：适合数值比较
 4. **BetweenFilter**：数值范围的快捷方式
 5. **组合使用**：将多个快速筛选器组合在一起实现强大的筛选功能
+6. **column() 方法**：当需要多个筛选器作用于同一列时，使用此方法实现灵活的筛选器命名
 
 ## 与 Dcat Admin 的对比
 

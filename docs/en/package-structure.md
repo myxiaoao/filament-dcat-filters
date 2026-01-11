@@ -167,19 +167,66 @@ vendor/tapp/filament-value-range-filter/
 └── phpstan configuration
 ```
 
-#### Optimized Package
+#### Optimized Package (v1.0.2)
 ```
 packages/filament-dcat-filters/
 ├── composer.json (✅ Optimized)
 ├── src/
 │   ├── FilamentDcatFiltersServiceProvider.php (✅ Refactored)
-│   ├── Filters/ (9 filter classes)
-│   ├── Traits/
+│   ├── FilamentDcatFilters.php (Main class)
+│   ├── Facades/
+│   │   └── FilamentDcatFilters.php (Facade class)
+│   ├── Filters/ (22 filter classes)
+│   │   ├── BetweenFilter.php
+│   │   ├── BooleanFilter.php
+│   │   ├── CascadingSelectFilter.php
+│   │   ├── ComparisonFilter.php
+│   │   ├── DateComponentFilter.php
+│   │   ├── EnumFilter.php
+│   │   ├── FilterGroup.php
+│   │   ├── FindInSetFilter.php
+│   │   ├── FullTextFilter.php
+│   │   ├── GeoLocationFilter.php
+│   │   ├── HiddenFilter.php
+│   │   ├── InFilter.php
+│   │   ├── InputMaskFilter.php
+│   │   ├── JsonFilter.php
+│   │   ├── LikeFilter.php
+│   │   ├── ModalSelectFilter.php
+│   │   ├── NullFilter.php
+│   │   ├── RangeFilter.php
+│   │   ├── RegexFilter.php
+│   │   ├── RelativeDateFilter.php
+│   │   ├── ScopeFilter.php
+│   │   └── SelectTableFilter.php
+│   ├── Concerns/ (6 traits)
+│   │   ├── HasFilterExportImport.php
+│   │   ├── HasFilterPersistence.php
+│   │   ├── HasFilterPresets.php
+│   │   ├── HasRangeQuery.php
+│   │   ├── HasResetFilters.php
+│   │   ├── HasScopeBadgeCounts.php
+│   │   └── SyncsFiltersToUrlWithoutHistory.php
+│   ├── Http/
+│   │   └── Controllers/
+│   │       └── ModalSelectController.php
 │   └── Components/
+│       └── ModalSelectTable.php
 ├── config/
+│   └── filament-dcat-filters.php
 ├── resources/
+│   ├── css/
+│   ├── js/
+│   ├── lang/ (en, zh_CN)
+│   └── views/
 ├── docs/
+│   ├── en/ (English documentation)
+│   └── zh_CN/ (Chinese documentation)
 ├── tests/
+│   ├── Feature/
+│   │   ├── Filters/ (22 filter test files)
+│   │   └── Concerns/ (6 concern test files)
+│   └── Unit/
 ├── phpstan.neon (✅ Added)
 └── phpstan-baseline.neon (✅ Added)
 ```
