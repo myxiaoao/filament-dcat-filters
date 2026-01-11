@@ -151,6 +151,16 @@ return [
     'regex.url' => 'URL',
     'regex.ipv4' => 'IPv4 address',
 
+    // Input mask filter
+    'input_mask.placeholder' => 'Enter value...',
+    'input_mask.phone' => 'Phone number',
+    'input_mask.china_phone' => 'China phone number',
+    'input_mask.credit_card' => 'Credit card number',
+    'input_mask.date' => 'Date (YYYY-MM-DD)',
+    'input_mask.time' => 'Time (HH:MM)',
+    'input_mask.ip' => 'IP address',
+    'input_mask.zip_code' => 'ZIP code',
+
     // Accessibility
     'accessibility.selection_updated' => 'Selection updated',
     'accessibility.selection_cleared' => 'Selection cleared',

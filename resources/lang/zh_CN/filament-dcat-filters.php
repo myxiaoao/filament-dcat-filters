@@ -151,6 +151,16 @@ return [
     'regex.url' => '网址',
     'regex.ipv4' => 'IPv4地址',
 
+    // Input mask filter
+    'input_mask.placeholder' => '输入值...',
+    'input_mask.phone' => '电话号码',
+    'input_mask.china_phone' => '中国手机号',
+    'input_mask.credit_card' => '信用卡号',
+    'input_mask.date' => '日期 (YYYY-MM-DD)',
+    'input_mask.time' => '时间 (HH:MM)',
+    'input_mask.ip' => 'IP地址',
+    'input_mask.zip_code' => '邮政编码',
+
     // Accessibility
     'accessibility.selection_updated' => '选择已更新',
     'accessibility.selection_cleared' => '选择已清空',

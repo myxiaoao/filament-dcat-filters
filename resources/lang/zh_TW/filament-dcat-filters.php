@@ -133,4 +133,14 @@ return [
     'regex.url' => '網址',
     'regex.ipv4' => 'IPv4地址',
 
+    // Input mask filter
+    'input_mask.placeholder' => '輸入值...',
+    'input_mask.phone' => '電話號碼',
+    'input_mask.china_phone' => '中國手機號',
+    'input_mask.credit_card' => '信用卡號',
+    'input_mask.date' => '日期 (YYYY-MM-DD)',
+    'input_mask.time' => '時間 (HH:MM)',
+    'input_mask.ip' => 'IP地址',
+    'input_mask.zip_code' => '郵遞區號',
+
 ];
