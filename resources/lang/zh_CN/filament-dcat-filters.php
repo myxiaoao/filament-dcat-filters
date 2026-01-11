@@ -143,6 +143,14 @@ return [
     'find_in_set.and' => '且',
     'find_in_set.or' => '或',
 
+    // Regex filter
+    'regex.placeholder' => '输入正则表达式...',
+    'regex.pattern_applied' => '匹配模式',
+    'regex.china_mobile' => '中国手机号',
+    'regex.email' => '电子邮件地址',
+    'regex.url' => '网址',
+    'regex.ipv4' => 'IPv4地址',
+
     // Accessibility
     'accessibility.selection_updated' => '选择已更新',
     'accessibility.selection_cleared' => '选择已清空',

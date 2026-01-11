@@ -143,6 +143,14 @@ return [
     'find_in_set.and' => 'and',
     'find_in_set.or' => 'or',
 
+    // Regex filter
+    'regex.placeholder' => 'Enter regex pattern...',
+    'regex.pattern_applied' => 'Pattern matched',
+    'regex.china_mobile' => 'China mobile number',
+    'regex.email' => 'Email address',
+    'regex.url' => 'URL',
+    'regex.ipv4' => 'IPv4 address',
+
     // Accessibility
     'accessibility.selection_updated' => 'Selection updated',
     'accessibility.selection_cleared' => 'Selection cleared',

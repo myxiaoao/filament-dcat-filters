@@ -125,4 +125,12 @@ return [
     'find_in_set.and' => '且',
     'find_in_set.or' => '或',
 
+    // Regex filter
+    'regex.placeholder' => '輸入正則表達式...',
+    'regex.pattern_applied' => '匹配模式',
+    'regex.china_mobile' => '中國手機號',
+    'regex.email' => '電子郵件地址',
+    'regex.url' => '網址',
+    'regex.ipv4' => 'IPv4地址',
+
 ];
