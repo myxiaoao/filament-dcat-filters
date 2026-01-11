@@ -10,6 +10,14 @@ use Illuminate\Database\Eloquent\Builder;
 
 class GeoLocationFilter extends Filter
 {
+    protected const UNIT_FACTORS = [
+        'km' => 1,
+        'mi' => 1.60934,
+        'm' => 0.001,
+    ];
+
+    protected const EARTH_RADIUS_KM = 6371;
+
     protected string $latitudeColumn = 'latitude';
 
     protected string $longitudeColumn = 'longitude';
@@ -22,18 +30,6 @@ class GeoLocationFilter extends Filter
 
     protected ?float $centerLongitude = null;
 
-    /**
-     * Radius conversion factors to kilometers.
-     */
-    protected array $unitFactors = [
-        'km' => 1,
-        'mi' => 1.60934,
-        'm' => 0.001,
-    ];
-
-    /**
-     * Setup default configuration.
-     */
     protected function setUp(): void
     {
         parent::setUp();
@@ -42,100 +38,65 @@ class GeoLocationFilter extends Filter
         $this->configureForm();
     }
 
-    /**
-     * Set the latitude column name.
-     */
     public function latitude(string $column): static
     {
         $this->latitudeColumn = $column;
-        $this->configureForm();
 
         return $this;
     }
 
-    /**
-     * Set the longitude column name.
-     */
     public function longitude(string $column): static
     {
         $this->longitudeColumn = $column;
-        $this->configureForm();
 
         return $this;
     }
 
-    /**
-     * Set both latitude and longitude columns.
-     */
     public function coordinates(string $latitudeColumn, string $longitudeColumn): static
     {
         $this->latitudeColumn = $latitudeColumn;
         $this->longitudeColumn = $longitudeColumn;
-        $this->configureForm();
 
         return $this;
     }
 
-    /**
-     * Set the default radius and unit.
-     */
     public function radius(float $radius, string $unit = 'km'): static
     {
         $this->defaultRadius = $radius;
         $this->unit = strtolower($unit);
-        $this->configureForm();
 
         return $this;
     }
 
-    /**
-     * Set the center point for the search.
-     */
     public function center(float $latitude, float $longitude): static
     {
         $this->centerLatitude = $latitude;
         $this->centerLongitude = $longitude;
-        $this->configureForm();
 
         return $this;
     }
 
-    /**
-     * Use kilometers as the unit.
-     */
     public function kilometers(): static
     {
         $this->unit = 'km';
-        $this->configureForm();
 
         return $this;
     }
 
-    /**
-     * Use miles as the unit.
-     */
     public function miles(): static
     {
         $this->unit = 'mi';
-        $this->configureForm();
 
         return $this;
     }
 
-    /**
-     * Use meters as the unit.
-     */
     public function meters(): static
     {
         $this->unit = 'm';
-        $this->configureForm();
 
         return $this;
     }
 
-    /**
-     * Get the unit label for display.
-     */
     protected function getUnitLabel(): string
     {
         return match ($this->unit) {
@@ -146,13 +107,28 @@ class GeoLocationFilter extends Filter
         };
     }
 
-    /**
-     * Configure form component.
-     */
+    public function getLatitudeColumn(): string
+    {
+        return $this->latitudeColumn;
+    }
+
+    public function getLongitudeColumn(): string
+    {
+        return $this->longitudeColumn;
+    }
+
+    public function getDefaultRadius(): float
+    {
+        return $this->defaultRadius;
+    }
+
+    public function getUnit(): string
+    {
+        return $this->unit;
+    }
+
     protected function configureForm(): void
     {
-        $label = $this->getLabel() ?? __('filament-dcat-filters::filament-dcat-filters.geo.location');
-
         $this->form([
             Grid::make(3)
                 ->schema([
@@ -167,7 +143,7 @@ class GeoLocationFilter extends Filter
                         ->numeric()
                         ->default($this->centerLongitude),
                     TextInput::make('radius')
-                        ->label(__('filament-dcat-filters::filament-dcat-filters.geo.radius') . ' (' . $this->getUnitLabel() . ')')
+                        ->label(__('filament-dcat-filters::filament-dcat-filters.geo.radius').' ('.$this->getUnitLabel().')')
                         ->placeholder(__('filament-dcat-filters::filament-dcat-filters.geo.radius_placeholder'))
                         ->numeric()
                         ->default($this->defaultRadius),
@@ -177,15 +153,11 @@ class GeoLocationFilter extends Filter
         $this->configureQuery();
     }
 
-    /**
-     * Configure the query logic for this filter.
-     */
     protected function configureQuery(): void
     {
         $this->query(function (Builder $query, array $data): Builder {
             $latitude = $data['latitude'] ?? null;
             $longitude = $data['longitude'] ?? null;
-            $radius = $data['radius'] ?? $this->defaultRadius;
 
             if ($latitude === null || $longitude === null || $latitude === '' || $longitude === '') {
                 return $query;
@@ -193,27 +165,19 @@ class GeoLocationFilter extends Filter
 
             $latitude = (float) $latitude;
             $longitude = (float) $longitude;
-            $radius = (float) $radius;
+            $radius = (float) ($data['radius'] ?? $this->defaultRadius);
+            $radiusKm = $radius * (self::UNIT_FACTORS[$this->unit] ?? 1);
 
-            // Convert radius to kilometers
-            $radiusKm = $radius * ($this->unitFactors[$this->unit] ?? 1);
-
-            // Earth's radius in kilometers
-            $earthRadius = 6371;
-
-            // Haversine formula for distance calculation
-            $latColumn = $this->latitudeColumn;
-            $lngColumn = $this->longitudeColumn;
-
-            $haversine = "
-                ({$earthRadius} * acos(
-                    cos(radians({$latitude}))
-                    * cos(radians({$latColumn}))
-                    * cos(radians({$lngColumn}) - radians({$longitude}))
-                    + sin(radians({$latitude}))
-                    * sin(radians({$latColumn}))
-                ))
-            ";
+            $haversine = sprintf(
+                '(%d * acos(cos(radians(%f)) * cos(radians(%s)) * cos(radians(%s) - radians(%f)) + sin(radians(%f)) * sin(radians(%s))))',
+                self::EARTH_RADIUS_KM,
+                $latitude,
+                $this->latitudeColumn,
+                $this->longitudeColumn,
+                $longitude,
+                $latitude,
+                $this->latitudeColumn
+            );
 
             return $query->whereRaw("{$haversine} <= ?", [$radiusKm]);
         });
@@ -221,53 +185,21 @@ class GeoLocationFilter extends Filter
         $this->indicateUsing(function (array $data): array {
             $latitude = $data['latitude'] ?? null;
             $longitude = $data['longitude'] ?? null;
-            $radius = $data['radius'] ?? $this->defaultRadius;
 
             if ($latitude === null || $longitude === null || $latitude === '' || $longitude === '') {
                 return [];
             }
 
+            $radius = $data['radius'] ?? $this->defaultRadius;
             $label = $this->getLabel() ?? __('filament-dcat-filters::filament-dcat-filters.geo.location');
-            $unitLabel = $this->getUnitLabel();
+            $from = __('filament-dcat-filters::filament-dcat-filters.geo.from');
 
             return [
-                Indicator::make("{$label}: {$radius} {$unitLabel} " . __('filament-dcat-filters::filament-dcat-filters.geo.from') . " ({$latitude}, {$longitude})")
+                Indicator::make("{$label}: {$radius} {$this->getUnitLabel()} {$from} ({$latitude}, {$longitude})")
                     ->removeField('latitude')
                     ->removeField('longitude')
                     ->removeField('radius'),
             ];
         });
-    }
-
-    /**
-     * Get the latitude column.
-     */
-    public function getLatitudeColumn(): string
-    {
-        return $this->latitudeColumn;
-    }
-
-    /**
-     * Get the longitude column.
-     */
-    public function getLongitudeColumn(): string
-    {
-        return $this->longitudeColumn;
-    }
-
-    /**
-     * Get the default radius.
-     */
-    public function getDefaultRadius(): float
-    {
-        return $this->defaultRadius;
-    }
-
-    /**
-     * Get the unit.
-     */
-    public function getUnit(): string
-    {
-        return $this->unit;
     }
 }

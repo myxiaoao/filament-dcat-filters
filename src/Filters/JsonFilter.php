@@ -9,17 +9,14 @@ use Illuminate\Database\Eloquent\Builder;
 
 class JsonFilter extends Filter
 {
+    protected const VALID_OPERATORS = ['=', '!=', '>', '>=', '<', '<=', 'like', 'not like'];
+
     protected ?string $jsonPath = null;
 
     protected string $operator = '=';
 
     protected ?string $defaultValue = null;
 
-    protected array $validOperators = ['=', '!=', '>', '>=', '<', '<=', 'like', 'not like'];
-
-    /**
-     * Setup default configuration.
-     */
     protected function setUp(): void
     {
         parent::setUp();
@@ -28,140 +25,97 @@ class JsonFilter extends Filter
         $this->configureForm();
     }
 
-    /**
-     * Set the JSON path to query (e.g., 'settings.theme' or 'metadata->preferences->language').
-     */
     public function path(string $path): static
     {
         $this->jsonPath = $path;
-        $this->configureForm();
 
         return $this;
     }
 
-    /**
-     * Set the comparison operator.
-     */
     public function operator(string $operator): static
     {
-        if (! in_array(strtolower($operator), $this->validOperators)) {
-            throw new \InvalidArgumentException("Invalid operator: {$operator}. Valid operators are: " . implode(', ', $this->validOperators));
+        $operator = strtolower($operator);
+
+        if (! in_array($operator, self::VALID_OPERATORS)) {
+            throw new \InvalidArgumentException(
+                "Invalid operator: {$operator}. Valid operators are: ".implode(', ', self::VALID_OPERATORS)
+            );
         }
 
-        $this->operator = strtolower($operator);
-        $this->configureForm();
+        $this->operator = $operator;
 
         return $this;
     }
 
-    /**
-     * Set default value.
-     */
     public function defaultValue(mixed $value): static
     {
         $this->defaultValue = $value;
-        $this->configureForm();
 
         return $this;
     }
 
-    /**
-     * Use equals operator.
-     */
     public function eq(): static
     {
         return $this->operator('=');
     }
 
-    /**
-     * Use not equals operator.
-     */
     public function neq(): static
     {
         return $this->operator('!=');
     }
 
-    /**
-     * Use greater than operator.
-     */
     public function gt(): static
     {
         return $this->operator('>');
     }
 
-    /**
-     * Use greater than or equal operator.
-     */
     public function gte(): static
     {
         return $this->operator('>=');
     }
 
-    /**
-     * Use less than operator.
-     */
     public function lt(): static
     {
         return $this->operator('<');
     }
 
-    /**
-     * Use less than or equal operator.
-     */
     public function lte(): static
     {
         return $this->operator('<=');
     }
 
-    /**
-     * Use like operator.
-     */
     public function like(): static
     {
         return $this->operator('like');
     }
 
-    /**
-     * Use not like operator.
-     */
     public function notLike(): static
     {
         return $this->operator('not like');
     }
 
-    /**
-     * Build the JSON column accessor for the query.
-     */
     protected function buildJsonAccessor(): string
     {
         $column = $this->getName();
-        $path = $this->jsonPath;
 
-        if (! $path) {
+        if (! $this->jsonPath) {
             return $column;
         }
 
-        // Convert dot notation to arrow notation if needed
-        if (str_contains($path, '.') && ! str_contains($path, '->')) {
-            $path = str_replace('.', '->', $path);
-        }
+        $path = str_contains($this->jsonPath, '->')
+            ? $this->jsonPath
+            : str_replace('.', '->', $this->jsonPath);
 
         return "{$column}->{$path}";
     }
 
-    /**
-     * Configure form component.
-     */
     protected function configureForm(): void
     {
         $label = $this->getLabel() ?? ucfirst(str_replace('_', ' ', $this->getName()));
-        if ($this->jsonPath) {
-            $label .= ' (' . $this->jsonPath . ')';
-        }
 
         $this->form([
             TextInput::make('value')
-                ->label($label)
+                ->label($this->jsonPath ? "{$label} ({$this->jsonPath})" : $label)
                 ->placeholder(__('filament-dcat-filters::filament-dcat-filters.json.placeholder'))
                 ->default($this->defaultValue)
                 ->columnSpanFull(),
@@ -170,9 +124,6 @@ class JsonFilter extends Filter
         $this->configureQuery();
     }
 
-    /**
-     * Configure the query logic for this filter.
-     */
     protected function configureQuery(): void
     {
         $this->query(function (Builder $query, array $data): Builder {
@@ -184,7 +135,6 @@ class JsonFilter extends Filter
 
             $jsonAccessor = $this->buildJsonAccessor();
 
-            // Handle LIKE operators
             if (in_array($this->operator, ['like', 'not like'])) {
                 $value = "%{$value}%";
             }
@@ -200,18 +150,14 @@ class JsonFilter extends Filter
             }
 
             $label = $this->getLabel() ?? ucfirst(str_replace('_', ' ', $this->getName()));
-            $operatorLabel = $this->getOperatorLabel();
 
             return [
-                Indicator::make("{$label} {$operatorLabel} \"{$value}\"")
+                Indicator::make("{$label} {$this->getOperatorLabel()} \"{$value}\"")
                     ->removeField('value'),
             ];
         });
     }
 
-    /**
-     * Get human-readable operator label.
-     */
     protected function getOperatorLabel(): string
     {
         return match ($this->operator) {

@@ -3,17 +3,16 @@
 namespace Cooper\FilamentDcatFilters\Filters;
 
 use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\Indicator;
 use Illuminate\Database\Eloquent\Builder;
 
 class FilterGroup extends Filter
 {
     protected string $logic = 'and';
 
+    /** @var array<Filter> */
     protected array $childFilters = [];
 
-    /**
-     * Setup default configuration.
-     */
     protected function setUp(): void
     {
         parent::setUp();
@@ -21,9 +20,6 @@ class FilterGroup extends Filter
         $this->columnSpan(1);
     }
 
-    /**
-     * Set the logic operator (and/or).
-     */
     public function logic(string $logic): static
     {
         $this->logic = strtolower($logic) === 'or' ? 'or' : 'and';
@@ -32,27 +28,17 @@ class FilterGroup extends Filter
         return $this;
     }
 
-    /**
-     * Use AND logic for combining filters.
-     */
     public function andLogic(): static
     {
         return $this->logic('and');
     }
 
-    /**
-     * Use OR logic for combining filters.
-     */
     public function orLogic(): static
     {
         return $this->logic('or');
     }
 
-    /**
-     * Set the filters in this group.
-     *
-     * @param  array<Filter>  $filters
-     */
+    /** @param array<Filter> $filters */
     public function filters(array $filters): static
     {
         $this->childFilters = $filters;
@@ -62,26 +48,15 @@ class FilterGroup extends Filter
         return $this;
     }
 
-    /**
-     * Configure form by combining child filter forms.
-     */
     protected function configureForm(): void
     {
-        $formComponents = [];
-
-        foreach ($this->childFilters as $filter) {
-            $schema = $filter->getFormSchema();
-            foreach ($schema as $component) {
-                $formComponents[] = $component;
-            }
-        }
+        $formComponents = array_merge(
+            ...array_map(fn (Filter $filter) => $filter->getFormSchema(), $this->childFilters)
+        );
 
         $this->form($formComponents);
     }
 
-    /**
-     * Configure the query logic for this filter group.
-     */
     protected function configureQuery(): void
     {
         $this->query(function (Builder $query, array $data): Builder {
@@ -89,48 +64,37 @@ class FilterGroup extends Filter
                 return $query;
             }
 
-            // Check if any filter has data
-            $hasData = false;
-            foreach ($data as $value) {
-                if ($value !== null && $value !== '') {
-                    $hasData = true;
-                    break;
-                }
-            }
+            $hasData = collect($data)->contains(fn ($value) => $value !== null && $value !== '');
 
             if (! $hasData) {
                 return $query;
             }
 
             if ($this->logic === 'or') {
-                // OR logic: wrap all conditions in orWhere
                 return $query->where(function (Builder $q) use ($data) {
                     $isFirst = true;
                     foreach ($this->childFilters as $filter) {
-                        $filterName = $filter->getName();
-                        $filterData = ['value' => $data[$filterName] ?? null];
+                        $value = $data[$filter->getName()] ?? null;
 
-                        if ($filterData['value'] !== null && $filterData['value'] !== '') {
-                            if ($isFirst) {
-                                $this->applyFilterQuery($q, $filter, $filterData);
-                                $isFirst = false;
-                            } else {
-                                $q->orWhere(function (Builder $subQ) use ($filter, $filterData) {
-                                    $this->applyFilterQuery($subQ, $filter, $filterData);
-                                });
-                            }
+                        if ($value === null || $value === '') {
+                            continue;
+                        }
+
+                        if ($isFirst) {
+                            $this->applyFilterQuery($q, $filter, $value);
+                            $isFirst = false;
+                        } else {
+                            $q->orWhere(fn (Builder $subQ) => $this->applyFilterQuery($subQ, $filter, $value));
                         }
                     }
                 });
             }
 
-            // AND logic (default): apply filters normally
             foreach ($this->childFilters as $filter) {
-                $filterName = $filter->getName();
-                $filterData = ['value' => $data[$filterName] ?? null];
+                $value = $data[$filter->getName()] ?? null;
 
-                if ($filterData['value'] !== null && $filterData['value'] !== '') {
-                    $this->applyFilterQuery($query, $filter, $filterData);
+                if ($value !== null && $value !== '') {
+                    $this->applyFilterQuery($query, $filter, $value);
                 }
             }
 
@@ -146,7 +110,7 @@ class FilterGroup extends Filter
 
                 if ($value !== null && $value !== '') {
                     $label = $filter->getLabel() ?? ucfirst(str_replace('_', ' ', $filterName));
-                    $indicators[] = \Filament\Tables\Filters\Indicator::make("{$label}: {$value}")
+                    $indicators[] = Indicator::make("{$label}: {$value}")
                         ->removeField($filterName);
                 }
             }
@@ -155,38 +119,21 @@ class FilterGroup extends Filter
         });
     }
 
-    /**
-     * Apply a filter's query to the given query builder.
-     */
-    protected function applyFilterQuery(Builder $query, Filter $filter, array $data): void
+    protected function applyFilterQuery(Builder $query, Filter $filter, mixed $value): void
     {
-        // Get the filter's query callback and apply it
-        $filterName = $filter->getName();
-        $column = $filterName;
-        $value = $data['value'] ?? null;
-
         if ($value === null || $value === '') {
             return;
         }
 
-        // Default behavior: simple where clause
-        // In a real implementation, this would call the filter's actual query method
-        $query->where($column, 'like', "%{$value}%");
+        $query->where($filter->getName(), 'like', "%{$value}%");
     }
 
-    /**
-     * Get the logic type.
-     */
     public function getLogic(): string
     {
         return $this->logic;
     }
 
-    /**
-     * Get the child filters.
-     *
-     * @return array<Filter>
-     */
+    /** @return array<Filter> */
     public function getChildFilters(): array
     {
         return $this->childFilters;

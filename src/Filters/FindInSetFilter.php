@@ -20,9 +20,6 @@ class FindInSetFilter extends Filter
 
     protected bool $useMatchAny = false;
 
-    /**
-     * Setup default configuration.
-     */
     protected function setUp(): void
     {
         parent::setUp();
@@ -31,56 +28,34 @@ class FindInSetFilter extends Filter
         $this->configureForm();
     }
 
-    /**
-     * Set the available options.
-     *
-     * @param  array|\Closure  $options
-     */
     public function options(array|\Closure $options): static
     {
         $this->options = is_callable($options) ? $options() : $options;
-        $this->configureForm();
 
         return $this;
     }
 
-    /**
-     * Allow multiple selections.
-     */
     public function multiple(bool $condition = true): static
     {
         $this->isMultiple = $condition;
-        $this->configureForm();
 
         return $this;
     }
 
-    /**
-     * Make the select searchable.
-     */
     public function searchable(bool $condition = true): static
     {
         $this->isSearchable = $condition;
-        $this->configureForm();
 
         return $this;
     }
 
-    /**
-     * Set the placeholder text.
-     */
     public function placeholder(?string $placeholder): static
     {
         $this->placeholder = $placeholder;
-        $this->configureForm();
 
         return $this;
     }
 
-    /**
-     * Match any of the selected values (OR logic).
-     * Default behavior when multiple() is used.
-     */
     public function matchAny(bool $condition = true): static
     {
         $this->useMatchAny = $condition;
@@ -88,9 +63,6 @@ class FindInSetFilter extends Filter
         return $this;
     }
 
-    /**
-     * Match all of the selected values (AND logic).
-     */
     public function matchAll(): static
     {
         $this->useMatchAny = false;
@@ -98,15 +70,10 @@ class FindInSetFilter extends Filter
         return $this;
     }
 
-    /**
-     * Configure form component.
-     */
     protected function configureForm(): void
     {
         $label = $this->getLabel() ?? ucfirst(str_replace('_', ' ', $this->getName()));
-        $placeholder = $this->placeholder ?? ($this->isMultiple
-            ? __('filament-dcat-filters::filament-dcat-filters.find_in_set.placeholder_multiple')
-            : __('filament-dcat-filters::filament-dcat-filters.find_in_set.placeholder_single'));
+        $placeholder = $this->placeholder ?? __('filament-dcat-filters::filament-dcat-filters.find_in_set.placeholder_'.($this->isMultiple ? 'multiple' : 'single'));
 
         $this->form([
             Select::make('value')
@@ -121,9 +88,6 @@ class FindInSetFilter extends Filter
         $this->configureQuery();
     }
 
-    /**
-     * Configure the query logic for this filter.
-     */
     protected function configureQuery(): void
     {
         $this->query(function (Builder $query, array $data): Builder {
@@ -137,23 +101,19 @@ class FindInSetFilter extends Filter
             $values = Arr::wrap($value);
 
             if (count($values) === 1) {
-                // Single value - simple FIND_IN_SET
-                return $query->whereRaw('FIND_IN_SET(?, ' . $column . ')', [$values[0]]);
+                return $query->whereRaw('FIND_IN_SET(?, '.$column.')', [$values[0]]);
             }
 
-            // Multiple values
             if ($this->useMatchAny) {
-                // OR logic - match any of the selected values
                 return $query->where(function (Builder $q) use ($column, $values) {
                     foreach ($values as $val) {
-                        $q->orWhereRaw('FIND_IN_SET(?, ' . $column . ')', [$val]);
+                        $q->orWhereRaw('FIND_IN_SET(?, '.$column.')', [$val]);
                     }
                 });
             }
 
-            // AND logic - match all of the selected values
             foreach ($values as $val) {
-                $query->whereRaw('FIND_IN_SET(?, ' . $column . ')', [$val]);
+                $query->whereRaw('FIND_IN_SET(?, '.$column.')', [$val]);
             }
 
             return $query;
@@ -167,19 +127,12 @@ class FindInSetFilter extends Filter
             }
 
             $values = Arr::wrap($value);
-            $labels = [];
-
-            foreach ($values as $val) {
-                $labels[] = $this->options[$val] ?? $val;
-            }
-
-            $label = $this->getLabel() ?? ucfirst(str_replace('_', ' ', $this->getName()));
-            $separator = $this->useMatchAny
-                ? ' ' . __('filament-dcat-filters::filament-dcat-filters.find_in_set.or') . ' '
-                : ' ' . __('filament-dcat-filters::filament-dcat-filters.find_in_set.and') . ' ';
+            $labels = array_map(fn ($val) => $this->options[$val] ?? $val, $values);
+            $filterLabel = $this->getLabel() ?? ucfirst(str_replace('_', ' ', $this->getName()));
+            $separator = ' '.__('filament-dcat-filters::filament-dcat-filters.find_in_set.'.($this->useMatchAny ? 'or' : 'and')).' ';
 
             return [
-                Indicator::make("{$label}: " . implode($separator, $labels))
+                Indicator::make("{$filterLabel}: ".implode($separator, $labels))
                     ->removeField('value'),
             ];
         });
