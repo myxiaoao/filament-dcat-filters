@@ -4,6 +4,27 @@ All notable changes to `filament-dcat-filters` will be documented in this file.
 
 ## [Unreleased]
 
+## 1.0.3 - 2026-01-21
+
+### Added
+
+- **Filament v5 Support**: Added support for Filament v5 alongside v4
+  - Updated composer.json to allow `filament/filament: ^4.0 || ^5.0`
+  - Filament v5 primarily adds Livewire v4 support with no API changes
+  - All existing code remains compatible without modifications
+
+### Documentation
+
+- Updated README.md and README_CN.md with Filament v5 compatibility
+- Updated version compatibility tables to include Filament 5.x
+- Updated badges to show "4.x | 5.x" support
+
+### Tests
+
+- All **459 tests** passing with **623 assertions**
+
+---
+
 ## 1.0.2 - 2025-01-11
 
 ### Added

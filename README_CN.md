@@ -4,7 +4,7 @@
 
 **将 Dcat Admin 强大的过滤器功能带到 Filament**
 
-基于 PHP 8.3+ 构建，适用于 Laravel 12 和 Filament v4
+基于 PHP 8.3+ 构建，适用于 Laravel 12 和 Filament v4/v5
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/cooper/filament-dcat-filters.svg?style=flat-square)](https://packagist.org/packages/cooper/filament-dcat-filters)
 [![Total Downloads](https://img.shields.io/packagist/dt/cooper/filament-dcat-filters.svg?style=flat-square)](https://packagist.org/packages/cooper/filament-dcat-filters)
@@ -12,7 +12,7 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![PHP](https://img.shields.io/badge/php-8.3+-purple.svg)](https://www.php.net)
 [![Laravel](https://img.shields.io/badge/laravel-12.x-red.svg)](https://laravel.com)
-[![Filament](https://img.shields.io/badge/filament-4.x-orange.svg)](https://filamentphp.com)
+[![Filament](https://img.shields.io/badge/filament-4.x%20%7C%205.x-orange.svg)](https://filamentphp.com)
 
 <img src="./art/filters.png" alt="Filament Dcat Filters 截图" width="800">
 
@@ -73,6 +73,7 @@
 
 | Filament | Filament Dcat Filters | PHP    | Laravel |
 |----------|----------------------|--------|---------|
+| 5.x      | 1.x                  | ^8.3   | ^12.0   |
 | 4.x      | 1.x                  | ^8.3   | ^12.0   |
 
 ## 安装
