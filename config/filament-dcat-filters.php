@@ -3,6 +3,23 @@
 return [
     /*
     |--------------------------------------------------------------------------
+    | Table Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configure default table behavior when the package is installed.
+    | These settings are applied globally via Table::configureUsing().
+    |
+    */
+    'table' => [
+        // Display filters above table content (FiltersLayout::AboveContent)
+        'filters_above_content' => true,
+
+        // Display reset action in the footer (FiltersResetActionPosition::Footer)
+        'reset_action_in_footer' => true,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Database Configuration
     |--------------------------------------------------------------------------
     |

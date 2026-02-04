@@ -4,6 +4,22 @@ All notable changes to `filament-dcat-filters` will be documented in this file.
 
 ## [Unreleased]
 
+## 1.0.6 - 2026-02-04
+
+### Added
+
+- **Global Table Configuration**: 安装包后自动应用 `FiltersLayout::AboveContent` 和 `FiltersResetActionPosition::Footer`
+  - 通过 `Table::configureUsing()` 在 ServiceProvider 中全局设置
+  - 配置文件新增 `table` 段，包含 `filters_above_content` 和 `reset_action_in_footer` 开关
+  - 用户可在 `config/filament-dcat-filters.php` 中设为 `false` 关闭默认行为
+  - `FiltersResetActionPosition` 使用 `enum_exists()` 安全检查，兼容不同 Filament 版本
+
+### Tests
+
+- All **510 tests** passing with **699 assertions**
+
+---
+
 ## 1.0.5 - 2026-02-04
 
 ### Added

@@ -2,6 +2,8 @@
 
 namespace Cooper\FilamentDcatFilters;
 
+use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Table;
 use Livewire\Livewire;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -26,8 +28,8 @@ class FilamentDcatFiltersServiceProvider extends PackageServiceProvider
      */
     public function packageBooted(): void
     {
-        // Register Livewire components
         $this->registerLivewireComponents();
+        $this->configureTable();
     }
 
     /**
@@ -35,7 +37,6 @@ class FilamentDcatFiltersServiceProvider extends PackageServiceProvider
      */
     public function packageRegistered(): void
     {
-        // Register the main class as a singleton
         $this->app->singleton(FilamentDcatFilters::class, function () {
             return new FilamentDcatFilters;
         });
@@ -52,5 +53,25 @@ class FilamentDcatFiltersServiceProvider extends PackageServiceProvider
                 Components\ModalSelectTable::class
             );
         }
+    }
+
+    /**
+     * Apply global table configuration based on package config.
+     */
+    protected function configureTable(): void
+    {
+        Table::configureUsing(function (Table $table): void {
+            if (config('filament-dcat-filters.table.filters_above_content', true)) {
+                $table->filtersLayout(FiltersLayout::AboveContent);
+            }
+
+            if (config('filament-dcat-filters.table.reset_action_in_footer', true)) {
+                if (enum_exists(\Filament\Tables\Enums\FiltersResetActionPosition::class)) {
+                    $table->filtersResetActionPosition(
+                        \Filament\Tables\Enums\FiltersResetActionPosition::Footer
+                    );
+                }
+            }
+        });
     }
 }
