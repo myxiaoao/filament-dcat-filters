@@ -126,7 +126,7 @@ class JsonFilter extends Filter
     {
         $this->form([
             TextInput::make('value')
-                ->label(fn (): string => ($this->getLabel() ?? ucfirst(str_replace('_', ' ', $this->getName()))) . ($this->jsonPath ? " ({$this->jsonPath})" : ''))
+                ->label(fn (): string => ($this->getLabel() ?? ucfirst(str_replace('_', ' ', $this->getName()))).($this->jsonPath ? " ({$this->jsonPath})" : ''))
                 ->placeholder(__('filament-dcat-filters::filament-dcat-filters.json.placeholder'))
                 ->default($this->defaultValue)
                 ->columnSpanFull(),
