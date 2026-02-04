@@ -24,6 +24,8 @@ class EnumFilter extends Filter
 
     protected bool $searchable = false;
 
+    protected ?string $columnName = null;
+
     /**
      * Setup default configuration.
      */
@@ -73,6 +75,18 @@ class EnumFilter extends Filter
     public function searchable(bool $searchable = true): static
     {
         $this->searchable = $searchable;
+        $this->configureForm();
+
+        return $this;
+    }
+
+    /**
+     * Set the column name for the comparison.
+     * This allows the filter name to differ from the actual database column.
+     */
+    public function column(string $column): static
+    {
+        $this->columnName = $column;
         $this->configureForm();
 
         return $this;
@@ -214,7 +228,7 @@ class EnumFilter extends Filter
     protected function configureQuery(array $options): void
     {
         $this->query(function (Builder $query, array $data): Builder {
-            $column = $this->getName();
+            $column = $this->columnName ?? $this->getName();
 
             if ($this->multiple) {
                 $values = $data['values'] ?? [];

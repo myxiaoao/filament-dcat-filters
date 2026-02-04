@@ -2,7 +2,7 @@
 
 namespace Cooper\FilamentDcatFilters\Filters;
 
-use Filament\Forms\Components\CheckboxList;
+use Cooper\FilamentDcatFilters\Concerns\HasRelationship;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 class InFilter extends Filter
 {
+    use HasRelationship;
+
     protected array $options = [];
 
     protected bool $multiple = false;
@@ -122,8 +124,8 @@ class InFilter extends Filter
     protected function configureQuery(): void
     {
         $this->query(function (Builder $query, array $data): Builder {
-            // Use custom column name if set, otherwise default to filter name
-            $column = $this->columnName ?? $this->getName();
+            // Use relationship title column, custom column, or filter name
+            $column = $this->relationshipTitleColumn ?? $this->columnName ?? $this->getName();
 
             if ($this->multiple) {
                 $values = $data['values'] ?? [];
@@ -132,7 +134,11 @@ class InFilter extends Filter
                     return $query;
                 }
 
-                // Handle NOT IN for multiple values
+                // Relationship: wrap in whereHas
+                if ($this->hasRelationship()) {
+                    return $this->applyRelationshipWhereIn($query, $column, $values, $this->negate);
+                }
+
                 if ($this->negate) {
                     return $query->whereNotIn($column, $values);
                 }
@@ -146,7 +152,13 @@ class InFilter extends Filter
                 return $query;
             }
 
-            // Handle NOT EQUAL for single value
+            // Relationship: wrap in whereHas
+            if ($this->hasRelationship()) {
+                $operator = $this->negate ? '!=' : '=';
+
+                return $this->applyRelationshipConstraint($query, $column, $operator, $value);
+            }
+
             if ($this->negate) {
                 return $query->where($column, '!=', $value);
             }

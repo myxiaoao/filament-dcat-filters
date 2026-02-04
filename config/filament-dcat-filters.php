@@ -3,6 +3,23 @@
 return [
     /*
     |--------------------------------------------------------------------------
+    | Database Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configure database driver detection and behavior for filters that
+    | generate driver-specific SQL (LIKE/ILIKE, REGEXP, FIND_IN_SET, etc).
+    |
+    */
+    'database' => [
+        // Database driver: 'auto' (detect from connection), 'mysql', 'pgsql', 'sqlite'
+        'driver' => 'auto',
+
+        // Global default for case-insensitive search
+        'case_insensitive' => true,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Range Filter Configuration
     |--------------------------------------------------------------------------
     |

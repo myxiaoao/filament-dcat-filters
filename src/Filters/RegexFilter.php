@@ -2,6 +2,7 @@
 
 namespace Cooper\FilamentDcatFilters\Filters;
 
+use Cooper\FilamentDcatFilters\Concerns\HasDatabaseDriver;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Tables\Filters\Filter;
@@ -10,6 +11,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 class RegexFilter extends Filter
 {
+    use HasDatabaseDriver;
+
     protected ?string $regexPattern = null;
 
     protected bool $caseSensitive = true;
@@ -125,6 +128,31 @@ class RegexFilter extends Filter
         $this->configureQuery();
     }
 
+    /**
+     * Apply a regex WHERE clause that adapts to the database driver.
+     * PostgreSQL uses ~ (case-sensitive) or ~* (case-insensitive).
+     * MySQL uses REGEXP with optional (?i) prefix.
+     */
+    protected function applyRegexWhere(Builder $query, string $column, string $pattern): Builder
+    {
+        if ($this->isPostgres($query)) {
+            $operator = $this->caseSensitive ? '~' : '~*';
+
+            return $query->whereRaw(
+                $query->getGrammar()->wrap($column).' '.$operator.' ?',
+                [$pattern]
+            );
+        }
+
+        // MySQL/SQLite: use REGEXP with optional (?i) prefix
+        $finalPattern = $this->caseSensitive ? $pattern : '(?i)'.$pattern;
+
+        return $query->whereRaw(
+            $query->getGrammar()->wrap($column).' REGEXP ?',
+            [$finalPattern]
+        );
+    }
+
     protected function configureQuery(): void
     {
         $this->query(function (Builder $query, array $data): Builder {
@@ -135,9 +163,7 @@ class RegexFilter extends Filter
                     return $query;
                 }
 
-                $pattern = $this->caseSensitive ? $this->regexPattern : '(?i)'.$this->regexPattern;
-
-                return $query->whereRaw("{$column} REGEXP ?", [$pattern]);
+                return $this->applyRegexWhere($query, $column, $this->regexPattern);
             }
 
             $pattern = $data['pattern'] ?? null;
@@ -146,9 +172,7 @@ class RegexFilter extends Filter
                 return $query;
             }
 
-            $finalPattern = $this->caseSensitive ? $pattern : '(?i)'.$pattern;
-
-            return $query->whereRaw("{$column} REGEXP ?", [$finalPattern]);
+            return $this->applyRegexWhere($query, $column, $pattern);
         });
 
         $this->indicateUsing(function (array $data): array {

@@ -136,3 +136,63 @@ describe('Pattern Building', function () {
         expect($method->invoke($filter, 'test'))->toBe('test');
     });
 });
+
+describe('Relationship Support', function () {
+    it('can set relationship', function () {
+        $filter = LikeFilter::make('customer_name')
+            ->relationship('customer', 'full_name');
+
+        expect($filter)->toBeInstanceOf(LikeFilter::class);
+        expect($filter->hasRelationship())->toBeTrue();
+    });
+
+    it('can combine relationship with insensitive', function () {
+        $filter = LikeFilter::make('customer_name')
+            ->relationship('customer', 'full_name')
+            ->insensitive();
+
+        expect($filter)->toBeInstanceOf(LikeFilter::class);
+        expect($filter->hasRelationship())->toBeTrue();
+    });
+
+    it('can combine relationship with column and wildcard', function () {
+        $filter = LikeFilter::make('search')
+            ->relationship('author', 'name')
+            ->startsWith();
+
+        expect($filter)->toBeInstanceOf(LikeFilter::class);
+        expect($filter->hasRelationship())->toBeTrue();
+    });
+
+    it('has no relationship by default', function () {
+        $filter = LikeFilter::make('title');
+
+        expect($filter->hasRelationship())->toBeFalse();
+    });
+});
+
+describe('Database Driver', function () {
+    it('can set database driver', function () {
+        $filter = LikeFilter::make('title')
+            ->driver('pgsql');
+
+        expect($filter)->toBeInstanceOf(LikeFilter::class);
+    });
+
+    it('can combine driver with insensitive', function () {
+        $filter = LikeFilter::make('title')
+            ->driver('pgsql')
+            ->insensitive();
+
+        expect($filter)->toBeInstanceOf(LikeFilter::class);
+    });
+
+    it('can combine driver with relationship', function () {
+        $filter = LikeFilter::make('customer_name')
+            ->driver('pgsql')
+            ->relationship('customer', 'name')
+            ->insensitive();
+
+        expect($filter)->toBeInstanceOf(LikeFilter::class);
+    });
+});

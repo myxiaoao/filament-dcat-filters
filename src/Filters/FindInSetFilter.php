@@ -2,6 +2,7 @@
 
 namespace Cooper\FilamentDcatFilters\Filters;
 
+use Cooper\FilamentDcatFilters\Concerns\HasDatabaseDriver;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
@@ -10,6 +11,8 @@ use Illuminate\Support\Arr;
 
 class FindInSetFilter extends Filter
 {
+    use HasDatabaseDriver;
+
     protected array $options = [];
 
     protected bool $isMultiple = false;
@@ -19,6 +22,8 @@ class FindInSetFilter extends Filter
     protected ?string $placeholder = null;
 
     protected bool $useMatchAny = false;
+
+    protected ?string $columnName = null;
 
     protected function setUp(): void
     {
@@ -70,6 +75,55 @@ class FindInSetFilter extends Filter
         return $this;
     }
 
+    /**
+     * Set the column name for the comparison.
+     * This allows the filter name to differ from the actual database column.
+     */
+    public function column(string $column): static
+    {
+        $this->columnName = $column;
+
+        return $this;
+    }
+
+    /**
+     * Generate a FIND_IN_SET expression adapted to the database driver.
+     * PostgreSQL: ? = ANY(string_to_array(column, ','))
+     * MySQL: FIND_IN_SET(?, column)
+     */
+    protected function findInSetExpression(Builder $query, string $column, mixed $value): Builder
+    {
+        if ($this->isPostgres($query)) {
+            return $query->whereRaw(
+                '? = ANY(string_to_array('.$query->getGrammar()->wrap($column).", ','))",
+                [$value]
+            );
+        }
+
+        return $query->whereRaw(
+            'FIND_IN_SET(?, '.$query->getGrammar()->wrap($column).')',
+            [$value]
+        );
+    }
+
+    /**
+     * Generate an OR FIND_IN_SET expression adapted to the database driver.
+     */
+    protected function orFindInSetExpression(Builder $query, string $column, mixed $value): Builder
+    {
+        if ($this->isPostgres($query)) {
+            return $query->orWhereRaw(
+                '? = ANY(string_to_array('.$query->getGrammar()->wrap($column).", ','))",
+                [$value]
+            );
+        }
+
+        return $query->orWhereRaw(
+            'FIND_IN_SET(?, '.$query->getGrammar()->wrap($column).')',
+            [$value]
+        );
+    }
+
     protected function configureForm(): void
     {
         $labelResolver = fn (): string => $this->getLabel() ?? ucfirst(str_replace('_', ' ', $this->getName()));
@@ -97,23 +151,23 @@ class FindInSetFilter extends Filter
                 return $query;
             }
 
-            $column = $this->getName();
+            $column = $this->columnName ?? $this->getName();
             $values = Arr::wrap($value);
 
             if (count($values) === 1) {
-                return $query->whereRaw('FIND_IN_SET(?, '.$column.')', [$values[0]]);
+                return $this->findInSetExpression($query, $column, $values[0]);
             }
 
             if ($this->useMatchAny) {
                 return $query->where(function (Builder $q) use ($column, $values) {
                     foreach ($values as $val) {
-                        $q->orWhereRaw('FIND_IN_SET(?, '.$column.')', [$val]);
+                        $this->orFindInSetExpression($q, $column, $val);
                     }
                 });
             }
 
             foreach ($values as $val) {
-                $query->whereRaw('FIND_IN_SET(?, '.$column.')', [$val]);
+                $this->findInSetExpression($query, $column, $val);
             }
 
             return $query;

@@ -4,6 +4,43 @@ All notable changes to `filament-dcat-filters` will be documented in this file.
 
 ## [Unreleased]
 
+## 1.0.5 - 2026-02-04
+
+### Added
+
+- **Database Driver Adaptation**: PostgreSQL / MySQL / SQLite 自适应 SQL 生成
+  - 新增 `HasDatabaseDriver` trait，支持 `driver()` 手动指定、配置文件指定、自动检测三级优先级
+  - `LikeFilter`: PostgreSQL 使用原生 `ILIKE` / `NOT ILIKE`
+  - `FullTextFilter`: PostgreSQL 使用 `to_tsvector` / `to_tsquery` 全文检索，LIKE 搜索使用 `ILIKE`
+  - `RegexFilter`: PostgreSQL 使用 `~` (大小写敏感) / `~*` (大小写不敏感)
+  - `FindInSetFilter`: PostgreSQL 使用 `ANY(string_to_array())` 替代 `FIND_IN_SET()`
+  - 配置文件新增 `database` 段 (`driver`, `case_insensitive`)
+
+- **Relationship Query Support**: LikeFilter、InFilter 支持关系查询
+  - 新增 `HasRelationship` trait，提供 `relationship()` 方法
+  - `LikeFilter`: 通过 `whereHas` 在关联模型上执行 LIKE/ILIKE 搜索
+  - `InFilter`: 通过 `whereHas` 在关联模型上执行 IN/NOT IN 查询
+
+- **ComparisonFilter Money Conversion**: 分/元自动换算
+  - `money(int $divideBy = 100)`: 用户输入元，查询时自动乘以倍数转为分
+  - `moneySuffix(string $suffix)`: 输入框显示单位后缀
+
+- **EnumFilter column() Method**: 补齐 `column()` 方法，与其他 Filter 保持一致
+
+- **FindInSetFilter column() Method**: 补齐 `column()` 方法
+
+### Changed
+
+- `phpunit.xml.dist` 新增 Feature testsuite
+
+### Tests
+
+- 新增 `HasDatabaseDriverTest` 和 `HasRelationshipTest` 测试文件
+- 已有 Filter 测试追加 Relationship Support、Database Driver、Column Name、Money Support 等 describe 块
+- Total: **510 tests** with **699 assertions** (all passing)
+
+---
+
 ## 1.0.3 - 2026-01-21
 
 ### Added

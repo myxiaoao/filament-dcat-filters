@@ -115,3 +115,62 @@ describe('Column Name', function () {
         expect($filter)->toBeInstanceOf(ComparisonFilter::class);
     });
 });
+
+describe('Money Support', function () {
+    it('can enable money conversion', function () {
+        $filter = ComparisonFilter::make('min_price')
+            ->money(100);
+
+        expect($filter)->toBeInstanceOf(ComparisonFilter::class);
+    });
+
+    it('stores money divider correctly', function () {
+        $filter = ComparisonFilter::make('min_price')
+            ->money(100);
+
+        $reflection = new ReflectionClass($filter);
+        $prop = $reflection->getProperty('moneyDivider');
+        $prop->setAccessible(true);
+
+        expect($prop->getValue($filter))->toBe(100);
+    });
+
+    it('can set money suffix', function () {
+        $filter = ComparisonFilter::make('min_price')
+            ->moneySuffix('元');
+
+        expect($filter)->toBeInstanceOf(ComparisonFilter::class);
+    });
+
+    it('stores money suffix correctly', function () {
+        $filter = ComparisonFilter::make('min_price')
+            ->moneySuffix('元');
+
+        $reflection = new ReflectionClass($filter);
+        $prop = $reflection->getProperty('moneySuffix');
+        $prop->setAccessible(true);
+
+        expect($prop->getValue($filter))->toBe('元');
+    });
+
+    it('can combine money with column and operator', function () {
+        $filter = ComparisonFilter::make('min_price')
+            ->column('price_cents')
+            ->money(100)
+            ->moneySuffix('元')
+            ->gte();
+
+        expect($filter)->toBeInstanceOf(ComparisonFilter::class);
+    });
+
+    it('uses default divider of 100', function () {
+        $filter = ComparisonFilter::make('min_price')
+            ->money();
+
+        $reflection = new ReflectionClass($filter);
+        $prop = $reflection->getProperty('moneyDivider');
+        $prop->setAccessible(true);
+
+        expect($prop->getValue($filter))->toBe(100);
+    });
+});

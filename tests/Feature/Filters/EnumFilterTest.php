@@ -200,3 +200,42 @@ describe('Combined Features', function () {
         expect($filter)->toBeInstanceOf(EnumFilter::class);
     });
 });
+
+describe('Column Name', function () {
+    it('uses filter name as column by default', function () {
+        $filter = EnumFilter::make('status')
+            ->enum(TestStatus::class);
+
+        expect($filter)->toBeInstanceOf(EnumFilter::class);
+    });
+
+    it('can set custom column name', function () {
+        $filter = EnumFilter::make('order_status')
+            ->enum(TestStatus::class)
+            ->column('status');
+
+        expect($filter)->toBeInstanceOf(EnumFilter::class);
+    });
+
+    it('can combine column with other features', function () {
+        $filter = EnumFilter::make('status_filter')
+            ->enum(TestStatus::class)
+            ->column('order_status')
+            ->multiple()
+            ->searchable();
+
+        expect($filter)->toBeInstanceOf(EnumFilter::class);
+    });
+
+    it('stores column name correctly', function () {
+        $filter = EnumFilter::make('status_filter')
+            ->enum(TestStatus::class)
+            ->column('order_status');
+
+        $reflection = new ReflectionClass($filter);
+        $prop = $reflection->getProperty('columnName');
+        $prop->setAccessible(true);
+
+        expect($prop->getValue($filter))->toBe('order_status');
+    });
+});

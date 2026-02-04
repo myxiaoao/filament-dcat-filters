@@ -2,6 +2,7 @@
 
 namespace Cooper\FilamentDcatFilters\Filters;
 
+use Cooper\FilamentDcatFilters\Concerns\HasDatabaseDriver;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
@@ -9,6 +10,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 class FullTextFilter extends Filter
 {
+    use HasDatabaseDriver;
+
     protected array $searchColumns = [];
 
     protected int $minLength = 2;
@@ -122,6 +125,10 @@ class FullTextFilter extends Filter
             }
 
             if ($this->useFullText) {
+                if ($this->isPostgres($query)) {
+                    return $this->applyPostgresFullTextSearch($query, $search);
+                }
+
                 return $this->applyFullTextSearch($query, $search);
             }
 
@@ -149,12 +156,14 @@ class FullTextFilter extends Filter
      */
     protected function applyLikeSearch(Builder $query, string $search): Builder
     {
-        return $query->where(function (Builder $q) use ($search) {
+        $likeOp = $this->isPostgres($query) ? 'ILIKE' : 'LIKE';
+
+        return $query->where(function (Builder $q) use ($search, $likeOp) {
             foreach ($this->searchColumns as $column) {
                 if (str_contains($column, '.')) {
-                    $this->applyRelationSearch($q, $column, $search);
+                    $this->applyRelationSearch($q, $column, $search, $likeOp);
                 } else {
-                    $q->orWhere($column, 'LIKE', "%{$search}%");
+                    $q->orWhere($column, $likeOp, "%{$search}%");
                 }
             }
         });
@@ -163,14 +172,14 @@ class FullTextFilter extends Filter
     /**
      * Apply relation-based search.
      */
-    protected function applyRelationSearch(Builder $query, string $column, string $search): void
+    protected function applyRelationSearch(Builder $query, string $column, string $search, string $likeOp = 'LIKE'): void
     {
         $parts = explode('.', $column);
         $relationColumn = array_pop($parts);
         $relation = implode('.', $parts);
 
-        $query->orWhereHas($relation, function (Builder $q) use ($relationColumn, $search) {
-            $q->where($relationColumn, 'LIKE', "%{$search}%");
+        $query->orWhereHas($relation, function (Builder $q) use ($relationColumn, $search, $likeOp) {
+            $q->where($relationColumn, $likeOp, "%{$search}%");
         });
     }
 
@@ -185,6 +194,26 @@ class FullTextFilter extends Filter
             "MATCH ({$columns}) AGAINST (? IN BOOLEAN MODE)",
             [$search.'*']
         );
+    }
+
+    /**
+     * Apply PostgreSQL full-text search using tsvector/tsquery.
+     */
+    protected function applyPostgresFullTextSearch(Builder $query, string $search): Builder
+    {
+        $columns = array_map(
+            fn (string $col) => "coalesce({$col}, '')",
+            $this->searchColumns,
+        );
+
+        $tsvector = "to_tsvector('simple', ".implode(" || ' ' || ", $columns).')';
+        $tsquery = "to_tsquery('simple', ?)";
+
+        // Convert search terms: "hello world" → "hello:* & world:*"
+        $terms = preg_split('/\s+/', trim($search));
+        $tsValue = implode(' & ', array_map(fn (string $t) => $t.':*', $terms));
+
+        return $query->whereRaw("{$tsvector} @@ {$tsquery}", [$tsValue]);
     }
 
     /**

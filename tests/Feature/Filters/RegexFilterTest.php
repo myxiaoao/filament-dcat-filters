@@ -178,3 +178,38 @@ describe('Combined Features', function () {
         expect($filter)->toBeInstanceOf(RegexFilter::class);
     });
 });
+
+describe('Database Driver', function () {
+    it('can set database driver', function () {
+        $filter = RegexFilter::make('phone')
+            ->driver('pgsql');
+
+        expect($filter)->toBeInstanceOf(RegexFilter::class);
+    });
+
+    it('can combine driver with pattern mode', function () {
+        $filter = RegexFilter::make('phone')
+            ->driver('pgsql')
+            ->chinaMobile();
+
+        expect($filter)->toBeInstanceOf(RegexFilter::class);
+    });
+
+    it('can combine driver with case insensitivity', function () {
+        $filter = RegexFilter::make('email')
+            ->driver('pgsql')
+            ->caseInsensitive();
+
+        expect($filter)->toBeInstanceOf(RegexFilter::class);
+    });
+
+    it('can combine driver with column and pattern', function () {
+        $filter = RegexFilter::make('search')
+            ->driver('pgsql')
+            ->column('user_email')
+            ->pattern('^[a-z]+@example\\.com$')
+            ->caseInsensitive();
+
+        expect($filter)->toBeInstanceOf(RegexFilter::class);
+    });
+});

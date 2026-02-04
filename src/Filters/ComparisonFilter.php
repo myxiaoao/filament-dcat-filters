@@ -17,6 +17,10 @@ class ComparisonFilter extends Filter
 
     protected ?string $columnName = null;
 
+    protected ?int $moneyDivider = null;
+
+    protected ?string $moneySuffix = null;
+
     /**
      * Create a new comparison filter instance.
      */
@@ -118,6 +122,37 @@ class ComparisonFilter extends Filter
     }
 
     /**
+     * Enable money conversion (user input is divided/multiplied before querying).
+     * For example, money(100) means: user enters 50 (yuan) → query uses 5000 (cents).
+     */
+    public function money(int $divideBy = 100): static
+    {
+        $this->moneyDivider = $divideBy;
+
+        return $this;
+    }
+
+    /**
+     * Set a display suffix for the money input (e.g., '元').
+     */
+    public function moneySuffix(string $suffix): static
+    {
+        $this->moneySuffix = $suffix;
+
+        $this->form([
+            TextInput::make('value')
+                ->label(fn (): string => $this->getLabel() ?? $this->getName())
+                ->placeholder(__('filament-dcat-filters::filament-dcat-filters.comparison.placeholder'))
+                ->numeric()
+                ->suffix($suffix)
+                ->live()
+                ->columnSpanFull(),
+        ]);
+
+        return $this;
+    }
+
+    /**
      * Set input type to integer.
      */
     public function integer(): static
@@ -189,12 +224,17 @@ class ComparisonFilter extends Filter
             // Use custom column name if set, otherwise default to filter name
             $column = $this->columnName ?? $this->getName();
 
+            // Apply money conversion: multiply user input by divider
+            $queryValue = $this->moneyDivider !== null
+                ? (float) $value * $this->moneyDivider
+                : $value;
+
             // Validate operator at query time as well
             if (! in_array($this->operator, self::ALLOWED_OPERATORS, true)) {
                 return $query;
             }
 
-            return $query->where($column, $this->operator, $value);
+            return $query->where($column, $this->operator, $queryValue);
         });
 
         $this->indicateUsing(function (array $data): array {

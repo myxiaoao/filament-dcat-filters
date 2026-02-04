@@ -131,3 +131,66 @@ describe('Combined Features', function () {
         expect($filter)->toBeInstanceOf(FindInSetFilter::class);
     });
 });
+
+describe('Column Name', function () {
+    it('uses filter name as column by default', function () {
+        $filter = FindInSetFilter::make('tags');
+
+        expect($filter)->toBeInstanceOf(FindInSetFilter::class);
+    });
+
+    it('can set custom column name', function () {
+        $filter = FindInSetFilter::make('tag_filter')
+            ->column('tags');
+
+        expect($filter)->toBeInstanceOf(FindInSetFilter::class);
+    });
+
+    it('stores column name correctly', function () {
+        $filter = FindInSetFilter::make('tag_filter')
+            ->column('category_tags');
+
+        $reflection = new ReflectionClass($filter);
+        $prop = $reflection->getProperty('columnName');
+        $prop->setAccessible(true);
+
+        expect($prop->getValue($filter))->toBe('category_tags');
+    });
+
+    it('can combine column with other features', function () {
+        $filter = FindInSetFilter::make('tag_search')
+            ->column('tags')
+            ->options(['php' => 'PHP', 'js' => 'JavaScript'])
+            ->multiple()
+            ->matchAny();
+
+        expect($filter)->toBeInstanceOf(FindInSetFilter::class);
+    });
+});
+
+describe('Database Driver', function () {
+    it('can set database driver', function () {
+        $filter = FindInSetFilter::make('tags')
+            ->driver('pgsql');
+
+        expect($filter)->toBeInstanceOf(FindInSetFilter::class);
+    });
+
+    it('can combine driver with column', function () {
+        $filter = FindInSetFilter::make('tags')
+            ->driver('pgsql')
+            ->column('category_tags');
+
+        expect($filter)->toBeInstanceOf(FindInSetFilter::class);
+    });
+
+    it('can combine driver with multiple and options', function () {
+        $filter = FindInSetFilter::make('tags')
+            ->driver('pgsql')
+            ->options(['php' => 'PHP', 'js' => 'JavaScript'])
+            ->multiple()
+            ->matchAny();
+
+        expect($filter)->toBeInstanceOf(FindInSetFilter::class);
+    });
+});

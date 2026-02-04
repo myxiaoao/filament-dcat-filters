@@ -121,3 +121,41 @@ describe('Combined Features', function () {
         expect($filter)->toBeInstanceOf(InFilter::class);
     });
 });
+
+describe('Relationship Support', function () {
+    it('can set relationship', function () {
+        $filter = InFilter::make('category')
+            ->relationship('category', 'id')
+            ->options([1 => 'Tech', 2 => 'Science']);
+
+        expect($filter)->toBeInstanceOf(InFilter::class);
+        expect($filter->hasRelationship())->toBeTrue();
+    });
+
+    it('can combine relationship with multiple', function () {
+        $filter = InFilter::make('tags')
+            ->relationship('tags', 'id')
+            ->options([1 => 'PHP', 2 => 'JS'])
+            ->multiple();
+
+        expect($filter)->toBeInstanceOf(InFilter::class);
+        expect($filter->hasRelationship())->toBeTrue();
+    });
+
+    it('can combine relationship with negate', function () {
+        $filter = InFilter::make('category')
+            ->relationship('category', 'id')
+            ->options([1 => 'Tech'])
+            ->negate();
+
+        expect($filter)->toBeInstanceOf(InFilter::class);
+        expect($filter->hasRelationship())->toBeTrue();
+    });
+
+    it('has no relationship by default', function () {
+        $filter = InFilter::make('status')
+            ->options(['active' => 'Active']);
+
+        expect($filter->hasRelationship())->toBeFalse();
+    });
+});

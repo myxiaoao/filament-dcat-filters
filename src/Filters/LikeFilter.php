@@ -2,6 +2,8 @@
 
 namespace Cooper\FilamentDcatFilters\Filters;
 
+use Cooper\FilamentDcatFilters\Concerns\HasDatabaseDriver;
+use Cooper\FilamentDcatFilters\Concerns\HasRelationship;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
@@ -9,6 +11,9 @@ use Illuminate\Database\Eloquent\Builder;
 
 class LikeFilter extends Filter
 {
+    use HasDatabaseDriver;
+    use HasRelationship;
+
     protected string $operator = 'like';
 
     protected bool $caseSensitive = false;
@@ -155,12 +160,24 @@ class LikeFilter extends Filter
                 return $query;
             }
 
-            // Use custom column name if set, otherwise default to filter name
-            $column = $this->columnName ?? $this->getName();
+            // Use relationship title column, custom column, or filter name
+            $column = $this->relationshipTitleColumn ?? $this->columnName ?? $this->getName();
             $pattern = $this->buildPattern((string) $value);
 
-            if (! $this->caseSensitive && $this->operator === 'like') {
-                // Use query builder with case-insensitive comparison
+            // Relationship query: wrap constraint inside whereHas
+            if ($this->hasRelationship()) {
+                return $this->applyRelationshipLike($query, $column, $pattern);
+            }
+
+            if (! $this->caseSensitive) {
+                // PostgreSQL: use native ILIKE/NOT ILIKE
+                if ($this->isPostgres($query)) {
+                    $operator = $this->negate ? 'not ilike' : 'ilike';
+
+                    return $query->where($column, $operator, $pattern);
+                }
+
+                // MySQL/SQLite: use LOWER() + like
                 $operator = $this->negate ? 'not like' : 'like';
 
                 return $query->whereRaw(
@@ -190,6 +207,39 @@ class LikeFilter extends Filter
                 Indicator::make("{$label}: {$value}")
                     ->removeField('value'),
             ];
+        });
+    }
+
+    /**
+     * Apply a LIKE constraint through a relationship using whereHas.
+     */
+    protected function applyRelationshipLike(Builder $query, string $column, string $pattern): Builder
+    {
+        return $query->whereHas($this->relationshipName, function (Builder $q) use ($column, $pattern) {
+            if (! $this->caseSensitive) {
+                if ($this->isPostgres($q)) {
+                    $operator = $this->negate ? 'not ilike' : 'ilike';
+                    $q->where($column, $operator, $pattern);
+
+                    return;
+                }
+
+                $operator = $this->negate ? 'not like' : 'like';
+                $q->whereRaw(
+                    'LOWER('.$q->getGrammar()->wrap($column).') '.$operator.' ?',
+                    [strtolower($pattern)]
+                );
+
+                return;
+            }
+
+            if ($this->negate) {
+                $q->where($column, 'not like', $pattern);
+
+                return;
+            }
+
+            $q->where($column, $this->operator, $pattern);
         });
     }
 

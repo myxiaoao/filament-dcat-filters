@@ -124,3 +124,37 @@ describe('Combined Features', function () {
         expect($filter)->toBeInstanceOf(FullTextFilter::class);
     });
 });
+
+describe('Database Driver', function () {
+    it('can set database driver', function () {
+        $filter = FullTextFilter::make('search')
+            ->driver('pgsql');
+
+        expect($filter)->toBeInstanceOf(FullTextFilter::class);
+    });
+
+    it('can combine driver with fulltext', function () {
+        $filter = FullTextFilter::make('search')
+            ->driver('pgsql')
+            ->searchIn(['title', 'content'])
+            ->fullText();
+
+        expect($filter)->toBeInstanceOf(FullTextFilter::class);
+    });
+
+    it('can combine driver with like search', function () {
+        $filter = FullTextFilter::make('search')
+            ->driver('pgsql')
+            ->searchIn(['name', 'email']);
+
+        expect($filter)->toBeInstanceOf(FullTextFilter::class);
+    });
+
+    it('can combine driver with relation columns', function () {
+        $filter = FullTextFilter::make('search')
+            ->driver('pgsql')
+            ->searchIn(['name', 'department.name']);
+
+        expect($filter)->toBeInstanceOf(FullTextFilter::class);
+    });
+});
