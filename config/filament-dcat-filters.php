@@ -16,6 +16,9 @@ return [
 
         // Display reset action in the footer (FiltersResetActionPosition::Footer)
         'reset_action_in_footer' => true,
+
+        // Number of columns in the filters form (null = Filament default)
+        'filters_form_columns' => 4,
     ],
 
     /*

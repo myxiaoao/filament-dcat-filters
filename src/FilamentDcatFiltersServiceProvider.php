@@ -72,6 +72,12 @@ class FilamentDcatFiltersServiceProvider extends PackageServiceProvider
                     );
                 }
             }
+
+            $columns = config('filament-dcat-filters.table.filters_form_columns');
+
+            if ($columns !== null) {
+                $table->filtersFormColumns($columns);
+            }
         });
     }
 }
