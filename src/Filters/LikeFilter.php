@@ -32,7 +32,7 @@ class LikeFilter extends Filter
 
         $filter->form([
             TextInput::make('value')
-                ->label($filter->getLabel() ?? $filter->getName())
+                ->label(fn (): string => $filter->getLabel() ?? $filter->getName())
                 ->placeholder(__('filament-dcat-filters::filament-dcat-filters.like.placeholder'))
                 ->live(debounce: 500)
                 ->columnSpanFull(),

@@ -165,7 +165,7 @@ class SelectTableFilter extends Filter
             return;
         }
 
-        $label = $this->getLabel() ?? $this->getName();
+        $labelResolver = fn (): string => $this->getLabel() ?? $this->getName();
         $modelClass = $this->modelClass;
         $titleColumn = $this->titleColumn;
 
@@ -174,7 +174,7 @@ class SelectTableFilter extends Filter
 
         $this->form([
             Select::make($this->multiple ? 'values' : 'value')
-                ->label($label)
+                ->label($labelResolver)
                 ->options(function () use ($modelClass, $titleColumn, $limit) {
                     if (! $modelClass) {
                         return [];

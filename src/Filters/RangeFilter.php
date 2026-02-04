@@ -54,7 +54,7 @@ class RangeFilter extends Filter
         $this->rangeType = 'date';
         $this->dateFormat = config('filament-dcat-filters.range.date_format', 'Y-m-d');
 
-        $label = $this->getLabel() ?? ucfirst($this->getName());
+        $labelResolver = fn (): string => $this->getLabel() ?? ucfirst($this->getName());
         $displayFormat = config('filament-dcat-filters.range.date_display_format', 'M j, Y');
 
         $this->form([
@@ -62,7 +62,7 @@ class RangeFilter extends Filter
                 ->columnSpanFull()
                 ->schema([
                     DatePicker::make('from')
-                        ->label($label)
+                        ->label($labelResolver)
                         ->placeholder($this->placeholders['from'] ?? __('filament-dcat-filters::filament-dcat-filters.range.from'))
                         ->format($this->dateFormat)
                         ->displayFormat($displayFormat)
@@ -93,7 +93,7 @@ class RangeFilter extends Filter
         $this->rangeType = 'datetime';
         $this->dateFormat = $format ?? config('filament-dcat-filters.range.datetime_format', 'Y-m-d H:i:s');
 
-        $label = $this->getLabel() ?? ucfirst($this->getName());
+        $labelResolver = fn (): string => $this->getLabel() ?? ucfirst($this->getName());
         $displayFormat = config('filament-dcat-filters.range.datetime_display_format', 'M j, Y H:i');
 
         $this->form([
@@ -101,7 +101,7 @@ class RangeFilter extends Filter
                 ->columnSpanFull()
                 ->schema([
                     DateTimePicker::make('from')
-                        ->label($label)
+                        ->label($labelResolver)
                         ->placeholder($this->placeholders['from'] ?? __('filament-dcat-filters::filament-dcat-filters.range.from'))
                         ->format($this->dateFormat)
                         ->displayFormat($displayFormat)
@@ -134,14 +134,14 @@ class RangeFilter extends Filter
         $this->rangeType = 'time';
         $this->dateFormat = config('filament-dcat-filters.range.time_format', 'H:i:s');
 
-        $label = $this->getLabel() ?? ucfirst($this->getName());
+        $labelResolver = fn (): string => $this->getLabel() ?? ucfirst($this->getName());
 
         $this->form([
             Grid::make(2)
                 ->columnSpanFull()
                 ->schema([
                     TimePicker::make('from')
-                        ->label($label)
+                        ->label($labelResolver)
                         ->placeholder($this->placeholders['from'] ?? __('filament-dcat-filters::filament-dcat-filters.range.from'))
                         ->seconds(str_contains($this->dateFormat, ':s'))
                         ->native(false)
@@ -173,14 +173,14 @@ class RangeFilter extends Filter
     {
         $this->rangeType = 'numeric';
 
-        $label = $this->getLabel() ?? ucfirst($this->getName());
+        $labelResolver = fn (): string => $this->getLabel() ?? ucfirst($this->getName());
 
         $this->form([
             Grid::make(2)
                 ->columnSpanFull()
                 ->schema([
                     TextInput::make('from')
-                        ->label($label)
+                        ->label($labelResolver)
                         ->placeholder($this->placeholders['from'] ?? __('filament-dcat-filters::filament-dcat-filters.range.from'))
                         ->numeric()
                         ->step('any')
@@ -208,14 +208,14 @@ class RangeFilter extends Filter
     {
         $this->rangeType = 'integer';
 
-        $label = $this->getLabel() ?? ucfirst($this->getName());
+        $labelResolver = fn (): string => $this->getLabel() ?? ucfirst($this->getName());
 
         $this->form([
             Grid::make(2)
                 ->columnSpanFull()
                 ->schema([
                     TextInput::make('from')
-                        ->label($label)
+                        ->label($labelResolver)
                         ->placeholder($this->placeholders['from'] ?? __('filament-dcat-filters::filament-dcat-filters.range.from'))
                         ->numeric()
                         ->integer()

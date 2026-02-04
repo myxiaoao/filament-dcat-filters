@@ -125,18 +125,18 @@ class ScopeFilter extends Filter
         }
 
         // Create form component based on style
-        $label = $this->getLabel() ?? ucfirst($this->getName());
+        $labelResolver = fn (): string => $this->getLabel() ?? ucfirst($this->getName());
 
         $formComponent = match ($this->displayStyle) {
             'select' => Select::make('scope')
-                ->label($label)
+                ->label($labelResolver)
                 ->options($options)
                 ->default($this->defaultScope)
                 ->native(false)
                 ->selectablePlaceholder(false)
                 ->columnSpanFull(),
             default => Radio::make('scope')
-                ->label($label)
+                ->label($labelResolver)
                 ->options($options)
                 ->default($this->defaultScope)
                 ->inline()

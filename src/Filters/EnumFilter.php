@@ -180,12 +180,12 @@ class EnumFilter extends Filter
             return;
         }
 
-        $label = $this->getLabel() ?? ucfirst(str_replace('_', ' ', $this->getName()));
+        $labelResolver = fn (): string => $this->getLabel() ?? ucfirst(str_replace('_', ' ', $this->getName()));
 
         if ($this->multiple) {
             $this->form([
                 Select::make('values')
-                    ->label($label)
+                    ->label($labelResolver)
                     ->options($options)
                     ->searchable($this->searchable)
                     ->multiple()
@@ -196,7 +196,7 @@ class EnumFilter extends Filter
         } else {
             $this->form([
                 Select::make('value')
-                    ->label($label)
+                    ->label($labelResolver)
                     ->options($options)
                     ->searchable($this->searchable)
                     ->native(false)

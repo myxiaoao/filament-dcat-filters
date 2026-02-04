@@ -49,7 +49,7 @@ class DateComponentFilter extends Filter
 
         $this->form([
             Select::make('value')
-                ->label($this->getLabel() ?? __('filament-dcat-filters::filament-dcat-filters.date_component.year'))
+                ->label(fn (): string => $this->getLabel() ?? __('filament-dcat-filters::filament-dcat-filters.date_component.year'))
                 ->options($years)
                 ->placeholder(__('filament-dcat-filters::filament-dcat-filters.date_component.select_year'))
                 ->native(false)
@@ -85,7 +85,7 @@ class DateComponentFilter extends Filter
 
         $this->form([
             Select::make('value')
-                ->label($this->getLabel() ?? __('filament-dcat-filters::filament-dcat-filters.date_component.month'))
+                ->label(fn (): string => $this->getLabel() ?? __('filament-dcat-filters::filament-dcat-filters.date_component.month'))
                 ->options($months)
                 ->placeholder(__('filament-dcat-filters::filament-dcat-filters.date_component.select_month'))
                 ->native(false)
@@ -112,7 +112,7 @@ class DateComponentFilter extends Filter
 
         $this->form([
             Select::make('value')
-                ->label($this->getLabel() ?? __('filament-dcat-filters::filament-dcat-filters.date_component.day'))
+                ->label(fn (): string => $this->getLabel() ?? __('filament-dcat-filters::filament-dcat-filters.date_component.day'))
                 ->options($days)
                 ->placeholder(__('filament-dcat-filters::filament-dcat-filters.date_component.select_day'))
                 ->native(false)

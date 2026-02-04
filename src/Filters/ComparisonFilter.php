@@ -26,7 +26,7 @@ class ComparisonFilter extends Filter
 
         $filter->form([
             TextInput::make('value')
-                ->label($filter->getLabel() ?? $filter->getName())
+                ->label(fn (): string => $filter->getLabel() ?? $filter->getName())
                 ->placeholder(__('filament-dcat-filters::filament-dcat-filters.comparison.placeholder'))
                 ->numeric()
                 ->live()
@@ -126,7 +126,7 @@ class ComparisonFilter extends Filter
 
         $this->form([
             TextInput::make('value')
-                ->label($this->getLabel() ?? $this->getName())
+                ->label(fn (): string => $this->getLabel() ?? $this->getName())
                 ->placeholder(__('filament-dcat-filters::filament-dcat-filters.comparison.placeholder'))
                 ->numeric()
                 ->integer()
@@ -146,7 +146,7 @@ class ComparisonFilter extends Filter
 
         $this->form([
             TextInput::make('value')
-                ->label($this->getLabel() ?? $this->getName())
+                ->label(fn (): string => $this->getLabel() ?? $this->getName())
                 ->placeholder(__('filament-dcat-filters::filament-dcat-filters.comparison.placeholder'))
                 ->numeric()
                 ->step('any')

@@ -101,12 +101,10 @@ class InFilter extends Filter
             return;
         }
 
-        $label = $this->getLabel() ?? $this->getName();
-
         // Use Select component uniformly, supporting both single and multiple selection
         $this->form([
             Select::make($this->multiple ? 'values' : 'value')
-                ->label($label)
+                ->label(fn (): string => $this->getLabel() ?? $this->getName())
                 ->options($this->options)
                 ->searchable($this->searchable)
                 ->multiple($this->multiple)

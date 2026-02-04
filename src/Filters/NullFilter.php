@@ -106,7 +106,7 @@ class NullFilter extends Filter
      */
     protected function configureForm(): void
     {
-        $label = $this->getLabel() ?? ucfirst(str_replace('_', ' ', $this->getName()));
+        $labelResolver = fn (): string => $this->getLabel() ?? ucfirst(str_replace('_', ' ', $this->getName()));
 
         $options = [
             '' => $this->allLabel,
@@ -116,7 +116,7 @@ class NullFilter extends Filter
 
         $formComponent = match ($this->displayStyle) {
             'radio' => Radio::make('value')
-                ->label($label)
+                ->label($labelResolver)
                 ->options($options)
                 ->default('')
                 ->inline()
@@ -124,7 +124,7 @@ class NullFilter extends Filter
                 ->columnSpanFull(),
 
             default => Select::make('value')
-                ->label($label)
+                ->label($labelResolver)
                 ->options($options)
                 ->default('')
                 ->native(false)

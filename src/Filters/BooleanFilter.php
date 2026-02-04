@@ -119,7 +119,7 @@ class BooleanFilter extends Filter
      */
     protected function configureForm(): void
     {
-        $label = $this->getLabel() ?? ucfirst(str_replace('_', ' ', $this->getName()));
+        $labelResolver = fn (): string => $this->getLabel() ?? ucfirst(str_replace('_', ' ', $this->getName()));
 
         $options = [
             '' => $this->allLabel,
@@ -129,12 +129,12 @@ class BooleanFilter extends Filter
 
         $formComponent = match ($this->displayStyle) {
             'toggle' => Toggle::make('value')
-                ->label($label)
+                ->label($labelResolver)
                 ->inline(false)
                 ->columnSpanFull(),
 
             'radio' => Radio::make('value')
-                ->label($label)
+                ->label($labelResolver)
                 ->options($options)
                 ->default('')
                 ->inline()
@@ -142,7 +142,7 @@ class BooleanFilter extends Filter
                 ->columnSpanFull(),
 
             default => Select::make('value')
-                ->label($label)
+                ->label($labelResolver)
                 ->options($options)
                 ->default('')
                 ->native(false)

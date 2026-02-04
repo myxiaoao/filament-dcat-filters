@@ -110,11 +110,11 @@ class RelativeDateFilter extends Filter
      */
     protected function configureForm(): void
     {
-        $label = $this->getLabel() ?? ucfirst(str_replace('_', ' ', $this->getName()));
+        $labelResolver = fn (): string => $this->getLabel() ?? ucfirst(str_replace('_', ' ', $this->getName()));
 
         $this->form([
             Select::make('preset')
-                ->label($label)
+                ->label($labelResolver)
                 ->options($this->presets)
                 ->native(false)
                 ->placeholder(__('filament-dcat-filters::filament-dcat-filters.relative_date.placeholder'))

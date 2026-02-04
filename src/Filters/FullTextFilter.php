@@ -90,12 +90,11 @@ class FullTextFilter extends Filter
      */
     protected function configureForm(): void
     {
-        $label = $this->getLabel() ?? __('filament-dcat-filters::filament-dcat-filters.fulltext.label');
         $placeholder = $this->placeholder ?? __('filament-dcat-filters::filament-dcat-filters.fulltext.placeholder');
 
         $this->form([
             TextInput::make('search')
-                ->label($label)
+                ->label(fn (): string => $this->getLabel() ?? __('filament-dcat-filters::filament-dcat-filters.fulltext.label'))
                 ->placeholder($placeholder)
                 ->minLength($this->minLength)
                 ->debounce($this->debounce)

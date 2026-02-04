@@ -131,10 +131,10 @@ class InputMaskFilter extends Filter
 
     protected function configureForm(): void
     {
-        $label = $this->getLabel() ?? ucfirst(str_replace('_', ' ', $this->getName()));
+        $labelResolver = fn (): string => $this->getLabel() ?? ucfirst(str_replace('_', ' ', $this->getName()));
 
         $input = TextInput::make('value')
-            ->label($label)
+            ->label($labelResolver)
             ->placeholder($this->placeholder ?? __('filament-dcat-filters::filament-dcat-filters.input_mask.placeholder'))
             ->columnSpanFull();
 

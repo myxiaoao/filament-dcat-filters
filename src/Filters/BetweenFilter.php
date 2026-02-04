@@ -38,10 +38,10 @@ class BetweenFilter extends RangeFilter
      */
     protected function buildBetweenForm(): void
     {
-        $label = $this->getLabel() ?? ucfirst($this->getName());
+        $labelResolver = fn (): string => $this->getLabel() ?? ucfirst($this->getName());
 
         $fromInput = TextInput::make('from')
-            ->label($label)
+            ->label($labelResolver)
             ->placeholder(__('filament-dcat-filters::filament-dcat-filters.range.from'))
             ->numeric();
 

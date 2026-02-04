@@ -72,12 +72,12 @@ class FindInSetFilter extends Filter
 
     protected function configureForm(): void
     {
-        $label = $this->getLabel() ?? ucfirst(str_replace('_', ' ', $this->getName()));
+        $labelResolver = fn (): string => $this->getLabel() ?? ucfirst(str_replace('_', ' ', $this->getName()));
         $placeholder = $this->placeholder ?? __('filament-dcat-filters::filament-dcat-filters.find_in_set.placeholder_'.($this->isMultiple ? 'multiple' : 'single'));
 
         $this->form([
             Select::make('value')
-                ->label($label)
+                ->label($labelResolver)
                 ->options($this->options)
                 ->placeholder($placeholder)
                 ->multiple($this->isMultiple)
