@@ -4,22 +4,6 @@ All notable changes to `filament-dcat-filters` will be documented in this file.
 
 ## [Unreleased]
 
-## 1.0.8 - 2026-02-05
-
-### Added
-
-- **RangeFilter datetime() end time default**: Automatically set end time to 23:59:59 when time is 00:00:00
-  - When user selects an end date in datetime picker, if time is 00:00:00, it auto-adjusts to 23:59:59 (or 23:59:00 for formats without seconds)
-  - Ensures all records of the selected end day are included in query results
-  - Applied both in UI via `afterStateUpdated` and in query logic via new `configureDatetimeQuery()` method
-
-### Tests
-
-- Added 3 new test cases for datetime end time default behavior
-- Total: **513 tests** with **705 assertions** (all passing)
-
----
-
 ## 1.0.7 - 2026-02-04
 
 ### Added
