@@ -2,6 +2,15 @@
 
 All notable changes to `filament-dcat-filters` will be documented in this file.
 
+## v1.0.8 - 2026-02-05
+
+### Added
+
+- **RangeFilter datetime() end time default**: Time picker defaults to 23:59:59 for the "to" field
+  - When opening the datetime picker, time defaults to 23:59:59 (or 23:59 for formats without seconds)
+  - Frontend value is passed directly to backend without modification
+  
+
 ## [Unreleased]
 
 ## 1.0.7 - 2026-02-04
@@ -122,24 +131,30 @@ All notable changes to `filament-dcat-filters` will be documented in this file.
 #### Core Filters
 
 - **ScopeFilter** - Tab-style quick filtering with customizable scopes
+  
 - **RangeFilter** - Simplified date/number range filtering (3 lines of code!)
+  
   - Support for date, datetime, and integer ranges
   - Customizable input types and formats
   
 - **DateComponentFilter** - Filter by year, month, or day components separately
+  
   - `year()`, `month()`, `day()` methods for granular date filtering
   
 - **SelectTableFilter** - Modal table selector with search and pagination
+  
   - Relationship support with `relationship()` method
   - Multiple selection support
   - Customizable columns and search
   
 - **ModalSelectFilter** - Dcat Admin style modal with full table display
+  
   - Display multiple columns in modal
   - Searchable with custom search columns
   - Single and multiple selection modes
   
 - **HiddenFilter** - URL parameter-based filtering without UI
+  
   - Perfect for pre-filtering by tenant, user, or context
   - Supports all comparison operators
   
@@ -147,20 +162,24 @@ All notable changes to `filament-dcat-filters` will be documented in this file.
 #### Quick Filters
 
 - **LikeFilter** - Text search with wildcard control
+  
   - NOT LIKE support via `notLike()` method
   - Wildcard position control: `both`, `startsWith()`, `endsWith()`, `exact()`
   - Case sensitivity options
   
 - **InFilter** - Multiple value selection
+  
   - NOT IN support via `notIn()` method
   - Searchable dropdown
   - Multiple selection with checkboxes
   
 - **ComparisonFilter** - Comparison operators (>, <, >=, <=, =, !=)
+  
   - All standard comparison operations: `gt()`, `gte()`, `lt()`, `lte()`, `eq()`, `ne()`
   - Numeric and integer input types
   
 - **BetweenFilter** - Numeric range filtering shortcut
+  
   - Alias for `RangeFilter::make()->integer()`
   
 
