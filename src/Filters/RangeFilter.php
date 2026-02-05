@@ -128,7 +128,7 @@ class RangeFilter extends Filter
                 ]),
         ]);
 
-        $this->configureDatetimeQuery($defaultEndTime);
+        $this->configureQuery();
 
         return $this;
     }
@@ -280,44 +280,6 @@ class RangeFilter extends Filter
     {
         $this->query(function (Builder $query, array $data): Builder {
             $column = $this->columnName ?? $this->getName();
-
-            return $this->applyRangeQuery($query, $column, $data);
-        });
-
-        $this->indicateUsing(function (array $data): array {
-            $label = $this->getLabel() ?? $this->getName();
-            $indicators = [];
-
-            foreach ($this->generateRangeIndicators($data, $label) as $text) {
-                $indicators[] = Indicator::make($text);
-            }
-
-            return $indicators;
-        });
-    }
-
-    /**
-     * Configure the query logic for datetime filter.
-     * Automatically adjusts the end time to 23:59:59 if time is 00:00:00.
-     */
-    protected function configureDatetimeQuery(string $defaultEndTime): void
-    {
-        $this->query(function (Builder $query, array $data) use ($defaultEndTime): Builder {
-            $column = $this->columnName ?? $this->getName();
-            $to = $data['to'] ?? null;
-
-            // If 'to' has time 00:00:00, adjust it to end of day
-            if ($to !== null && $to !== '') {
-                try {
-                    $datetime = Carbon::parse($to);
-
-                    if ($datetime->format('H:i:s') === '00:00:00') {
-                        $data['to'] = $datetime->format('Y-m-d').' '.$defaultEndTime;
-                    }
-                } catch (\Exception $e) {
-                    // Ignore parse errors
-                }
-            }
 
             return $this->applyRangeQuery($query, $column, $data);
         });
