@@ -95,6 +95,8 @@ class RangeFilter extends Filter
 
         $labelResolver = fn (): string => $this->getLabel() ?? ucfirst($this->getName());
         $displayFormat = config('filament-dcat-filters.range.datetime_display_format', 'M j, Y H:i');
+        $hasSeconds = str_contains($this->dateFormat, ':s');
+        $defaultEndTime = $hasSeconds ? '23:59:59' : '23:59:00';
 
         $this->form([
             Grid::make(2)
@@ -105,7 +107,7 @@ class RangeFilter extends Filter
                         ->placeholder($this->placeholders['from'] ?? __('filament-dcat-filters::filament-dcat-filters.range.from'))
                         ->format($this->dateFormat)
                         ->displayFormat($displayFormat)
-                        ->seconds(str_contains($this->dateFormat, ':s'))
+                        ->seconds($hasSeconds)
                         ->native(false)
                         ->live(onBlur: true)
                         ->maxDate(fn (callable $get): ?string => $get('to') ?: null),
@@ -114,14 +116,30 @@ class RangeFilter extends Filter
                         ->placeholder($this->placeholders['to'] ?? __('filament-dcat-filters::filament-dcat-filters.range.to'))
                         ->format($this->dateFormat)
                         ->displayFormat($displayFormat)
-                        ->seconds(str_contains($this->dateFormat, ':s'))
+                        ->seconds($hasSeconds)
                         ->native(false)
                         ->live(onBlur: true)
-                        ->minDate(fn (callable $get): ?string => $get('from') ?: null),
+                        ->minDate(fn (callable $get): ?string => $get('from') ?: null)
+                        ->afterStateUpdated(function ($state, callable $set) use ($defaultEndTime): void {
+                            if ($state === null) {
+                                return;
+                            }
+
+                            try {
+                                $datetime = Carbon::parse($state);
+
+                                // If time is exactly 00:00:00, set it to end of day
+                                if ($datetime->format('H:i:s') === '00:00:00') {
+                                    $set('to', $datetime->format('Y-m-d').' '.$defaultEndTime);
+                                }
+                            } catch (\Exception $e) {
+                                // Ignore parse errors
+                            }
+                        }),
                 ]),
         ]);
 
-        $this->configureQuery();
+        $this->configureDatetimeQuery($defaultEndTime);
 
         return $this;
     }
@@ -273,6 +291,44 @@ class RangeFilter extends Filter
     {
         $this->query(function (Builder $query, array $data): Builder {
             $column = $this->columnName ?? $this->getName();
+
+            return $this->applyRangeQuery($query, $column, $data);
+        });
+
+        $this->indicateUsing(function (array $data): array {
+            $label = $this->getLabel() ?? $this->getName();
+            $indicators = [];
+
+            foreach ($this->generateRangeIndicators($data, $label) as $text) {
+                $indicators[] = Indicator::make($text);
+            }
+
+            return $indicators;
+        });
+    }
+
+    /**
+     * Configure the query logic for datetime filter.
+     * Automatically adjusts the end time to 23:59:59 if time is 00:00:00.
+     */
+    protected function configureDatetimeQuery(string $defaultEndTime): void
+    {
+        $this->query(function (Builder $query, array $data) use ($defaultEndTime): Builder {
+            $column = $this->columnName ?? $this->getName();
+            $to = $data['to'] ?? null;
+
+            // If 'to' has time 00:00:00, adjust it to end of day
+            if ($to !== null && $to !== '') {
+                try {
+                    $datetime = Carbon::parse($to);
+
+                    if ($datetime->format('H:i:s') === '00:00:00') {
+                        $data['to'] = $datetime->format('Y-m-d').' '.$defaultEndTime;
+                    }
+                } catch (\Exception $e) {
+                    // Ignore parse errors
+                }
+            }
 
             return $this->applyRangeQuery($query, $column, $data);
         });

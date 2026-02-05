@@ -56,6 +56,74 @@ describe('Date Range', function () {
     });
 });
 
+describe('Datetime End Time Default', function () {
+    it('adjusts end time from 00:00:00 to 23:59:59 for datetime filter with seconds', function () {
+        $filter = RangeFilter::make('created_at')->datetime('Y-m-d H:i:s');
+
+        $mockQuery = Mockery::mock(\Illuminate\Database\Eloquent\Builder::class);
+        $capturedData = null;
+
+        $mockQuery->shouldReceive('whereBetween')
+            ->once()
+            ->andReturnUsing(function ($column, $range) use (&$capturedData, $mockQuery) {
+                $capturedData = ['column' => $column, 'range' => $range];
+
+                return $mockQuery;
+            });
+
+        $filter->apply($mockQuery, [
+            'from' => '2024-01-01 08:00:00',
+            'to' => '2024-01-15 00:00:00',
+        ]);
+
+        expect($capturedData['range'][1])->toBe('2024-01-15 23:59:59');
+    });
+
+    it('preserves end time when not 00:00:00', function () {
+        $filter = RangeFilter::make('created_at')->datetime('Y-m-d H:i:s');
+
+        $mockQuery = Mockery::mock(\Illuminate\Database\Eloquent\Builder::class);
+        $capturedData = null;
+
+        $mockQuery->shouldReceive('whereBetween')
+            ->once()
+            ->andReturnUsing(function ($column, $range) use (&$capturedData, $mockQuery) {
+                $capturedData = ['column' => $column, 'range' => $range];
+
+                return $mockQuery;
+            });
+
+        $filter->apply($mockQuery, [
+            'from' => '2024-01-01 08:00:00',
+            'to' => '2024-01-15 18:30:00',
+        ]);
+
+        expect($capturedData['range'][1])->toBe('2024-01-15 18:30:00');
+    });
+
+    it('adjusts end time to 23:59:00 for datetime filter without seconds', function () {
+        $filter = RangeFilter::make('created_at')->datetime('Y-m-d H:i');
+
+        $mockQuery = Mockery::mock(\Illuminate\Database\Eloquent\Builder::class);
+        $capturedData = null;
+
+        $mockQuery->shouldReceive('whereBetween')
+            ->once()
+            ->andReturnUsing(function ($column, $range) use (&$capturedData, $mockQuery) {
+                $capturedData = ['column' => $column, 'range' => $range];
+
+                return $mockQuery;
+            });
+
+        $filter->apply($mockQuery, [
+            'from' => '2024-01-01 08:00:00',
+            'to' => '2024-01-15 00:00:00',
+        ]);
+
+        expect($capturedData['range'][1])->toBe('2024-01-15 23:59:00');
+    });
+});
+
 describe('Placeholders', function () {
     it('can set placeholders with array', function () {
         $filter = RangeFilter::make('price')
