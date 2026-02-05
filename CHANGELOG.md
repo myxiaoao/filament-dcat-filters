@@ -2,15 +2,6 @@
 
 All notable changes to `filament-dcat-filters` will be documented in this file.
 
-## v1.0.8 - 2026-02-05
-
-### Added
-
-- **RangeFilter datetime() end time default**: Time picker defaults to 23:59:59 for the "to" field
-  - When opening the datetime picker, time defaults to 23:59:59 (or 23:59 for formats without seconds)
-  - Frontend value is passed directly to backend without modification
-  
-
 ## [Unreleased]
 
 ## 1.0.7 - 2026-02-04
