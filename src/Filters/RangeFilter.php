@@ -120,22 +120,11 @@ class RangeFilter extends Filter
                         ->native(false)
                         ->live(onBlur: true)
                         ->minDate(fn (callable $get): ?string => $get('from') ?: null)
-                        ->afterStateUpdated(function ($state, callable $set) use ($defaultEndTime): void {
-                            if ($state === null) {
-                                return;
-                            }
-
-                            try {
-                                $datetime = Carbon::parse($state);
-
-                                // If time is exactly 00:00:00, set it to end of day
-                                if ($datetime->format('H:i:s') === '00:00:00') {
-                                    $set('to', $datetime->format('Y-m-d').' '.$defaultEndTime);
-                                }
-                            } catch (\Exception $e) {
-                                // Ignore parse errors
-                            }
-                        }),
+                        ->extraAlpineAttributes([
+                            'x-init' => $hasSeconds
+                                ? 'hour = 23; minute = 59; second = 59'
+                                : 'hour = 23; minute = 59',
+                        ]),
                 ]),
         ]);
 
