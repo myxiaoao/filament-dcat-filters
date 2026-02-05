@@ -122,8 +122,8 @@ class RangeFilter extends Filter
                         ->minDate(fn (callable $get): ?string => $get('from') ?: null)
                         ->extraAlpineAttributes([
                             'x-init' => $hasSeconds
-                                ? 'hour = 23; minute = 59; second = 59'
-                                : 'hour = 23; minute = 59',
+                                ? '$nextTick(() => { if (state === null || state === undefined) { hour = 23; minute = 59; second = 59; } })'
+                                : '$nextTick(() => { if (state === null || state === undefined) { hour = 23; minute = 59; } })',
                         ]),
                 ]),
         ]);
