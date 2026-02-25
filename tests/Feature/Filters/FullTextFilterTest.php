@@ -25,12 +25,12 @@ describe('Form Component', function () {
         expect($form[0])->toBeInstanceOf(TextInput::class);
     });
 
-    it('has search prefix icon', function () {
+    it('has no prefix icon', function () {
         $filter = FullTextFilter::make('search');
 
         $form = $filter->getFormSchema();
 
-        expect($form[0]->getPrefixIcon())->toBe('heroicon-o-magnifying-glass');
+        expect($form[0]->getPrefixIcon())->toBeNull();
     });
 });
 
