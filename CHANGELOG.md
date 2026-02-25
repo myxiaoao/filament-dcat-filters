@@ -2,6 +2,12 @@
 
 All notable changes to `filament-dcat-filters` will be documented in this file.
 
+## v1.1.2 - 2026-02-25
+
+### Fixed
+
+- Fix failing FullTextFilter test after prefixIcon removal
+
 ## v1.1.1 - 2026-02-25
 
 ### Fixed
@@ -23,11 +29,13 @@ Label
 [ placeholder       ]
 
 
+
 ```
 **After (dcat-admin style):**
 
 ```
 [ Label | label text ]
+
 
 
 ```
@@ -62,6 +70,7 @@ Fully backward compatible. To restore Filament default behavior:
 
 // Or per-filter
 LikeFilter::make('name')->inlineLabel(false)
+
 
 
 ```
