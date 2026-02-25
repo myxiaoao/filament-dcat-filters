@@ -4,6 +4,7 @@ namespace Cooper\FilamentDcatFilters\Filters;
 
 use BackedEnum;
 use Closure;
+use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
@@ -12,6 +13,8 @@ use UnitEnum;
 
 class EnumFilter extends Filter
 {
+    use HasInlineLabel;
+
     protected ?string $enumClass = null;
 
     protected array $excluded = [];
@@ -197,27 +200,27 @@ class EnumFilter extends Filter
         $labelResolver = fn (): string => $this->getLabel() ?? ucfirst(str_replace('_', ' ', $this->getName()));
 
         if ($this->multiple) {
-            $this->form([
-                Select::make('values')
-                    ->label($labelResolver)
-                    ->options($options)
-                    ->searchable($this->searchable)
-                    ->multiple()
-                    ->native(false)
-                    ->placeholder(__('filament-dcat-filters::filament-dcat-filters.enum.placeholder_multiple'))
-                    ->columnSpanFull(),
-            ]);
+            $select = Select::make('values')
+                ->label($labelResolver)
+                ->options($options)
+                ->searchable($this->searchable)
+                ->multiple()
+                ->native(false)
+                ->placeholder(__('filament-dcat-filters::filament-dcat-filters.enum.placeholder_multiple'))
+                ->columnSpanFull();
         } else {
-            $this->form([
-                Select::make('value')
-                    ->label($labelResolver)
-                    ->options($options)
-                    ->searchable($this->searchable)
-                    ->native(false)
-                    ->placeholder(__('filament-dcat-filters::filament-dcat-filters.enum.placeholder_single'))
-                    ->columnSpanFull(),
-            ]);
+            $select = Select::make('value')
+                ->label($labelResolver)
+                ->options($options)
+                ->searchable($this->searchable)
+                ->native(false)
+                ->placeholder(__('filament-dcat-filters::filament-dcat-filters.enum.placeholder_single'))
+                ->columnSpanFull();
         }
+
+        $this->applyInlineLabel($select, $labelResolver);
+
+        $this->form([$select]);
 
         $this->configureQuery($options);
     }

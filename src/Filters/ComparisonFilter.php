@@ -2,6 +2,7 @@
 
 namespace Cooper\FilamentDcatFilters\Filters;
 
+use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
@@ -9,6 +10,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 class ComparisonFilter extends Filter
 {
+    use HasInlineLabel;
+
     protected const ALLOWED_OPERATORS = ['=', '!=', '>', '>=', '<', '<='];
 
     protected string $operator = '=';
@@ -28,14 +31,18 @@ class ComparisonFilter extends Filter
     {
         $filter = parent::make($name);
 
-        $filter->form([
-            TextInput::make('value')
-                ->label(fn (): string => $filter->getLabel() ?? $filter->getName())
-                ->placeholder(__('filament-dcat-filters::filament-dcat-filters.comparison.placeholder'))
-                ->numeric()
-                ->live()
-                ->columnSpanFull(),
-        ]);
+        $labelResolver = fn (): string => $filter->getLabel() ?? $filter->getName();
+
+        $input = TextInput::make('value')
+            ->label($labelResolver)
+            ->placeholder(__('filament-dcat-filters::filament-dcat-filters.comparison.placeholder'))
+            ->numeric()
+            ->live()
+            ->columnSpanFull();
+
+        $filter->applyInlineLabel($input, $labelResolver);
+
+        $filter->form([$input]);
 
         $filter->configureQuery();
         $filter->columnSpan(1);
@@ -138,16 +145,19 @@ class ComparisonFilter extends Filter
     public function moneySuffix(string $suffix): static
     {
         $this->moneySuffix = $suffix;
+        $labelResolver = fn (): string => $this->getLabel() ?? $this->getName();
 
-        $this->form([
-            TextInput::make('value')
-                ->label(fn (): string => $this->getLabel() ?? $this->getName())
-                ->placeholder(__('filament-dcat-filters::filament-dcat-filters.comparison.placeholder'))
-                ->numeric()
-                ->suffix($suffix)
-                ->live()
-                ->columnSpanFull(),
-        ]);
+        $input = TextInput::make('value')
+            ->label($labelResolver)
+            ->placeholder(__('filament-dcat-filters::filament-dcat-filters.comparison.placeholder'))
+            ->numeric()
+            ->suffix($suffix)
+            ->live()
+            ->columnSpanFull();
+
+        $this->applyInlineLabel($input, $labelResolver);
+
+        $this->form([$input]);
 
         return $this;
     }
@@ -158,16 +168,19 @@ class ComparisonFilter extends Filter
     public function integer(): static
     {
         $this->inputType = 'integer';
+        $labelResolver = fn (): string => $this->getLabel() ?? $this->getName();
 
-        $this->form([
-            TextInput::make('value')
-                ->label(fn (): string => $this->getLabel() ?? $this->getName())
-                ->placeholder(__('filament-dcat-filters::filament-dcat-filters.comparison.placeholder'))
-                ->numeric()
-                ->integer()
-                ->live()
-                ->columnSpanFull(),
-        ]);
+        $input = TextInput::make('value')
+            ->label($labelResolver)
+            ->placeholder(__('filament-dcat-filters::filament-dcat-filters.comparison.placeholder'))
+            ->numeric()
+            ->integer()
+            ->live()
+            ->columnSpanFull();
+
+        $this->applyInlineLabel($input, $labelResolver);
+
+        $this->form([$input]);
 
         return $this;
     }
@@ -178,16 +191,19 @@ class ComparisonFilter extends Filter
     public function numeric(): static
     {
         $this->inputType = 'numeric';
+        $labelResolver = fn (): string => $this->getLabel() ?? $this->getName();
 
-        $this->form([
-            TextInput::make('value')
-                ->label(fn (): string => $this->getLabel() ?? $this->getName())
-                ->placeholder(__('filament-dcat-filters::filament-dcat-filters.comparison.placeholder'))
-                ->numeric()
-                ->step('any')
-                ->live()
-                ->columnSpanFull(),
-        ]);
+        $input = TextInput::make('value')
+            ->label($labelResolver)
+            ->placeholder(__('filament-dcat-filters::filament-dcat-filters.comparison.placeholder'))
+            ->numeric()
+            ->step('any')
+            ->live()
+            ->columnSpanFull();
+
+        $this->applyInlineLabel($input, $labelResolver);
+
+        $this->form([$input]);
 
         return $this;
     }

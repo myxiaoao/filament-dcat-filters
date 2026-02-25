@@ -3,6 +3,7 @@
 namespace Cooper\FilamentDcatFilters\Filters;
 
 use Cooper\FilamentDcatFilters\Concerns\HasDatabaseDriver;
+use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
@@ -12,6 +13,7 @@ use Illuminate\Support\Arr;
 class FindInSetFilter extends Filter
 {
     use HasDatabaseDriver;
+    use HasInlineLabel;
 
     protected array $options = [];
 
@@ -129,14 +131,18 @@ class FindInSetFilter extends Filter
         $labelResolver = fn (): string => $this->getLabel() ?? ucfirst(str_replace('_', ' ', $this->getName()));
         $placeholder = $this->placeholder ?? __('filament-dcat-filters::filament-dcat-filters.find_in_set.placeholder_'.($this->isMultiple ? 'multiple' : 'single'));
 
+        $component = Select::make('value')
+            ->label($labelResolver)
+            ->options($this->options)
+            ->placeholder($placeholder)
+            ->multiple($this->isMultiple)
+            ->searchable($this->isSearchable)
+            ->columnSpanFull();
+
+        $this->applyInlineLabel($component, $labelResolver);
+
         $this->form([
-            Select::make('value')
-                ->label($labelResolver)
-                ->options($this->options)
-                ->placeholder($placeholder)
-                ->multiple($this->isMultiple)
-                ->searchable($this->isSearchable)
-                ->columnSpanFull(),
+            $component,
         ]);
 
         $this->configureQuery();

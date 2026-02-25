@@ -2,6 +2,7 @@
 
 namespace Cooper\FilamentDcatFilters\Filters;
 
+use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Get;
 use Filament\Tables\Filters\Filter;
@@ -17,6 +18,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class CascadingSelectFilter extends Filter
 {
+    use HasInlineLabel;
+
     protected array $levels = [];
 
     protected array $levelConfigs = [];
@@ -144,6 +147,8 @@ class CascadingSelectFilter extends Filter
                 }
             });
         }
+
+        $this->applyInlineLabel($field, $config['label']);
 
         return $field;
     }

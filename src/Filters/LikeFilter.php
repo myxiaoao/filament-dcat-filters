@@ -3,6 +3,7 @@
 namespace Cooper\FilamentDcatFilters\Filters;
 
 use Cooper\FilamentDcatFilters\Concerns\HasDatabaseDriver;
+use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
 use Cooper\FilamentDcatFilters\Concerns\HasRelationship;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Filters\Filter;
@@ -12,6 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
 class LikeFilter extends Filter
 {
     use HasDatabaseDriver;
+    use HasInlineLabel;
     use HasRelationship;
 
     protected string $operator = 'like';
@@ -35,13 +37,17 @@ class LikeFilter extends Filter
         $filter->caseSensitive = config('filament-dcat-filters.quick_filters.case_sensitive', false);
         $filter->wildcardPosition = config('filament-dcat-filters.quick_filters.like_wildcards', 'both');
 
-        $filter->form([
-            TextInput::make('value')
-                ->label(fn (): string => $filter->getLabel() ?? $filter->getName())
-                ->placeholder(__('filament-dcat-filters::filament-dcat-filters.like.placeholder'))
-                ->live(debounce: 500)
-                ->columnSpanFull(),
-        ]);
+        $labelResolver = fn (): string => $filter->getLabel() ?? $filter->getName();
+
+        $input = TextInput::make('value')
+            ->label($labelResolver)
+            ->placeholder(__('filament-dcat-filters::filament-dcat-filters.like.placeholder'))
+            ->live(debounce: 500)
+            ->columnSpanFull();
+
+        $filter->applyInlineLabel($input, $labelResolver);
+
+        $filter->form([$input]);
 
         $filter->configureQuery();
         $filter->columnSpan(1);

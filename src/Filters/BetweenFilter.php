@@ -59,6 +59,8 @@ class BetweenFilter extends RangeFilter
             $toInput->step('any');
         }
 
+        $this->applyRangeInlineLabels($fromInput, $toInput, $labelResolver);
+
         $this->form([
             Grid::make(2)
                 ->columnSpanFull()

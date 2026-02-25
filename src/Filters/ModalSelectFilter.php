@@ -3,6 +3,7 @@
 namespace Cooper\FilamentDcatFilters\Filters;
 
 use Closure;
+use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
 use Filament\Forms\Components\ViewField;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
@@ -24,6 +25,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ModalSelectFilter extends Filter
 {
+    use HasInlineLabel;
+
     protected ?string $modelClass = null;
 
     protected ?string $relationship = null;
@@ -65,25 +68,31 @@ class ModalSelectFilter extends Filter
     protected function configureForm(): void
     {
         $filterKey = $this->getName();
+        $shouldInline = $this->shouldInlineLabel();
 
-        $this->form([
-            ViewField::make('value')
-                ->label(fn () => $this->evaluate($this->getLabel()) ?? $filterKey)
-                ->view('filament-dcat-filters::filters.modal-select')
-                ->viewData(fn () => [
-                    'filterName' => $filterKey,
-                    'label' => $this->evaluate($this->getLabel()) ?? $filterKey,
-                    'modelClass' => $this->modelClass,
-                    'titleColumn' => $this->titleColumn,
-                    'keyColumn' => $this->keyColumn,
-                    'multiple' => $this->multiple,
-                    'dialogTitle' => $this->getDialogTitle(),
-                    'dialogWidth' => $this->dialogWidth,
-                    'searchColumns' => $this->searchColumns,
-                    'displayColumns' => $this->displayColumns,
-                ])
-                ->columnSpanFull(),
-        ]);
+        $viewField = ViewField::make('value')
+            ->label(fn () => $this->evaluate($this->getLabel()) ?? $filterKey)
+            ->view('filament-dcat-filters::filters.modal-select')
+            ->viewData(fn () => [
+                'filterName' => $filterKey,
+                'label' => $this->evaluate($this->getLabel()) ?? $filterKey,
+                'modelClass' => $this->modelClass,
+                'titleColumn' => $this->titleColumn,
+                'keyColumn' => $this->keyColumn,
+                'multiple' => $this->multiple,
+                'dialogTitle' => $this->getDialogTitle(),
+                'dialogWidth' => $this->dialogWidth,
+                'searchColumns' => $this->searchColumns,
+                'displayColumns' => $this->displayColumns,
+                'inlineLabel' => $shouldInline,
+            ])
+            ->columnSpanFull();
+
+        if ($shouldInline) {
+            $viewField->hiddenLabel();
+        }
+
+        $this->form([$viewField]);
     }
 
     /**

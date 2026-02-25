@@ -3,6 +3,29 @@
 return [
     /*
     |--------------------------------------------------------------------------
+    | Inline Label (Dcat Admin Style)
+    |--------------------------------------------------------------------------
+    |
+    | When enabled, filter labels are displayed inside the input as a prefix
+    | (dcat-admin style) instead of above the input (Filament default).
+    |
+    */
+    'inline_label' => true,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Placeholder From Label
+    |--------------------------------------------------------------------------
+    |
+    | When enabled, the placeholder text defaults to the label text.
+    | This provides a consistent dcat-admin experience where the label
+    | serves as both prefix and placeholder hint.
+    |
+    */
+    'placeholder_from_label' => true,
+
+    /*
+    |--------------------------------------------------------------------------
     | Table Configuration
     |--------------------------------------------------------------------------
     |

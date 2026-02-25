@@ -5,6 +5,7 @@
         : __('filament-dcat-filters::filament-dcat-filters.modal_select.placeholder_single');
     $statePath = $getStatePath();
     $wireModelAttribute = $applyStateBindingModifiers('wire:model');
+    $inlineLabel = $inlineLabel ?? false;
 @endphp
 
 <x-dynamic-component
@@ -111,7 +112,10 @@
         }"
         class="fi-fo-select"
     >
-        <x-filament::input.wrapper class="fi-fo-select">
+        <x-filament::input.wrapper
+            class="fi-fo-select"
+            :prefix="$inlineLabel ? $label : null"
+        >
             <div class="fi-select-input">
                 <button
                     type="button"

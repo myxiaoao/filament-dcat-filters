@@ -2,6 +2,7 @@
 
 namespace Cooper\FilamentDcatFilters\Filters;
 
+use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
@@ -9,6 +10,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 class DateComponentFilter extends Filter
 {
+    use HasInlineLabel;
+
     protected string $component = 'year'; // 'year', 'month', 'day'
 
     protected ?string $columnName = null;
@@ -47,14 +50,18 @@ class DateComponentFilter extends Filter
             $years[$i] = (string) $i;
         }
 
-        $this->form([
-            Select::make('value')
-                ->label(fn (): string => $this->getLabel() ?? __('filament-dcat-filters::filament-dcat-filters.date_component.year'))
-                ->options($years)
-                ->placeholder(__('filament-dcat-filters::filament-dcat-filters.date_component.select_year'))
-                ->native(false)
-                ->columnSpanFull(),
-        ]);
+        $labelResolver = fn (): string => $this->getLabel() ?? __('filament-dcat-filters::filament-dcat-filters.date_component.year');
+
+        $select = Select::make('value')
+            ->label($labelResolver)
+            ->options($years)
+            ->placeholder(__('filament-dcat-filters::filament-dcat-filters.date_component.select_year'))
+            ->native(false)
+            ->columnSpanFull();
+
+        $this->applyInlineLabel($select, $labelResolver);
+
+        $this->form([$select]);
 
         $this->configureQuery('YEAR');
 
@@ -83,14 +90,18 @@ class DateComponentFilter extends Filter
             '12' => __('filament-dcat-filters::filament-dcat-filters.months.12'),
         ];
 
-        $this->form([
-            Select::make('value')
-                ->label(fn (): string => $this->getLabel() ?? __('filament-dcat-filters::filament-dcat-filters.date_component.month'))
-                ->options($months)
-                ->placeholder(__('filament-dcat-filters::filament-dcat-filters.date_component.select_month'))
-                ->native(false)
-                ->columnSpanFull(),
-        ]);
+        $labelResolver = fn (): string => $this->getLabel() ?? __('filament-dcat-filters::filament-dcat-filters.date_component.month');
+
+        $select = Select::make('value')
+            ->label($labelResolver)
+            ->options($months)
+            ->placeholder(__('filament-dcat-filters::filament-dcat-filters.date_component.select_month'))
+            ->native(false)
+            ->columnSpanFull();
+
+        $this->applyInlineLabel($select, $labelResolver);
+
+        $this->form([$select]);
 
         $this->configureQuery('MONTH');
 
@@ -110,14 +121,18 @@ class DateComponentFilter extends Filter
             $days[$day] = $day;
         }
 
-        $this->form([
-            Select::make('value')
-                ->label(fn (): string => $this->getLabel() ?? __('filament-dcat-filters::filament-dcat-filters.date_component.day'))
-                ->options($days)
-                ->placeholder(__('filament-dcat-filters::filament-dcat-filters.date_component.select_day'))
-                ->native(false)
-                ->columnSpanFull(),
-        ]);
+        $labelResolver = fn (): string => $this->getLabel() ?? __('filament-dcat-filters::filament-dcat-filters.date_component.day');
+
+        $select = Select::make('value')
+            ->label($labelResolver)
+            ->options($days)
+            ->placeholder(__('filament-dcat-filters::filament-dcat-filters.date_component.select_day'))
+            ->native(false)
+            ->columnSpanFull();
+
+        $this->applyInlineLabel($select, $labelResolver);
+
+        $this->form([$select]);
 
         $this->configureQuery('DAY');
 

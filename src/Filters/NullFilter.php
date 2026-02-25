@@ -2,6 +2,7 @@
 
 namespace Cooper\FilamentDcatFilters\Filters;
 
+use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Filters\Filter;
@@ -10,6 +11,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 class NullFilter extends Filter
 {
+    use HasInlineLabel;
+
     protected string $nullLabel = 'Is Null';
 
     protected string $notNullLabel = 'Is Not Null';
@@ -123,17 +126,29 @@ class NullFilter extends Filter
                 ->columns($this->radioColumns)
                 ->columnSpanFull(),
 
-            default => Select::make('value')
-                ->label($labelResolver)
-                ->options($options)
-                ->default('')
-                ->native(false)
-                ->placeholder(__('filament-dcat-filters::filament-dcat-filters.null.placeholder'))
-                ->columnSpanFull(),
+            default => $this->buildNullSelectComponent($labelResolver, $options),
         };
 
         $this->form([$formComponent]);
         $this->configureQuery();
+    }
+
+    /**
+     * Build the select component with inline label support.
+     */
+    protected function buildNullSelectComponent(\Closure $labelResolver, array $options): Select
+    {
+        $select = Select::make('value')
+            ->label($labelResolver)
+            ->options($options)
+            ->default('')
+            ->native(false)
+            ->placeholder(__('filament-dcat-filters::filament-dcat-filters.null.placeholder'))
+            ->columnSpanFull();
+
+        $this->applyInlineLabel($select, $labelResolver);
+
+        return $select;
     }
 
     /**

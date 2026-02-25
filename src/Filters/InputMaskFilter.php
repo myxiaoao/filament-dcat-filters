@@ -2,6 +2,7 @@
 
 namespace Cooper\FilamentDcatFilters\Filters;
 
+use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
@@ -9,6 +10,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 class InputMaskFilter extends Filter
 {
+    use HasInlineLabel;
+
     protected ?string $inputMask = null;
 
     protected ?string $placeholder = null;
@@ -141,6 +144,8 @@ class InputMaskFilter extends Filter
         if ($this->inputMask) {
             $input->mask($this->inputMask);
         }
+
+        $this->applyInlineLabel($input, $labelResolver);
 
         $this->form([$input]);
         $this->configureQuery();

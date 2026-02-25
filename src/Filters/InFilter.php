@@ -2,6 +2,7 @@
 
 namespace Cooper\FilamentDcatFilters\Filters;
 
+use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
 use Cooper\FilamentDcatFilters\Concerns\HasRelationship;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Filters\Filter;
@@ -10,6 +11,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class InFilter extends Filter
 {
+    use HasInlineLabel;
     use HasRelationship;
 
     protected array $options = [];
@@ -104,16 +106,20 @@ class InFilter extends Filter
         }
 
         // Use Select component uniformly, supporting both single and multiple selection
-        $this->form([
-            Select::make($this->multiple ? 'values' : 'value')
-                ->label(fn (): string => $this->getLabel() ?? $this->getName())
-                ->options($this->options)
-                ->searchable($this->searchable)
-                ->multiple($this->multiple)
-                ->native(false)
-                ->placeholder($this->multiple ? __('filament-dcat-filters::filament-dcat-filters.in.placeholder_multiple') : __('filament-dcat-filters::filament-dcat-filters.in.placeholder_single'))
-                ->columnSpanFull(),
-        ]);
+        $labelResolver = fn (): string => $this->getLabel() ?? $this->getName();
+
+        $select = Select::make($this->multiple ? 'values' : 'value')
+            ->label($labelResolver)
+            ->options($this->options)
+            ->searchable($this->searchable)
+            ->multiple($this->multiple)
+            ->native(false)
+            ->placeholder($this->multiple ? __('filament-dcat-filters::filament-dcat-filters.in.placeholder_multiple') : __('filament-dcat-filters::filament-dcat-filters.in.placeholder_single'))
+            ->columnSpanFull();
+
+        $this->applyInlineLabel($select, $labelResolver);
+
+        $this->form([$select]);
 
         $this->configureQuery();
     }

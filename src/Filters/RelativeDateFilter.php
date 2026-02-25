@@ -3,6 +3,7 @@
 namespace Cooper\FilamentDcatFilters\Filters;
 
 use Carbon\Carbon;
+use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
@@ -10,6 +11,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 class RelativeDateFilter extends Filter
 {
+    use HasInlineLabel;
+
     protected array $presets = [];
 
     protected bool $includeCustomRange = false;
@@ -112,14 +115,16 @@ class RelativeDateFilter extends Filter
     {
         $labelResolver = fn (): string => $this->getLabel() ?? ucfirst(str_replace('_', ' ', $this->getName()));
 
-        $this->form([
-            Select::make('preset')
-                ->label($labelResolver)
-                ->options($this->presets)
-                ->native(false)
-                ->placeholder(__('filament-dcat-filters::filament-dcat-filters.relative_date.placeholder'))
-                ->columnSpanFull(),
-        ]);
+        $select = Select::make('preset')
+            ->label($labelResolver)
+            ->options($this->presets)
+            ->native(false)
+            ->placeholder(__('filament-dcat-filters::filament-dcat-filters.relative_date.placeholder'))
+            ->columnSpanFull();
+
+        $this->applyInlineLabel($select, $labelResolver);
+
+        $this->form([$select]);
 
         $this->configureQuery();
     }

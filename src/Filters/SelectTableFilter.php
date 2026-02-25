@@ -3,6 +3,7 @@
 namespace Cooper\FilamentDcatFilters\Filters;
 
 use Closure;
+use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\Column;
 use Filament\Tables\Filters\Filter;
@@ -12,6 +13,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class SelectTableFilter extends Filter
 {
+    use HasInlineLabel;
+
     protected ?string $modelClass = null;
 
     protected ?string $relationship = null;
@@ -172,26 +175,28 @@ class SelectTableFilter extends Filter
         // Use Select component with relationship as a simpler alternative
         $limit = $this->getOptionsLimit();
 
-        $this->form([
-            Select::make($this->multiple ? 'values' : 'value')
-                ->label($labelResolver)
-                ->options(function () use ($modelClass, $titleColumn, $limit) {
-                    if (! $modelClass) {
-                        return [];
-                    }
+        $select = Select::make($this->multiple ? 'values' : 'value')
+            ->label($labelResolver)
+            ->options(function () use ($modelClass, $titleColumn, $limit) {
+                if (! $modelClass) {
+                    return [];
+                }
 
-                    return $modelClass::query()
-                        ->limit($limit)
-                        ->pluck($titleColumn ?? 'name', 'id')
-                        ->toArray();
-                })
-                ->searchable()
-                ->multiple($this->multiple)
-                ->native(false)
-                ->preload()
-                ->placeholder($this->multiple ? __('filament-dcat-filters::filament-dcat-filters.select_table.placeholder_multiple') : __('filament-dcat-filters::filament-dcat-filters.select_table.placeholder_single'))
-                ->columnSpanFull(),
-        ]);
+                return $modelClass::query()
+                    ->limit($limit)
+                    ->pluck($titleColumn ?? 'name', 'id')
+                    ->toArray();
+            })
+            ->searchable()
+            ->multiple($this->multiple)
+            ->native(false)
+            ->preload()
+            ->placeholder($this->multiple ? __('filament-dcat-filters::filament-dcat-filters.select_table.placeholder_multiple') : __('filament-dcat-filters::filament-dcat-filters.select_table.placeholder_single'))
+            ->columnSpanFull();
+
+        $this->applyInlineLabel($select, $labelResolver);
+
+        $this->form([$select]);
 
         $this->configureQuery();
     }

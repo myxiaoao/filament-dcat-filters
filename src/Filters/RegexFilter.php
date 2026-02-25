@@ -3,6 +3,7 @@
 namespace Cooper\FilamentDcatFilters\Filters;
 
 use Cooper\FilamentDcatFilters\Concerns\HasDatabaseDriver;
+use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Tables\Filters\Filter;
@@ -12,6 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
 class RegexFilter extends Filter
 {
     use HasDatabaseDriver;
+    use HasInlineLabel;
 
     protected ?string $regexPattern = null;
 
@@ -117,11 +119,15 @@ class RegexFilter extends Filter
                     ->columnSpanFull(),
             ]);
         } else {
+            $component = TextInput::make('pattern')
+                ->label($labelResolver)
+                ->placeholder($this->placeholder ?? __('filament-dcat-filters::filament-dcat-filters.regex.placeholder'))
+                ->columnSpanFull();
+
+            $this->applyInlineLabel($component, $labelResolver);
+
             $this->form([
-                TextInput::make('pattern')
-                    ->label($labelResolver)
-                    ->placeholder($this->placeholder ?? __('filament-dcat-filters::filament-dcat-filters.regex.placeholder'))
-                    ->columnSpanFull(),
+                $component,
             ]);
         }
 

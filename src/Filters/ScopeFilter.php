@@ -3,6 +3,7 @@
 namespace Cooper\FilamentDcatFilters\Filters;
 
 use Closure;
+use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Filters\Filter;
@@ -11,6 +12,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 class ScopeFilter extends Filter
 {
+    use HasInlineLabel;
+
     protected array $scopes = [];
 
     protected ?string $defaultScope = null;
@@ -128,13 +131,7 @@ class ScopeFilter extends Filter
         $labelResolver = fn (): string => $this->getLabel() ?? ucfirst($this->getName());
 
         $formComponent = match ($this->displayStyle) {
-            'select' => Select::make('scope')
-                ->label($labelResolver)
-                ->options($options)
-                ->default($this->defaultScope)
-                ->native(false)
-                ->selectablePlaceholder(false)
-                ->columnSpanFull(),
+            'select' => $this->buildScopeSelectComponent($labelResolver, $options),
             default => Radio::make('scope')
                 ->label($labelResolver)
                 ->options($options)
@@ -181,6 +178,24 @@ class ScopeFilter extends Filter
                     ->removeField('scope'),
             ];
         });
+    }
+
+    /**
+     * Build the select component with inline label support.
+     */
+    protected function buildScopeSelectComponent(\Closure $labelResolver, array $options): Select
+    {
+        $select = Select::make('scope')
+            ->label($labelResolver)
+            ->options($options)
+            ->default($this->defaultScope)
+            ->native(false)
+            ->selectablePlaceholder(false)
+            ->columnSpanFull();
+
+        $this->applyInlineLabel($select, $labelResolver);
+
+        return $select;
     }
 
     /**

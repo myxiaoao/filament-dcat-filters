@@ -3,6 +3,7 @@
 namespace Cooper\FilamentDcatFilters\Filters;
 
 use Cooper\FilamentDcatFilters\Concerns\HasDatabaseDriver;
+use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
@@ -11,6 +12,7 @@ use Illuminate\Database\Eloquent\Builder;
 class FullTextFilter extends Filter
 {
     use HasDatabaseDriver;
+    use HasInlineLabel;
 
     protected array $searchColumns = [];
 
@@ -94,16 +96,26 @@ class FullTextFilter extends Filter
     protected function configureForm(): void
     {
         $placeholder = $this->placeholder ?? __('filament-dcat-filters::filament-dcat-filters.fulltext.placeholder');
+        $labelResolver = fn (): string => $this->getLabel() ?? __('filament-dcat-filters::filament-dcat-filters.fulltext.label');
 
-        $this->form([
-            TextInput::make('search')
-                ->label(fn (): string => $this->getLabel() ?? __('filament-dcat-filters::filament-dcat-filters.fulltext.label'))
-                ->placeholder($placeholder)
-                ->minLength($this->minLength)
-                ->debounce($this->debounce)
-                ->prefixIcon('heroicon-o-magnifying-glass')
-                ->columnSpanFull(),
-        ]);
+        $input = TextInput::make('search')
+            ->label($labelResolver)
+            ->placeholder($placeholder)
+            ->minLength($this->minLength)
+            ->debounce($this->debounce)
+            ->prefixIcon('heroicon-o-magnifying-glass')
+            ->columnSpanFull();
+
+        if ($this->shouldInlineLabel()) {
+            $input->hiddenLabel();
+            $input->prefix($labelResolver);
+
+            if ($this->shouldPlaceholderFromLabel() && $this->placeholder === null) {
+                $input->placeholder($labelResolver);
+            }
+        }
+
+        $this->form([$input]);
 
         $this->configureQuery();
     }

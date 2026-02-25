@@ -2,6 +2,7 @@
 
 namespace Cooper\FilamentDcatFilters\Filters;
 
+use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
@@ -9,6 +10,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 class JsonFilter extends Filter
 {
+    use HasInlineLabel;
+
     protected const VALID_OPERATORS = ['=', '!=', '>', '>=', '<', '<=', 'like', 'not like'];
 
     protected ?string $jsonPath = null;
@@ -124,12 +127,18 @@ class JsonFilter extends Filter
 
     protected function configureForm(): void
     {
+        $labelResolver = fn (): string => ($this->getLabel() ?? ucfirst(str_replace('_', ' ', $this->getName()))).($this->jsonPath ? " ({$this->jsonPath})" : '');
+
+        $component = TextInput::make('value')
+            ->label($labelResolver)
+            ->placeholder(__('filament-dcat-filters::filament-dcat-filters.json.placeholder'))
+            ->default($this->defaultValue)
+            ->columnSpanFull();
+
+        $this->applyInlineLabel($component, $labelResolver);
+
         $this->form([
-            TextInput::make('value')
-                ->label(fn (): string => ($this->getLabel() ?? ucfirst(str_replace('_', ' ', $this->getName()))).($this->jsonPath ? " ({$this->jsonPath})" : ''))
-                ->placeholder(__('filament-dcat-filters::filament-dcat-filters.json.placeholder'))
-                ->default($this->defaultValue)
-                ->columnSpanFull(),
+            $component,
         ]);
 
         $this->configureQuery();

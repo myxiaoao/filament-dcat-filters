@@ -2,6 +2,7 @@
 
 namespace Cooper\FilamentDcatFilters\Filters;
 
+use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Tables\Filters\Filter;
@@ -10,6 +11,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 class GeoLocationFilter extends Filter
 {
+    use HasInlineLabel;
+
     protected const UNIT_FACTORS = [
         'km' => 1,
         'mi' => 1.60934,
@@ -129,24 +132,38 @@ class GeoLocationFilter extends Filter
 
     protected function configureForm(): void
     {
+        $latitudeLabel = __('filament-dcat-filters::filament-dcat-filters.geo.latitude');
+        $longitudeLabel = __('filament-dcat-filters::filament-dcat-filters.geo.longitude');
+        $radiusLabel = __('filament-dcat-filters::filament-dcat-filters.geo.radius').' ('.$this->getUnitLabel().')';
+
+        $latitudeInput = TextInput::make('latitude')
+            ->label($latitudeLabel)
+            ->placeholder(__('filament-dcat-filters::filament-dcat-filters.geo.latitude_placeholder'))
+            ->numeric()
+            ->default($this->centerLatitude);
+
+        $longitudeInput = TextInput::make('longitude')
+            ->label($longitudeLabel)
+            ->placeholder(__('filament-dcat-filters::filament-dcat-filters.geo.longitude_placeholder'))
+            ->numeric()
+            ->default($this->centerLongitude);
+
+        $radiusInput = TextInput::make('radius')
+            ->label($radiusLabel)
+            ->placeholder(__('filament-dcat-filters::filament-dcat-filters.geo.radius_placeholder'))
+            ->numeric()
+            ->default($this->defaultRadius);
+
+        $this->applyInlineLabel($latitudeInput, $latitudeLabel);
+        $this->applyInlineLabel($longitudeInput, $longitudeLabel);
+        $this->applyInlineLabel($radiusInput, $radiusLabel);
+
         $this->form([
             Grid::make(3)
                 ->schema([
-                    TextInput::make('latitude')
-                        ->label(__('filament-dcat-filters::filament-dcat-filters.geo.latitude'))
-                        ->placeholder(__('filament-dcat-filters::filament-dcat-filters.geo.latitude_placeholder'))
-                        ->numeric()
-                        ->default($this->centerLatitude),
-                    TextInput::make('longitude')
-                        ->label(__('filament-dcat-filters::filament-dcat-filters.geo.longitude'))
-                        ->placeholder(__('filament-dcat-filters::filament-dcat-filters.geo.longitude_placeholder'))
-                        ->numeric()
-                        ->default($this->centerLongitude),
-                    TextInput::make('radius')
-                        ->label(__('filament-dcat-filters::filament-dcat-filters.geo.radius').' ('.$this->getUnitLabel().')')
-                        ->placeholder(__('filament-dcat-filters::filament-dcat-filters.geo.radius_placeholder'))
-                        ->numeric()
-                        ->default($this->defaultRadius),
+                    $latitudeInput,
+                    $longitudeInput,
+                    $radiusInput,
                 ]),
         ]);
 
