@@ -103,17 +103,9 @@ class FullTextFilter extends Filter
             ->placeholder($placeholder)
             ->minLength($this->minLength)
             ->debounce($this->debounce)
-            ->prefixIcon('heroicon-o-magnifying-glass')
             ->columnSpanFull();
 
-        if ($this->shouldInlineLabel()) {
-            $input->hiddenLabel();
-            $input->prefix($labelResolver);
-
-            if ($this->shouldPlaceholderFromLabel() && $this->placeholder === null) {
-                $input->placeholder($labelResolver);
-            }
-        }
+        $this->applyInlineLabel($input, $labelResolver);
 
         $this->form([$input]);
 
