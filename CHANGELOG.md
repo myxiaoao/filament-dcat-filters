@@ -2,6 +2,12 @@
 
 All notable changes to `filament-dcat-filters` will be documented in this file.
 
+## v1.1.1 - 2026-02-25
+
+### Fixed
+
+- Removed unnecessary magnifying glass `prefixIcon` from `FullTextFilter`, which conflicted with the inline label prefix
+
 ## v1.1.0 - Dcat Admin Style Inline Labels - 2026-02-25
 
 ### What's New
@@ -16,22 +22,28 @@ All filter labels now display **inside the input as a prefix** (dcat-admin style
 Label
 [ placeholder       ]
 
+
 ```
 **After (dcat-admin style):**
 
 ```
 [ Label | label text ]
 
+
 ```
 #### New Features
 
 - **`HasInlineLabel` trait** — reusable trait for all filters
+  
 - **Config options:**
+  
   - `inline_label` (default `true`) — enable/disable globally
   - `placeholder_from_label` (default `true`) — use label text as placeholder
   
 - **Per-filter opt-out:** `->inlineLabel(false)`
+  
 - **Range filters:** label on "from" field, dash `—` separator on "to" field
+  
 
 #### Affected Filters (20 total)
 
@@ -50,6 +62,7 @@ Fully backward compatible. To restore Filament default behavior:
 
 // Or per-filter
 LikeFilter::make('name')->inlineLabel(false)
+
 
 ```
 ## v1.0.8 - 2026-02-05
