@@ -2,6 +2,56 @@
 
 All notable changes to `filament-dcat-filters` will be documented in this file.
 
+## v1.1.0 - Dcat Admin Style Inline Labels - 2026-02-25
+
+### What's New
+
+#### Dcat Admin Style Inline Labels
+
+All filter labels now display **inside the input as a prefix** (dcat-admin style) instead of above the input (Filament default). Placeholder text defaults to the label text.
+
+**Before (Filament default):**
+
+```
+Label
+[ placeholder       ]
+
+```
+**After (dcat-admin style):**
+
+```
+[ Label | label text ]
+
+```
+#### New Features
+
+- **`HasInlineLabel` trait** — reusable trait for all filters
+- **Config options:**
+  - `inline_label` (default `true`) — enable/disable globally
+  - `placeholder_from_label` (default `true`) — use label text as placeholder
+  
+- **Per-filter opt-out:** `->inlineLabel(false)`
+- **Range filters:** label on "from" field, dash `—` separator on "to" field
+
+#### Affected Filters (20 total)
+
+All filters with visible UI components:
+`LikeFilter`, `FullTextFilter`, `ComparisonFilter`, `InFilter`, `EnumFilter`, `BooleanFilter`, `NullFilter`, `RangeFilter`, `BetweenFilter`, `DateComponentFilter`, `RelativeDateFilter`, `InputMaskFilter`, `ScopeFilter`, `JsonFilter`, `FindInSetFilter`, `RegexFilter`, `GeoLocationFilter`, `CascadingSelectFilter`, `SelectTableFilter`, `ModalSelectFilter`
+
+Correctly skipped: `FilterGroup` (no own form), `HiddenFilter` (no UI)
+
+#### Backward Compatibility
+
+Fully backward compatible. To restore Filament default behavior:
+
+```php
+// config/filament-dcat-filters.php
+'inline_label' => false,
+
+// Or per-filter
+LikeFilter::make('name')->inlineLabel(false)
+
+```
 ## v1.0.8 - 2026-02-05
 
 ### Added
