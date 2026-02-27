@@ -85,7 +85,7 @@ trait HasInlineLabel
     /**
      * Apply dcat-style inline labels for range filter (from/to pair).
      *
-     * The "from" field gets the label as prefix, the "to" field gets a dash separator.
+     * The "from" field gets the label as prefix, the "to" field hides the label.
      */
     protected function applyRangeInlineLabels(Component $from, Component $to, string|Closure $label): void
     {
@@ -97,6 +97,5 @@ trait HasInlineLabel
         $from->prefix($label);
 
         $to->hiddenLabel();
-        $to->prefix('—');
     }
 }
