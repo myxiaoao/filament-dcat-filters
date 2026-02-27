@@ -2,6 +2,14 @@
 
 All notable changes to `filament-dcat-filters` will be documented in this file.
 
+## v1.1.3 - 2026-02-27
+
+### What's Changed
+
+#### Bug Fixes
+
+- Remove dash prefix (`—`) from RangeFilter's "to" field inline label
+
 ## v1.1.2 - 2026-02-25
 
 ### Fixed
@@ -30,11 +38,13 @@ Label
 
 
 
+
 ```
 **After (dcat-admin style):**
 
 ```
 [ Label | label text ]
+
 
 
 
@@ -70,6 +80,7 @@ Fully backward compatible. To restore Filament default behavior:
 
 // Or per-filter
 LikeFilter::make('name')->inlineLabel(false)
+
 
 
 
