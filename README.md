@@ -67,7 +67,7 @@ A modern collection of enhanced filters inspired by [Dcat Admin](https://github.
 - 🎨 **Highly Customizable** - Extensive customization options for each filter
 - 📱 **Mobile Friendly** - Responsive design for all screen sizes
 - 🌐 **Bilingual Docs** - Complete English and Chinese documentation
-- ✅ **Fully Tested** - Comprehensive test coverage with 694 tests
+- ✅ **Fully Tested** - Comprehensive test coverage with 693 tests
 
 ## Version Compatibility
 

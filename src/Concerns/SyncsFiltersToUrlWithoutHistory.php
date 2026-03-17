@@ -4,15 +4,14 @@ namespace Cooper\FilamentDcatFilters\Concerns;
 
 trait SyncsFiltersToUrlWithoutHistory
 {
-    use SyncsFiltersToUrl;
+    use SyncsFiltersToUrl {
+        SyncsFiltersToUrl::queryString as baseQueryString;
+    }
 
     public function queryString(): array
     {
-        return [
-            'tableFilters' => ['except' => [], 'history' => false, 'keep' => false],
-            'tableSearch' => ['except' => '', 'history' => false, 'keep' => false],
-            'tableSortColumn' => ['except' => '', 'history' => false, 'keep' => false],
-            'tableSortDirection' => ['except' => '', 'history' => false, 'keep' => false],
-        ];
+        $this->urlHistory = false;
+
+        return $this->baseQueryString();
     }
 }

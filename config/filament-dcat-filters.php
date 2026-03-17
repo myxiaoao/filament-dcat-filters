@@ -118,6 +118,32 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Modal Select Table Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configure pagination options for the modal select table component.
+    |
+    */
+    'modal_select' => [
+        'pagination_options' => [10, 25, 50],
+        'default_pagination' => 10,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Regex Filter Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configure default behavior for Regex filters.
+    |
+    */
+    'regex' => [
+        // Maximum allowed pattern length (ReDoS mitigation)
+        'max_pattern_length' => 500,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Modal Select Filter Security
     |--------------------------------------------------------------------------
     |
@@ -160,9 +186,6 @@ return [
     |
     */
     'persistence' => [
-        // Enable session persistence by default
-        'session_enabled' => true,
-
         // Session key prefix
         'session_prefix' => 'filament-dcat-filters',
     ],

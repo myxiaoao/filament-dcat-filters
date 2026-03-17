@@ -136,6 +136,7 @@
                     x-on:click="openModal()"
                     class="fi-select-input-btn"
                     aria-haspopup="dialog"
+                    :aria-expanded="open"
                     :aria-label="getDisplayText() || @json($placeholder)"
                 >
                     @if($multiple)

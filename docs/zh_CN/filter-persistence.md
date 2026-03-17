@@ -120,9 +120,6 @@ FilamentDcatFilters.clearFilters();
 
 ```php
 'persistence' => [
-    // 默认启用会话持久化
-    'session_enabled' => true,
-
     // 会话键前缀
     'session_prefix' => 'filament-dcat-filters',
 

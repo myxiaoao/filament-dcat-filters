@@ -200,9 +200,9 @@ class InputMaskFilter extends Filter
     protected function stripMaskCharacters(string $value): string
     {
         if ($this->stripPattern) {
-            return preg_replace($this->stripPattern, '', $value);
+            return preg_replace($this->stripPattern, '', $value) ?? $value;
         }
 
-        return preg_replace('/[^a-zA-Z0-9]/', '', $value);
+        return preg_replace('/[^a-zA-Z0-9]/', '', $value) ?? $value;
     }
 }

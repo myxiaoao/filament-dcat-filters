@@ -9,7 +9,7 @@ class FilamentDcatFilters
      */
     public function version(): string
     {
-        return '1.0.0';
+        return \Composer\InstalledVersions::getPrettyVersion('cooper/filament-dcat-filters') ?? '0.0.0';
     }
 
     /**

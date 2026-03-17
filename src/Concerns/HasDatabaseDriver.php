@@ -46,20 +46,4 @@ trait HasDatabaseDriver
     {
         return $this->resolveDriver($query) === 'pgsql';
     }
-
-    /**
-     * Check if the resolved driver is MySQL.
-     */
-    protected function isMysql(Builder $query): bool
-    {
-        return $this->resolveDriver($query) === 'mysql';
-    }
-
-    /**
-     * Check if the resolved driver is SQLite.
-     */
-    protected function isSqlite(Builder $query): bool
-    {
-        return $this->resolveDriver($query) === 'sqlite';
-    }
 }

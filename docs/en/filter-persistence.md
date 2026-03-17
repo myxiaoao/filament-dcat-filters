@@ -120,9 +120,6 @@ Configure persistence behavior in `config/filament-dcat-filters.php`:
 
 ```php
 'persistence' => [
-    // Enable session persistence by default
-    'session_enabled' => true,
-
     // Session key prefix
     'session_prefix' => 'filament-dcat-filters',
 

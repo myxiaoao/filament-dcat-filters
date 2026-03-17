@@ -188,5 +188,7 @@ return [
     'accessibility.filter_cleared' => 'Filter cleared',
     'accessibility.loading' => 'Loading',
     'accessibility.error_occurred' => 'An error occurred',
+    'accessibility.select_row' => 'Select row',
+    'accessibility.select_option' => 'Select this option',
 
 ];

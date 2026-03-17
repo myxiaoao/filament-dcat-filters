@@ -33,9 +33,7 @@ class ComparisonFilter extends Filter
     {
         $filter = parent::make($name);
 
-        $filter->form([$filter->buildValueInput()]);
-
-        $filter->configureQuery();
+        $filter->configureForm();
         $filter->columnSpan(1);
 
         return $filter;
@@ -61,14 +59,23 @@ class ComparisonFilter extends Filter
     }
 
     /**
-     * Set the column name and reconfigure the query.
+     * Set the column name and reconfigure the form and query.
      */
     public function column(string $column): static
     {
         $this->columnName = $column;
-        $this->configureQuery();
+        $this->configureForm();
 
         return $this;
+    }
+
+    /**
+     * Configure the form component and query.
+     */
+    protected function configureForm(): void
+    {
+        $this->form([$this->buildValueInput()]);
+        $this->configureQuery();
     }
 
     /**

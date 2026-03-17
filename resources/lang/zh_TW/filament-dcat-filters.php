@@ -5,6 +5,8 @@ return [
     // Range filter placeholders
     'range.from' => '從',
     'range.to' => '到',
+    'range.indicator_from' => '從 :value',
+    'range.indicator_to' => '到 :value',
 
     // Scope filter labels
     'scope.all' => '全部',
@@ -65,6 +67,24 @@ return [
     'modal_select.clear_selection' => '清空選擇',
     'modal_select.cancel' => '取消',
     'modal_select.confirm' => '確定',
+    'modal_select.loading' => '載入中...',
+    'modal_select.fetch_error' => '載入選項失敗',
+    'modal_select.empty_state' => '未找到記錄',
+    'modal_select.empty_state_description' => '請嘗試調整搜尋條件',
+
+    // Reset filters action
+    'reset_filters.label' => '重設篩選',
+    'reset_filters.confirm_heading' => '重設所有篩選',
+    'reset_filters.confirm_description' => '確定要重設所有篩選條件嗎？這將清除所有目前的篩選設定。',
+    'reset_filters.confirm_button' => '重設',
+
+    // Cascading select filter
+    'cascading.select_placeholder' => '請選擇...',
+    'cascading.country' => '國家',
+    'cascading.state' => '省份/州',
+    'cascading.city' => '城市',
+    'cascading.category' => '分類',
+    'cascading.subcategory' => '子分類',
 
     // JSON filter
     'json.placeholder' => '輸入值...',
@@ -156,30 +176,6 @@ return [
     'geo.mi' => '英里',
     'geo.m' => '米',
 
-    // Range indicator
-    'range.indicator_from' => '從 :value',
-    'range.indicator_to' => '到 :value',
-
-    // Modal select - additional
-    'modal_select.loading' => '載入中...',
-    'modal_select.fetch_error' => '載入選項失敗',
-    'modal_select.empty_state' => '未找到記錄',
-    'modal_select.empty_state_description' => '請嘗試調整搜尋條件',
-
-    // Reset filters
-    'reset_filters.label' => '重設篩選',
-    'reset_filters.confirm_heading' => '重設所有篩選',
-    'reset_filters.confirm_description' => '確定要重設所有篩選條件嗎？這將清除所有目前的篩選設定。',
-    'reset_filters.confirm_button' => '重設',
-
-    // Cascading select
-    'cascading.select_placeholder' => '請選擇...',
-    'cascading.country' => '國家',
-    'cascading.state' => '省份/州',
-    'cascading.city' => '城市',
-    'cascading.category' => '分類',
-    'cascading.subcategory' => '子分類',
-
     // Accessibility
     'accessibility.selection_updated' => '選擇已更新',
     'accessibility.selection_cleared' => '選擇已清除',
@@ -192,5 +188,7 @@ return [
     'accessibility.filter_cleared' => '已清除篩選',
     'accessibility.loading' => '載入中',
     'accessibility.error_occurred' => '發生錯誤',
+    'accessibility.select_row' => '選擇此列',
+    'accessibility.select_option' => '選擇此選項',
 
 ];

@@ -52,7 +52,7 @@
 
                 <x-filament::button
                     wire:click="confirm"
-                    :disabled="count($selected) === 0"
+                    :disabled="empty($selected)"
                 >
                     {{ __('filament-dcat-filters::filament-dcat-filters.modal_select.confirm') }}
                 </x-filament::button>

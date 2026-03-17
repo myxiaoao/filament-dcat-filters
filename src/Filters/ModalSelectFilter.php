@@ -207,14 +207,6 @@ class ModalSelectFilter extends Filter
     }
 
     /**
-     * Check if a filter value is considered empty.
-     */
-    protected function isValueEmpty(mixed $value): bool
-    {
-        return $value === null || $value === '' || $value === [];
-    }
-
-    /**
      * Configure query logic.
      */
     protected function configureQuery(): void

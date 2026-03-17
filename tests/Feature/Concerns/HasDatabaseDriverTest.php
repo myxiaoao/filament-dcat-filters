@@ -23,16 +23,6 @@ class HasDatabaseDriverTestFilter
     {
         return $this->isPostgres($query);
     }
-
-    public function testIsMysql(Builder $query): bool
-    {
-        return $this->isMysql($query);
-    }
-
-    public function testIsSqlite(Builder $query): bool
-    {
-        return $this->isSqlite($query);
-    }
 }
 
 function createMockBuilder(string $driverName): Builder
@@ -108,25 +98,12 @@ describe('Driver Detection Helpers', function () {
         $builder = createMockBuilder('mysql');
 
         expect($filter->testIsPostgres($builder))->toBeTrue();
-        expect($filter->testIsMysql($builder))->toBeFalse();
-        expect($filter->testIsSqlite($builder))->toBeFalse();
     });
 
-    it('detects MySQL', function () {
+    it('does not detect PostgreSQL for other drivers', function () {
         $filter = (new HasDatabaseDriverTestFilter)->driver('mysql');
         $builder = createMockBuilder('pgsql');
 
-        expect($filter->testIsMysql($builder))->toBeTrue();
         expect($filter->testIsPostgres($builder))->toBeFalse();
-        expect($filter->testIsSqlite($builder))->toBeFalse();
-    });
-
-    it('detects SQLite', function () {
-        $filter = (new HasDatabaseDriverTestFilter)->driver('sqlite');
-        $builder = createMockBuilder('pgsql');
-
-        expect($filter->testIsSqlite($builder))->toBeTrue();
-        expect($filter->testIsPostgres($builder))->toBeFalse();
-        expect($filter->testIsMysql($builder))->toBeFalse();
     });
 });

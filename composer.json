@@ -71,10 +71,7 @@
         "laravel": {
             "providers": [
                 "Cooper\\FilamentDcatFilters\\FilamentDcatFiltersServiceProvider"
-            ],
-            "aliases": {
-                "FilamentDcatFilters": "Cooper\\FilamentDcatFilters\\Facades\\FilamentDcatFilters"
-            }
+            ]
         }
     },
     "minimum-stability": "dev",

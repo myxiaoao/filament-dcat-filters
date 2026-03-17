@@ -82,8 +82,8 @@ class ModalSelectTable extends Component implements HasActions, HasForms, HasTab
         return $table
             ->query($this->getQuery())
             ->columns($columns)
-            ->paginated([10, 25, 50])
-            ->defaultPaginationPageOption(10)
+            ->paginated(config('filament-dcat-filters.modal_select.pagination_options', [10, 25, 50]))
+            ->defaultPaginationPageOption(config('filament-dcat-filters.modal_select.default_pagination', 10))
             ->searchable($this->searchColumns ? true : false)
             ->searchPlaceholder(__('filament-dcat-filters::filament-dcat-filters.like.placeholder'))
             ->striped()

@@ -10,6 +10,10 @@ document.addEventListener('livewire:init', () => {
     Livewire.on('filament-dcat-filters::init-local-storage', ({ key, componentId }) => {
         if (!key || !componentId) return;
 
+        // Prevent duplicate commit hook registration
+        if (window.FilamentDcatFilters._commitHookRegistered) return;
+        window.FilamentDcatFilters._commitHookRegistered = true;
+
         // Listen for filter changes and save to LocalStorage
         Livewire.hook('commit', ({ component, respond }) => {
             respond(() => {

@@ -24,4 +24,12 @@ trait HasColumnName
     {
         return $this->columnName ?? $this->getName();
     }
+
+    /**
+     * Check if a filter value is considered empty.
+     */
+    protected function isValueEmpty(mixed $value): bool
+    {
+        return $value === null || $value === '' || $value === [];
+    }
 }

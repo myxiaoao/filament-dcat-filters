@@ -170,7 +170,7 @@ class RegexFilter extends Filter
             }
 
             // Prevent excessively long patterns (ReDoS mitigation)
-            if (strlen($pattern) > 500) {
+            if (strlen($pattern) > config('filament-dcat-filters.regex.max_pattern_length', 500)) {
                 return $query;
             }
 

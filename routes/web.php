@@ -3,7 +3,7 @@
 use Cooper\FilamentDcatFilters\Http\Controllers\ModalSelectController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth'])
+Route::middleware(['auth', 'throttle:60,1'])
     ->prefix('filament-dcat-filters')
     ->name('filament-dcat-filters.')
     ->group(function () {

@@ -33,7 +33,7 @@ class JsonFilter extends Filter
     public function path(string $path): static
     {
         // Validate JSON path contains only safe characters
-        if (! preg_match('/^[a-zA-Z_][a-zA-Z0-9_.\->]*$/', $path)) {
+        if (! preg_match('/^[a-zA-Z_][a-zA-Z0-9_.>-]*$/', $path)) {
             throw new \InvalidArgumentException("Invalid JSON path: {$path}");
         }
 

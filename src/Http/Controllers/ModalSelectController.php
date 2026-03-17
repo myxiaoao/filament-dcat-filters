@@ -20,7 +20,7 @@ class ModalSelectController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'model' => ['required', 'string'],
-            'ids' => ['required', 'array'],
+            'ids' => ['required', 'array', 'max:100'],
             'ids.*' => ['required'],
             'column' => ['required', 'string', 'max:100', 'regex:/^[a-zA-Z_][a-zA-Z0-9_.]*$/'],
             'keyColumn' => ['sometimes', 'string', 'max:100', 'regex:/^[a-zA-Z_][a-zA-Z0-9_.]*$/'],
