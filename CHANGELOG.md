@@ -2,6 +2,53 @@
 
 All notable changes to `filament-dcat-filters` will be documented in this file.
 
+## v1.2.0 - 2026-03-17
+
+### Added
+
+- **HasSelectRadioDisplay trait** — extracted shared select/radio display style switching from BooleanFilter and NullFilter
+- **HasColumnName trait** added to BooleanFilter, NullFilter, InputMaskFilter — enables custom column name mapping via `column()`
+- **Artisan command expanded** — `make:dcat-filter` now supports all 22 filter types (added between, scope, date-component, select-table, modal-select, hidden, relative-date, cascading-select, find-in-set, input-mask, geo-location, filter-group)
+- **HasOperator trait** — extracted shared operator logic (gt, gte, lt, lte, eq, ne) with validation
+- **HasLabelResolver trait** — unified 3 different label resolution patterns across 14+ filters
+- **49 SQL query behavior tests** — verify actual SQL generation for BooleanFilter, NullFilter, ComparisonFilter, InFilter, LikeFilter, HiddenFilter, BetweenFilter, RangeFilter
+- **Facade IDE helper** — PHPDoc annotations for all filter factory methods
+- **Filter export/import** — mergeFilters() now handles encrypted filter data
+
+### Fixed
+
+- **Security: ModalSelectController** — empty `allowed_models` config now denies all requests instead of allowing all
+- **Security: GeoLocationFilter** — SQL column names now use `grammar->wrap()` to prevent injection
+- **Security: Routes** — modal select routes now use `auth` middleware
+- **FilterGroup** — properly delegates to child filter `apply()` instead of hardcoded WHERE
+- **SelectTableFilter** — `modifyQueryUsing` callback now correctly applied in query
+- **RangeFilter::toTimestamp()** — fixed zero-value bug (`if ($from)` → `isRangeValueEmpty()`)
+- **HasRangeQuery** — zero-value bug fix for range filtering (treats "0" as valid)
+- **SyncsFiltersToUrl** — replaced `#[Url]` attributes with `queryString()` for dynamic history control
+
+### Changed
+
+- **HasRangeQuery indicators** — internationalized hardcoded "from"/"to" strings with translation keys
+- **JsonFilter** — renamed `VALID_OPERATORS` to `ALLOWED_OPERATORS` for consistency with HasOperator
+- **SyncsFiltersToUrlWithoutHistory** — simplified to thin wrapper overriding `queryString()`
+- **LikeFilter** — improved `wildcardPosition` documentation comments
+- **PersistsFiltersInSession** — reads `session_prefix` from config instead of hardcoding
+- **filter-persistence.js** — updated from Livewire 2 `message.processed` to Livewire 3 `commit` hook
+
+### Removed
+
+- Unused `SelectTableFilter::$searchColumns` property and `searchable()` method
+- Unused `RelativeDateFilter::$includeCustomRange` property
+- Unused `database.case_insensitive` config key
+- Dead `SyncsFiltersToUrl::withoutUrlHistory()` method
+- Dead code in SelectTableFilter (tableColumns, modalWidth, getModel)
+- Redundant `BetweenFilter::label()` override
+
+### Tests
+
+- Total: **620 tests** with **887 assertions** (all passing)
+- New: SQL query behavior tests, HasColumnName tests, HasOperator tests, Facade tests, Artisan command tests, Architecture tests
+
 ## v1.1.3 - 2026-02-27
 
 ### What's Changed
