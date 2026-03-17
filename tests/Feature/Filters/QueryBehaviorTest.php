@@ -1,5 +1,6 @@
 <?php
 
+use Carbon\Carbon;
 use Cooper\FilamentDcatFilters\Filters\BetweenFilter;
 use Cooper\FilamentDcatFilters\Filters\BooleanFilter;
 use Cooper\FilamentDcatFilters\Filters\ComparisonFilter;
@@ -1053,7 +1054,7 @@ describe('RelativeDateFilter Query', function () {
         $filter = RelativeDateFilter::make('created_at')->addPresets([
             'last_90_days' => [
                 'label' => 'Last 90 Days',
-                'range' => fn () => [\Carbon\Carbon::now()->subDays(89)->startOfDay(), \Carbon\Carbon::now()->endOfDay()],
+                'range' => fn () => [Carbon::now()->subDays(89)->startOfDay(), Carbon::now()->endOfDay()],
             ],
         ]);
         $query = applyFilterQuery($filter, freshQuery(), ['preset' => 'last_90_days']);

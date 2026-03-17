@@ -1,6 +1,7 @@
 <?php
 
 use Cooper\FilamentDcatFilters\Filters\GeoLocationFilter;
+use Filament\Schemas\Components\Grid;
 
 it('can be instantiated', function () {
     $filter = GeoLocationFilter::make('location');
@@ -183,7 +184,7 @@ describe('Form Schema', function () {
         $form = $filter->getFormSchema();
 
         expect($form)->toHaveCount(1);
-        expect($form[0])->toBeInstanceOf(\Filament\Schemas\Components\Grid::class);
+        expect($form[0])->toBeInstanceOf(Grid::class);
     });
 });
 

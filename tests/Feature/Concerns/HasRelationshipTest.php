@@ -3,6 +3,7 @@
 use Cooper\FilamentDcatFilters\Concerns\HasRelationship;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 // Create a concrete test class that uses the trait
 class HasRelationshipTestFilter
@@ -36,7 +37,7 @@ function freshRelationshipQuery(): Builder
     {
         protected $table = 'test_items';
 
-        public function tags(): \Illuminate\Database\Eloquent\Relations\HasMany
+        public function tags(): HasMany
         {
             return $this->hasMany(self::class, 'test_item_id');
         }

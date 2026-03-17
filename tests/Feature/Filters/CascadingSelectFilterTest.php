@@ -59,7 +59,7 @@ it('throws exception for non-model class', function () {
     expect(fn () => $filter->addLevel(
         name: 'country_id',
         label: 'Country',
-        model: \stdClass::class
+        model: stdClass::class
     ))->toThrow(InvalidArgumentException::class, 'Invalid model class');
 });
 

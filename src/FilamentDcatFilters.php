@@ -2,6 +2,8 @@
 
 namespace Cooper\FilamentDcatFilters;
 
+use Composer\InstalledVersions;
+
 class FilamentDcatFilters
 {
     /**
@@ -9,7 +11,7 @@ class FilamentDcatFilters
      */
     public function version(): string
     {
-        return \Composer\InstalledVersions::getPrettyVersion('cooper/filament-dcat-filters') ?? '0.0.0';
+        return InstalledVersions::getPrettyVersion('cooper/filament-dcat-filters') ?? '0.0.0';
     }
 
     /**

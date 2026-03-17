@@ -140,7 +140,7 @@ describe('POST /filament-dcat-filters/fetch-labels', function () {
             config(['filament-dcat-filters.allowed_models' => []]);
 
             $this->postJson('/filament-dcat-filters/fetch-labels', [
-                'model' => Illuminate\Foundation\Auth\User::class,
+                'model' => User::class,
                 'ids' => [1],
                 'column' => 'name',
             ])->assertStatus(403)->assertJsonFragment(['error' => 'No models configured']);
@@ -150,7 +150,7 @@ describe('POST /filament-dcat-filters/fetch-labels', function () {
             config(['filament-dcat-filters.allowed_models' => ['App\\Models\\Post']]);
 
             $this->postJson('/filament-dcat-filters/fetch-labels', [
-                'model' => Illuminate\Foundation\Auth\User::class,
+                'model' => User::class,
                 'ids' => [1],
                 'column' => 'name',
             ])->assertStatus(403)->assertJsonFragment(['error' => 'Model not allowed']);
@@ -164,7 +164,7 @@ describe('POST /filament-dcat-filters/fetch-labels', function () {
 
             // postJson sends Accept: application/json so Laravel returns 401 (not a redirect)
             $this->postJson('/filament-dcat-filters/fetch-labels', [
-                'model' => Illuminate\Foundation\Auth\User::class,
+                'model' => User::class,
                 'ids' => [1],
                 'column' => 'name',
             ])->assertUnauthorized();
@@ -200,10 +200,10 @@ describe('POST /filament-dcat-filters/fetch-labels', function () {
 
             $insertedId = $this->app['db']->table('users')->where('email', 'alice@example.com')->value('id');
 
-            config(['filament-dcat-filters.allowed_models' => [Illuminate\Foundation\Auth\User::class]]);
+            config(['filament-dcat-filters.allowed_models' => [User::class]]);
 
             $this->postJson('/filament-dcat-filters/fetch-labels', [
-                'model' => Illuminate\Foundation\Auth\User::class,
+                'model' => User::class,
                 'ids' => [$insertedId],
                 'column' => 'name',
             ])->assertStatus(200)
@@ -223,10 +223,10 @@ describe('POST /filament-dcat-filters/fetch-labels', function () {
                 updated_at DATETIME
             )');
 
-            config(['filament-dcat-filters.allowed_models' => [Illuminate\Foundation\Auth\User::class]]);
+            config(['filament-dcat-filters.allowed_models' => [User::class]]);
 
             $this->postJson('/filament-dcat-filters/fetch-labels', [
-                'model' => Illuminate\Foundation\Auth\User::class,
+                'model' => User::class,
                 'ids' => [99999],
                 'column' => 'name',
             ])->assertStatus(200)
@@ -253,10 +253,10 @@ describe('POST /filament-dcat-filters/fetch-labels', function () {
 
             $insertedId = $this->app['db']->table('users')->where('email', 'bob@example.com')->value('id');
 
-            config(['filament-dcat-filters.allowed_models' => [Illuminate\Foundation\Auth\User::class]]);
+            config(['filament-dcat-filters.allowed_models' => [User::class]]);
 
             $this->postJson('/filament-dcat-filters/fetch-labels', [
-                'model' => Illuminate\Foundation\Auth\User::class,
+                'model' => User::class,
                 'ids' => [$insertedId],
                 'column' => 'name',
                 'keyColumn' => 'id',
