@@ -77,6 +77,7 @@ class RangeFilter extends Filter
                 ->schema([$from, $to]),
         ]);
 
+        // configureQuery called per type method since form depends on type
         $this->configureQuery();
 
         return $this;
@@ -139,6 +140,7 @@ class RangeFilter extends Filter
                 ->schema([$from, $to]),
         ]);
 
+        // configureQuery called per type method since form depends on type
         $this->configureQuery();
 
         return $this;
@@ -182,6 +184,7 @@ class RangeFilter extends Filter
                 ->schema([$from, $to]),
         ]);
 
+        // configureQuery called per type method since form depends on type
         $this->configureQuery();
 
         return $this;
@@ -220,6 +223,7 @@ class RangeFilter extends Filter
                 ->schema([$from, $to]),
         ]);
 
+        // configureQuery called per type method since form depends on type
         $this->configureQuery();
 
         return $this;
@@ -258,6 +262,7 @@ class RangeFilter extends Filter
                 ->schema([$from, $to]),
         ]);
 
+        // configureQuery called per type method since form depends on type
         $this->configureQuery();
 
         return $this;
@@ -289,7 +294,7 @@ class RangeFilter extends Filter
         });
 
         $this->indicateUsing(function (array $data): array {
-            $label = $this->getLabel() ?? $this->getName();
+            $label = $this->resolveLabel();
             $indicators = [];
 
             foreach ($this->generateRangeIndicators($data, $label) as $text) {

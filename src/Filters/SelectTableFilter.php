@@ -18,12 +18,15 @@ class SelectTableFilter extends Filter
     use HasInlineLabel;
     use HasLabelResolver;
 
+    protected string $keyColumn = 'id';
+
     protected ?string $modelClass = null;
 
     protected ?string $relationship = null;
 
     protected bool $multiple = false;
 
+    /** @var string|null Column name on the model used as display label (distinct from HasRelationship::$relationshipTitleColumn) */
     protected ?string $titleColumn = 'name';
 
     protected ?Closure $customQueryModifier = null;
@@ -107,6 +110,17 @@ class SelectTableFilter extends Filter
     }
 
     /**
+     * Set the key column for the filter.
+     */
+    public function keyColumn(string $column): static
+    {
+        $this->keyColumn = $column;
+        $this->configureForm();
+
+        return $this;
+    }
+
+    /**
      * Get the options limit from config or property.
      */
     protected function getOptionsLimit(): int
@@ -139,7 +153,7 @@ class SelectTableFilter extends Filter
 
                 return $modelClass::query()
                     ->limit($limit)
-                    ->pluck($titleColumn ?? 'name', 'id')
+                    ->pluck($titleColumn ?? 'name', $this->keyColumn)
                     ->toArray();
             })
             ->searchable()
@@ -180,7 +194,7 @@ class SelectTableFilter extends Filter
                 if ($this->relationship) {
                     return $query->whereHas(
                         $this->relationship,
-                        fn (Builder $query) => $query->whereIn('id', $values)
+                        fn (Builder $query) => $query->whereIn($this->keyColumn, $values)
                     );
                 }
 
@@ -203,7 +217,7 @@ class SelectTableFilter extends Filter
             if ($this->relationship) {
                 return $query->whereHas(
                     $this->relationship,
-                    fn (Builder $query) => $query->where('id', $value)
+                    fn (Builder $query) => $query->where($this->keyColumn, $value)
                 );
             }
 
@@ -228,7 +242,7 @@ class SelectTableFilter extends Filter
                     }
 
                     $names = $model::query()
-                        ->whereIn('id', $values)
+                        ->whereIn($this->keyColumn, $values)
                         ->pluck($this->titleColumn ?? 'name')
                         ->implode(', ');
 
@@ -244,7 +258,7 @@ class SelectTableFilter extends Filter
                     return [];
                 }
 
-                $record = $model::query()->find($value);
+                $record = $model::query()->where($this->keyColumn, $value)->first();
                 $name = $record ? $record->{$this->titleColumn ?? 'name'} : $value;
 
                 return [

@@ -199,7 +199,7 @@ class LikeFilter extends Filter
                 return [];
             }
 
-            $label = $this->getLabel() ?? $this->getName();
+            $label = $this->resolveLabel();
 
             return [
                 Indicator::make("{$label}: {$value}")

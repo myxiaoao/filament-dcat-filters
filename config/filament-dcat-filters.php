@@ -170,14 +170,5 @@ return [
 
         // Session key prefix
         'session_prefix' => 'filament-dcat-filters',
-
-        // Enable LocalStorage persistence by default
-        'local_storage_enabled' => false,
-
-        // LocalStorage key prefix
-        'local_storage_prefix' => 'filament-dcat-filters',
-
-        // Automatically clear persistence on filter reset
-        'clear_on_reset' => true,
     ],
 ];

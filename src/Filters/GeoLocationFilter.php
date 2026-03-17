@@ -189,17 +189,14 @@ class GeoLocationFilter extends Filter
             $lonCol = $query->getGrammar()->wrap($this->longitudeColumn);
 
             $haversine = sprintf(
-                '(%d * acos(cos(radians(%f)) * cos(radians(%s)) * cos(radians(%s) - radians(%f)) + sin(radians(%f)) * sin(radians(%s))))',
+                '(%d * acos(cos(radians(?)) * cos(radians(%s)) * cos(radians(%s) - radians(?)) + sin(radians(?)) * sin(radians(%s))))',
                 self::EARTH_RADIUS_KM,
-                $latitude,
                 $latCol,
                 $lonCol,
-                $longitude,
-                $latitude,
                 $latCol
             );
 
-            return $query->whereRaw("{$haversine} <= ?", [$radiusKm]);
+            return $query->whereRaw("{$haversine} <= ?", [$latitude, $longitude, $latitude, $radiusKm]);
         });
 
         $this->indicateUsing(function (array $data): array {

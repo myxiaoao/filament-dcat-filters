@@ -152,7 +152,7 @@ class ComparisonFilter extends Filter
                 return [];
             }
 
-            $label = $this->getLabel() ?? $this->getName();
+            $label = $this->resolveLabel();
             $operatorLabel = $this->getOperatorLabel();
 
             return [

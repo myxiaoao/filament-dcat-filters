@@ -22,8 +22,8 @@ class ModalSelectController extends Controller
             'model' => ['required', 'string'],
             'ids' => ['required', 'array'],
             'ids.*' => ['required'],
-            'column' => ['required', 'string', 'max:100'],
-            'keyColumn' => ['sometimes', 'string', 'max:100'],
+            'column' => ['required', 'string', 'max:100', 'regex:/^[a-zA-Z_][a-zA-Z0-9_.]*$/'],
+            'keyColumn' => ['sometimes', 'string', 'max:100', 'regex:/^[a-zA-Z_][a-zA-Z0-9_.]*$/'],
         ]);
 
         if ($validator->fails()) {

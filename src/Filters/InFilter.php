@@ -164,7 +164,7 @@ class InFilter extends Filter
         });
 
         $this->indicateUsing(function (array $data): array {
-            $label = $this->getLabel() ?? $this->getName();
+            $label = $this->resolveLabel();
 
             if ($this->multiple) {
                 $values = $data['values'] ?? [];

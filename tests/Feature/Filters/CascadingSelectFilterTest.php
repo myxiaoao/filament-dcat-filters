@@ -42,3 +42,31 @@ it('has correct default column span', function () {
     // The filter should have default column span of 1
     expect($filter->getColumnSpan())->toBe(1);
 });
+
+it('throws exception for non-existent model class', function () {
+    $filter = CascadingSelectFilter::make('location');
+
+    expect(fn () => $filter->addLevel(
+        name: 'country_id',
+        label: 'Country',
+        model: 'App\\Models\\NonExistentModel'
+    ))->toThrow(InvalidArgumentException::class, 'Invalid model class');
+});
+
+it('throws exception for non-model class', function () {
+    $filter = CascadingSelectFilter::make('location');
+
+    expect(fn () => $filter->addLevel(
+        name: 'country_id',
+        label: 'Country',
+        model: \stdClass::class
+    ))->toThrow(InvalidArgumentException::class, 'Invalid model class');
+});
+
+it('levels method delegates to addLevel and validates each entry', function () {
+    $filter = CascadingSelectFilter::make('location');
+
+    expect(fn () => $filter->levels([
+        ['name' => 'country_id', 'label' => 'Country', 'model' => 'InvalidClass'],
+    ]))->toThrow(InvalidArgumentException::class, 'Invalid model class');
+});

@@ -159,10 +159,12 @@ class CascadingSelectFilter extends Filter
     protected function getOptionsForLevel(array $config, Get $get, ?string $previousField): array
     {
         $model = $config['model'];
+        $limit = config('filament-dcat-filters.select_table.options_limit', 100);
 
-        // Root level - return all options
+        // Root level - return all options with limit
         if ($previousField === null) {
             return $model::query()
+                ->limit($limit)
                 ->pluck($config['titleColumn'], $config['keyColumn'])
                 ->toArray();
         }
@@ -176,6 +178,7 @@ class CascadingSelectFilter extends Filter
 
         return $model::query()
             ->where($config['foreignKey'], $parentValue)
+            ->limit($limit)
             ->pluck($config['titleColumn'], $config['keyColumn'])
             ->toArray();
     }
@@ -206,24 +209,51 @@ class CascadingSelectFilter extends Filter
         $this->indicateUsing(function (array $data): array {
             $indicators = [];
 
+            // Group values by model class for batch querying
+            $modelGroups = [];
             foreach ($this->levels as $levelName) {
                 $value = $data[$levelName] ?? null;
-
                 if ($value === null || $value === '') {
+                    continue;
+                }
+                $config = $this->levelConfigs[$levelName];
+                $model = $config['model'];
+                $modelGroups[$model][] = [
+                    'levelName' => $levelName,
+                    'value' => $value,
+                    'config' => $config,
+                ];
+            }
+
+            // Batch query per model
+            $resolvedLabels = [];
+            foreach ($modelGroups as $model => $items) {
+                $ids = array_column($items, 'value');
+                $keyColumn = $items[0]['config']['keyColumn'];
+                $titleColumn = $items[0]['config']['titleColumn'];
+
+                try {
+                    $records = $model::query()
+                        ->whereIn($keyColumn, $ids)
+                        ->pluck($titleColumn, $keyColumn)
+                        ->toArray();
+                } catch (\Exception $e) {
+                    $records = [];
+                }
+
+                foreach ($items as $item) {
+                    $resolvedLabels[$item['levelName']] = $records[$item['value']] ?? $item['value'];
+                }
+            }
+
+            // Build indicators in level order
+            foreach ($this->levels as $levelName) {
+                if (! isset($resolvedLabels[$levelName])) {
                     continue;
                 }
 
                 $config = $this->levelConfigs[$levelName];
-                $model = $config['model'];
-
-                try {
-                    $record = $model::query()->find($value);
-                    $displayValue = $record ? $record->{$config['titleColumn']} : $value;
-                } catch (\Exception $e) {
-                    $displayValue = $value;
-                }
-
-                $indicators[] = Indicator::make("{$config['label']}: {$displayValue}")
+                $indicators[] = Indicator::make("{$config['label']}: {$resolvedLabels[$levelName]}")
                     ->removeField($levelName);
             }
 

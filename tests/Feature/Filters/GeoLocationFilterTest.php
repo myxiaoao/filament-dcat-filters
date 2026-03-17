@@ -111,6 +111,82 @@ describe('Center Point', function () {
     });
 });
 
+describe('Unit Factors', function () {
+    it('has correct UNIT_FACTORS constant', function () {
+        $reflection = new ReflectionClass(GeoLocationFilter::class);
+        $constant = $reflection->getConstant('UNIT_FACTORS');
+
+        expect($constant)->toBe([
+            'km' => 1,
+            'mi' => 1.60934,
+            'm' => 0.001,
+        ]);
+    });
+
+    it('has correct EARTH_RADIUS_KM constant', function () {
+        $reflection = new ReflectionClass(GeoLocationFilter::class);
+        $constant = $reflection->getConstant('EARTH_RADIUS_KM');
+
+        expect($constant)->toBe(6371);
+    });
+});
+
+describe('Unit Label', function () {
+    it('returns km label for kilometers', function () {
+        $filter = GeoLocationFilter::make('location')->kilometers();
+
+        $reflection = new ReflectionClass($filter);
+        $method = $reflection->getMethod('getUnitLabel');
+        $method->setAccessible(true);
+
+        expect($method->invoke($filter))->toBeString();
+    });
+
+    it('returns mi label for miles', function () {
+        $filter = GeoLocationFilter::make('location')->miles();
+
+        $reflection = new ReflectionClass($filter);
+        $method = $reflection->getMethod('getUnitLabel');
+        $method->setAccessible(true);
+
+        expect($method->invoke($filter))->toBeString();
+    });
+
+    it('returns m label for meters', function () {
+        $filter = GeoLocationFilter::make('location')->meters();
+
+        $reflection = new ReflectionClass($filter);
+        $method = $reflection->getMethod('getUnitLabel');
+        $method->setAccessible(true);
+
+        expect($method->invoke($filter))->toBeString();
+    });
+
+    it('returns raw unit string for unknown unit', function () {
+        $filter = GeoLocationFilter::make('location');
+
+        $reflection = new ReflectionClass($filter);
+        $unitProperty = $reflection->getProperty('unit');
+        $unitProperty->setAccessible(true);
+        $unitProperty->setValue($filter, 'ft');
+
+        $method = $reflection->getMethod('getUnitLabel');
+        $method->setAccessible(true);
+
+        expect($method->invoke($filter))->toBe('ft');
+    });
+});
+
+describe('Form Schema', function () {
+    it('generates form with three inputs in a grid', function () {
+        $filter = GeoLocationFilter::make('location');
+        $form = $filter->getFormSchema();
+
+        expect($form)->toHaveCount(1);
+        expect($form[0])->toBeInstanceOf(\Filament\Schemas\Components\Grid::class);
+    });
+});
+
 describe('Combined Features', function () {
     it('can combine all settings', function () {
         $filter = GeoLocationFilter::make('location')

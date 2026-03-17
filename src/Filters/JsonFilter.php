@@ -32,6 +32,11 @@ class JsonFilter extends Filter
 
     public function path(string $path): static
     {
+        // Validate JSON path contains only safe characters
+        if (! preg_match('/^[a-zA-Z_][a-zA-Z0-9_.\->]*$/', $path)) {
+            throw new \InvalidArgumentException("Invalid JSON path: {$path}");
+        }
+
         $this->jsonPath = $path;
 
         return $this;
@@ -149,7 +154,8 @@ class JsonFilter extends Filter
                 $value = "%{$value}%";
             }
 
-            return $query->whereRaw("{$jsonAccessor} {$this->operator} ?", [$value]);
+            // Use Eloquent's JSON where instead of raw
+            return $query->where($jsonAccessor, $this->operator, $value);
         });
 
         $this->indicateUsing(function (array $data): array {

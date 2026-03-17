@@ -11,10 +11,12 @@ trait HasOperator
      */
     public function operator(string $operator): static
     {
-        if (! in_array($operator, static::ALLOWED_OPERATORS, true)) {
-            throw new \InvalidArgumentException(
-                "Invalid operator: {$operator}. Allowed: ".implode(', ', static::ALLOWED_OPERATORS)
-            );
+        if (defined('static::ALLOWED_OPERATORS')) {
+            if (! in_array($operator, static::ALLOWED_OPERATORS, true)) {
+                throw new \InvalidArgumentException(
+                    "Invalid operator: {$operator}. Allowed: ".implode(', ', static::ALLOWED_OPERATORS)
+                );
+            }
         }
 
         $this->operator = $operator;

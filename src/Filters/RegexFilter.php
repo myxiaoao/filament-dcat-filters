@@ -169,6 +169,11 @@ class RegexFilter extends Filter
                 return $query;
             }
 
+            // Prevent excessively long patterns (ReDoS mitigation)
+            if (strlen($pattern) > 500) {
+                return $query;
+            }
+
             return $this->applyRegexWhere($query, $column, $pattern);
         });
 

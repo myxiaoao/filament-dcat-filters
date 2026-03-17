@@ -179,6 +179,137 @@ describe('Combined Features', function () {
     });
 });
 
+describe('Pattern Mode Toggle', function () {
+    it('starts in user pattern mode by default', function () {
+        $filter = RegexFilter::make('test');
+
+        $reflection = new ReflectionClass($filter);
+        $property = $reflection->getProperty('patternMode');
+        $property->setAccessible(true);
+
+        expect($property->getValue($filter))->toBeFalse();
+    });
+
+    it('switches to pattern mode when pattern is set', function () {
+        $filter = RegexFilter::make('test')->pattern('^test$');
+
+        $reflection = new ReflectionClass($filter);
+        $property = $reflection->getProperty('patternMode');
+        $property->setAccessible(true);
+
+        expect($property->getValue($filter))->toBeTrue();
+    });
+
+    it('switches back to user pattern mode with userPattern()', function () {
+        $filter = RegexFilter::make('test')->pattern('^test$')->userPattern();
+
+        $reflection = new ReflectionClass($filter);
+        $property = $reflection->getProperty('patternMode');
+        $property->setAccessible(true);
+
+        expect($property->getValue($filter))->toBeFalse();
+    });
+
+    it('stores regex pattern value', function () {
+        $filter = RegexFilter::make('test')->pattern('^[a-z]+$');
+
+        $reflection = new ReflectionClass($filter);
+        $property = $reflection->getProperty('regexPattern');
+        $property->setAccessible(true);
+
+        expect($property->getValue($filter))->toBe('^[a-z]+$');
+    });
+});
+
+describe('Case Sensitivity Internal State', function () {
+    it('is case sensitive by default', function () {
+        $filter = RegexFilter::make('test');
+
+        $reflection = new ReflectionClass($filter);
+        $property = $reflection->getProperty('caseSensitive');
+        $property->setAccessible(true);
+
+        expect($property->getValue($filter))->toBeTrue();
+    });
+
+    it('becomes case insensitive after caseInsensitive()', function () {
+        $filter = RegexFilter::make('test')->caseInsensitive();
+
+        $reflection = new ReflectionClass($filter);
+        $property = $reflection->getProperty('caseSensitive');
+        $property->setAccessible(true);
+
+        expect($property->getValue($filter))->toBeFalse();
+    });
+
+    it('can toggle back to case sensitive', function () {
+        $filter = RegexFilter::make('test')->caseInsensitive()->caseSensitive();
+
+        $reflection = new ReflectionClass($filter);
+        $property = $reflection->getProperty('caseSensitive');
+        $property->setAccessible(true);
+
+        expect($property->getValue($filter))->toBeTrue();
+    });
+});
+
+describe('Preset Internal Patterns', function () {
+    it('chinaMobile sets correct regex pattern', function () {
+        $filter = RegexFilter::make('phone')->chinaMobile();
+
+        $reflection = new ReflectionClass($filter);
+        $property = $reflection->getProperty('regexPattern');
+        $property->setAccessible(true);
+
+        expect($property->getValue($filter))->toBe('^1[3-9][0-9]{9}$');
+    });
+
+    it('email sets correct regex pattern and case insensitive', function () {
+        $filter = RegexFilter::make('email')->email();
+
+        $reflection = new ReflectionClass($filter);
+
+        $patternProp = $reflection->getProperty('regexPattern');
+        $patternProp->setAccessible(true);
+
+        $caseProp = $reflection->getProperty('caseSensitive');
+        $caseProp->setAccessible(true);
+
+        expect($patternProp->getValue($filter))->toBe('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$');
+        expect($caseProp->getValue($filter))->toBeFalse();
+    });
+
+    it('url sets correct regex pattern and case insensitive', function () {
+        $filter = RegexFilter::make('website')->url();
+
+        $reflection = new ReflectionClass($filter);
+
+        $patternProp = $reflection->getProperty('regexPattern');
+        $patternProp->setAccessible(true);
+
+        $caseProp = $reflection->getProperty('caseSensitive');
+        $caseProp->setAccessible(true);
+
+        expect($patternProp->getValue($filter))->toBe('^https?://[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}');
+        expect($caseProp->getValue($filter))->toBeFalse();
+    });
+
+    it('ipv4 sets correct regex pattern and stays case sensitive', function () {
+        $filter = RegexFilter::make('ip')->ipv4();
+
+        $reflection = new ReflectionClass($filter);
+
+        $patternProp = $reflection->getProperty('regexPattern');
+        $patternProp->setAccessible(true);
+
+        $caseProp = $reflection->getProperty('caseSensitive');
+        $caseProp->setAccessible(true);
+
+        expect($patternProp->getValue($filter))->toBe('^([0-9]{1,3}\\.){3}[0-9]{1,3}$');
+        expect($caseProp->getValue($filter))->toBeTrue();
+    });
+});
+
 describe('Database Driver', function () {
     it('can set database driver', function () {
         $filter = RegexFilter::make('phone')

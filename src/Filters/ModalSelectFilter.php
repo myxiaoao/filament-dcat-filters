@@ -33,6 +33,7 @@ class ModalSelectFilter extends Filter
 
     protected ?string $relationship = null;
 
+    /** @var string|null Column name on the model used as display label (distinct from HasRelationship::$relationshipTitleColumn) */
     protected ?string $titleColumn = 'name';
 
     protected ?string $keyColumn = 'id';
