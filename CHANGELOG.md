@@ -2,6 +2,55 @@
 
 All notable changes to `filament-dcat-filters` will be documented in this file.
 
+## v1.3.0 - 2026-03-17
+
+### Added
+
+- **RelativeDateFilter custom presets** — `addPresets()` supports custom date ranges via closures
+- **FilterGroup array value support** — child filters with array-based form data (e.g., RangeFilter from/to) now handled correctly
+- **93 new tests** — comprehensive query behavior tests for 11 uncovered filters, Concerns trait method tests, ModalSelectController HTTP integration tests
+
+### Fixed
+
+- **Security: XSS in modal-select Blade** — replaced raw output with `@json()` encoding
+- **Security: Routes** — added `throttle:60,1` middleware to modal select routes
+- **Security: ModalSelectController** — added `max:100` validation on `ids` array
+- **Security: JsonFilter** — fixed regex character class for `-` in JSON path validation
+- **Security: InputMaskFilter** — added null coalescing to `preg_replace()` for safety
+- **HasFilterExportImport** — removed double URL decode in `loadFiltersFromUrl()` (corrupted `+` characters)
+- **HasFilterExportImport** — encryption failure now returns `false` instead of silent fallback
+- **FindInSetFilter** — 6 methods now properly call `configureForm()` to rebuild form on option changes
+- **SyncsFiltersToUrlWithoutHistory** — hardcoded `history: false` to avoid PHP trait property conflict
+- **filter-persistence.js** — added deduplication guard to prevent multiple Livewire hook registrations
+- **zh_CN language** — added 2 missing accessibility translation keys
+
+### Changed
+
+- **HasDatabaseDriver** — removed unused `isMysql()`/`isSqlite()` methods
+- **HasColumnName** — added `isValueEmpty()` utility method
+- **FilamentDcatFilters::version()** — now uses `Composer\InstalledVersions` for accurate version
+- **Config cleanup** — removed dead `session_enabled` key, added `modal_select.pagination_options` and `regex.max_pattern_length`
+- **HasSelectRadioDisplay** — added unified `buildFormComponent()` method
+- **HasInlineLabel** — uses `method_exists()` instead of `instanceof` for broader compatibility
+- **Blade views** — added ARIA labels for accessibility, Alpine `destroy()` cleanup, `AbortController` for fetch
+
+### Documentation
+
+- Updated test counts across all docs (786 tests, 1145 assertions)
+- Added 10 missing trait documentations to concerns-traits.md (EN + CN)
+- Added regex `max_pattern_length` config docs
+- Added FilterGroup multi-field array value support docs
+- Marked partially-implemented items in future-improvements.md
+- Fixed package-structure.md: 16 traits, zh_TW in lang listing
+
+### Tests
+
+- Total: **786 tests** with **1145 assertions** (all passing)
+- New: Query behavior tests for ScopeFilter, FullTextFilter, EnumFilter, DateComponentFilter, RegexFilter, JsonFilter, FindInSetFilter, GeoLocationFilter, RelativeDateFilter, InputMaskFilter, FilterGroup
+- New: HasRangeQuery.applyRangeQuery(), HasRelationship constraint/whereIn, HasFilterExportImport encryption roundtrip
+- New: HasInlineLabel component tests, HasScopeBadgeCounts format/cache, HasColumnName.isValueEmpty()
+- New: ModalSelectController HTTP tests (400/401/403/200 full coverage)
+
 ## v1.2.0 - 2026-03-17
 
 ### Added
@@ -46,7 +95,7 @@ All notable changes to `filament-dcat-filters` will be documented in this file.
 
 ### Tests
 
-- Total: **620 tests** with **887 assertions** (all passing)
+- Total: **620 tests** with **887 assertions** (at release time)
 - New: SQL query behavior tests, HasColumnName tests, HasOperator tests, Facade tests, Artisan command tests, Architecture tests
 
 ## v1.1.3 - 2026-02-27
