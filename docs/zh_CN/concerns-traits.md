@@ -323,6 +323,182 @@ $this->clearImportedFilters();
 
 ---
 
+## HasDatabaseDriver
+
+检测并解析当前数据库驱动（MySQL、PostgreSQL、SQLite），供 filter 内部生成驱动特定的 SQL。
+
+解析优先级：
+1. 通过 `driver()` 在 filter 实例上手动覆盖
+2. 包配置 `filament-dcat-filters.database.driver`
+3. 从查询连接自动检测
+
+### 方法
+
+| 方法 | 描述 |
+|------|------|
+| `driver(string $driver): static` | 为当前 filter 实例手动指定驱动 |
+| `resolveDriver(Builder $query): string` | 解析最终生效的驱动名称 |
+| `isPostgres(Builder $query): bool` | 当解析到的驱动为 `pgsql` 时返回 `true` |
+
+### 使用的 Filter
+
+FullTextFilter、FindInSetFilter、JsonFilter、RegexFilter
+
+---
+
+## HasInlineLabel
+
+提供 Dcat Admin 风格的内联标签显示——将标签渲染为输入框内部的前缀，而非显示在输入框上方。可通过全局配置或在 filter 上调用 `inlineLabel()` 单独控制。
+
+### 方法
+
+| 方法 | 描述 |
+|------|------|
+| `inlineLabel(bool $condition = true): static` | 为当前 filter 启用或禁用内联标签 |
+| `placeholderFromLabel(bool $condition = true): static` | 将标签文字用作输入框的 placeholder |
+| `shouldInlineLabel(): bool` | 解析内联标签是否生效（遵从配置默认值） |
+| `shouldPlaceholderFromLabel(): bool` | 解析 placeholder 是否来自标签 |
+| `applyInlineLabel(Component $component, string\|Closure $label): Component` | 将内联标签应用到单个表单组件 |
+| `applyRangeInlineLabels(Component $from, Component $to, string\|Closure $label): void` | 将内联标签应用到 from/to 区间对 |
+
+### 使用的 Filter
+
+LikeFilter、ComparisonFilter、InFilter、EnumFilter、BooleanFilter、NullFilter、RangeFilter、RelativeDateFilter、BetweenFilter，以及其他渲染表单输入的 filter。
+
+---
+
+## HasRangeQuery
+
+封装区间筛选（from/to）的查询逻辑。正确处理空值检测——将 `"0"` 视为有效非空值，并在 from > to 时自动交换两端值。
+
+### 方法
+
+| 方法 | 描述 |
+|------|------|
+| `isRangeValueEmpty(mixed $value): bool` | 仅对 `null` 或 `""` 返回 `true`，`0` 被视为有效值 |
+| `applyRangeQuery(Builder $query, string $column, array $data): Builder` | 根据 from/to 的填写情况应用 `>=`、`<=` 或 `BETWEEN` 约束 |
+| `generateRangeIndicators(array $data, string $label): array` | 返回当前激活的 from/to 指示器字符串数组 |
+
+### 使用的 Filter
+
+RangeFilter、BetweenFilter、DateComponentFilter
+
+---
+
+## HasRelationship
+
+为 filter 添加 Eloquent 关联支持，通过 `whereHas` 查询关联模型的列，而非直接查询主模型。
+
+### 用法示例
+
+```php
+LikeFilter::make('tag_name')
+    ->relationship('tags', 'name');
+```
+
+### 方法
+
+| 方法 | 描述 |
+|------|------|
+| `relationship(string $name, ?string $titleColumn = null): static` | 配置关联名称和可选的标题列 |
+| `hasRelationship(): bool` | 检查是否已配置关联 |
+| `applyRelationshipConstraint(Builder $query, string $column, string $operator, mixed $value): Builder` | 通过 `whereHas` 应用单值约束 |
+| `applyRelationshipWhereIn(Builder $query, string $column, array $values, bool $negate = false): Builder` | 通过 `whereHas` + `whereIn`/`whereNotIn` 应用多值约束 |
+
+### 使用的 Filter
+
+LikeFilter、InFilter、ComparisonFilter、EnumFilter
+
+---
+
+## HasSelectRadioDisplay
+
+为 Select 下拉框和 Radio 单选按钮表单组件提供统一的构建入口。默认样式为 `select`，调用 `radio()` 可切换为内联单选按钮。
+
+### 方法
+
+| 方法 | 描述 |
+|------|------|
+| `radio(): static` | 切换为单选按钮显示 |
+| `select(): static` | 切换为下拉选择框显示（默认） |
+| `columns(array\|int\|null $columns = 3): static` | 设置单选按钮的列数布局 |
+| `buildFormComponent(string $fieldName, Closure $labelResolver, array $options, string $placeholder): Select\|Radio` | 根据当前显示样式构建对应组件 |
+
+### 使用的 Filter
+
+InFilter、EnumFilter、BooleanFilter
+
+---
+
+## HasResetFilters
+
+提供一键重置操作，清除所有已激活的 filter，在表格头部渲染一个操作按钮。
+
+> 详细用法请参见 [reset-filters.md](reset-filters.md)。
+
+---
+
+## PersistsFiltersInLocalStorage
+
+将表格 filter 状态持久化到浏览器的 LocalStorage，使 filter 在 session 过期或页面刷新后仍能保留。
+
+> 详细用法请参见 [filter-persistence.md](filter-persistence.md)。
+
+### 方法
+
+| 方法 | 描述 |
+|------|------|
+| `getLocalStorageKey(): string` | 返回按组件类名作用域的 LocalStorage 键 |
+| `initLocalStoragePersistence(): void` | 派发 JS 事件以初始化持久化 |
+| `mountPersistsFiltersInLocalStorage(): void` | Livewire mount 钩子——派发恢复事件 |
+| `restoreFiltersFromLocalStorage(array $filters): void` | Livewire 监听器——将恢复的 filter 写入组件状态 |
+
+---
+
+## PersistsFiltersInSession
+
+将表格 filter 状态持久化到服务端 Laravel session，使 filter 在同一 session 内的页面刷新后仍能保留。
+
+> 详细用法请参见 [filter-persistence.md](filter-persistence.md)。
+
+### 方法
+
+| 方法 | 描述 |
+|------|------|
+| `getFilterSessionKey(): string` | 返回按组件类名作用域的 session 键 |
+| `bootPersistsFiltersInSession(): void` | Livewire boot 钩子——从 session 恢复 filter |
+| `restoreFiltersFromSession(): void` | 从 session 读取已保存的 filter 并应用 |
+| `saveFiltersToSession(): void` | 将当前 filter 写入 session |
+| `clearFiltersFromSession(): void` | 从 session 删除已保存的 filter |
+| `updatedTableFilters(): void` | Livewire 钩子——filter 变更时自动保存 |
+
+---
+
+## SyncsFiltersToUrl
+
+通过 Livewire 的 query string 功能，将表格 filter 状态（filter 值、搜索词、排序列、排序方向）同步到浏览器 URL。每次变更会创建浏览器历史记录，支持通过返回键恢复之前的 filter 状态。
+
+> 详细用法请参见 [url-sync.md](url-sync.md)。
+
+### 方法
+
+| 方法 | 描述 |
+|------|------|
+| `queryString(): array` | 返回 `history: true` 的 Livewire query string 配置 |
+| `getFilterQueryString(): array` | 将当前 filter 状态以普通数组返回，用于手动构建 URL |
+| `getShareableFilterUrl(): string` | 构建含当前 filter 状态查询参数的完整 URL |
+| `resetUrlParameters(): void` | 清除所有已同步的 URL 参数 |
+
+---
+
+## SyncsFiltersToUrlWithoutHistory
+
+与 `SyncsFiltersToUrl` 功能相同，但将 `history` 设为 `false`——通过 `replaceState` 而非 `pushState` 更新 URL，不会创建浏览器历史记录。
+
+> 详细用法请参见 [url-sync.md](url-sync.md)。
+
+---
+
 ## 组合使用 Traits
 
 可以同时使用多个 trait:

@@ -133,6 +133,19 @@ FilterGroup::make('exact_match')
 - 逻辑影响过滤器在 SQL WHERE 子句中的组合方式
 - 可以嵌套 FilterGroup 实现更复杂的逻辑 (但不建议，影响用户体验)
 
+### 多字段过滤器支持
+
+FilterGroup 可以处理使用数组形式表单数据的子过滤器（例如带有 `from`/`to` 字段的 RangeFilter）。当子过滤器的数据为数组时，会直接传递给过滤器的 `apply()` 方法：
+
+```php
+FilterGroup::make('date_and_price')
+    ->andLogic()
+    ->filters([
+        RangeFilter::make('created_at')->date(),
+        BetweenFilter::make('price'),
+    ])
+```
+
 ## 过滤器兼容性
 
 FilterGroup 可与任何继承自 `Filament\Tables\Filters\Filter` 的过滤器配合使用:

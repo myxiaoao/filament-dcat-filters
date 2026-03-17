@@ -322,6 +322,182 @@ $this->clearImportedFilters();
 
 ---
 
+## HasDatabaseDriver
+
+Detects and resolves the active database driver (MySQL, PostgreSQL, SQLite) to enable driver-specific SQL generation inside filters.
+
+Resolution priority:
+1. Filter-level override via `driver()`
+2. Package config `filament-dcat-filters.database.driver`
+3. Auto-detect from the query's connection
+
+### Available Methods
+
+| Method | Description |
+|--------|-------------|
+| `driver(string $driver): static` | Manually override the driver for this filter instance |
+| `resolveDriver(Builder $query): string` | Resolve the effective driver name |
+| `isPostgres(Builder $query): bool` | Returns `true` when the resolved driver is `pgsql` |
+
+### Filters Using This Trait
+
+FullTextFilter, FindInSetFilter, JsonFilter, RegexFilter
+
+---
+
+## HasInlineLabel
+
+Provides Dcat Admin-style inline label display, where the label is rendered as a prefix inside the input element rather than above it. Controlled globally via config or per-filter via `inlineLabel()`.
+
+### Available Methods
+
+| Method | Description |
+|--------|-------------|
+| `inlineLabel(bool $condition = true): static` | Enable or disable inline label for this filter |
+| `placeholderFromLabel(bool $condition = true): static` | Use the label text as the input placeholder |
+| `shouldInlineLabel(): bool` | Resolve whether inline label is active (respects config default) |
+| `shouldPlaceholderFromLabel(): bool` | Resolve whether placeholder-from-label is active |
+| `applyInlineLabel(Component $component, string\|Closure $label): Component` | Apply inline label to a single form component |
+| `applyRangeInlineLabels(Component $from, Component $to, string\|Closure $label): void` | Apply inline labels to a from/to range pair |
+
+### Filters Using This Trait
+
+LikeFilter, ComparisonFilter, InFilter, EnumFilter, BooleanFilter, NullFilter, RangeFilter, RelativeDateFilter, BetweenFilter, and most other filters that render form inputs.
+
+---
+
+## HasRangeQuery
+
+Encapsulates range query logic (from/to) used by range-style filters. Handles empty-value detection that correctly treats `"0"` as a valid non-empty value, and auto-swaps `from`/`to` when they are reversed.
+
+### Available Methods
+
+| Method | Description |
+|--------|-------------|
+| `isRangeValueEmpty(mixed $value): bool` | Returns `true` only for `null` or `""` — treats `0` as a valid value |
+| `applyRangeQuery(Builder $query, string $column, array $data): Builder` | Applies `>=`, `<=`, or `BETWEEN` constraints based on which values are present |
+| `generateRangeIndicators(array $data, string $label): array` | Returns an array of active-filter indicator strings for the from/to values |
+
+### Filters Using This Trait
+
+RangeFilter, BetweenFilter, DateComponentFilter
+
+---
+
+## HasRelationship
+
+Adds Eloquent relationship support to filters, allowing them to query through `whereHas` instead of directly on the model's own columns.
+
+### Usage
+
+```php
+LikeFilter::make('tag_name')
+    ->relationship('tags', 'name');
+```
+
+### Available Methods
+
+| Method | Description |
+|--------|-------------|
+| `relationship(string $name, ?string $titleColumn = null): static` | Configure the relationship name and optional title column |
+| `hasRelationship(): bool` | Check whether a relationship has been configured |
+| `applyRelationshipConstraint(Builder $query, string $column, string $operator, mixed $value): Builder` | Apply a single-value `whereHas` constraint |
+| `applyRelationshipWhereIn(Builder $query, string $column, array $values, bool $negate = false): Builder` | Apply a multi-value `whereHas` + `whereIn`/`whereNotIn` constraint |
+
+### Filters Using This Trait
+
+LikeFilter, InFilter, ComparisonFilter, EnumFilter
+
+---
+
+## HasSelectRadioDisplay
+
+Provides a unified builder for Select dropdown and Radio button form components. The default display style is `select`; calling `radio()` switches to inline radio buttons.
+
+### Available Methods
+
+| Method | Description |
+|--------|-------------|
+| `radio(): static` | Switch to radio button display |
+| `select(): static` | Switch to select dropdown display (default) |
+| `columns(array\|int\|null $columns = 3): static` | Set the number of columns for the radio layout |
+| `buildFormComponent(string $fieldName, Closure $labelResolver, array $options, string $placeholder): Select\|Radio` | Build the appropriate component based on current display style |
+
+### Filters Using This Trait
+
+InFilter, EnumFilter, BooleanFilter
+
+---
+
+## HasResetFilters
+
+Provides a one-click reset action to clear all active filters. Renders a header action button on the table.
+
+> For detailed usage, see [reset-filters.md](reset-filters.md).
+
+---
+
+## PersistsFiltersInLocalStorage
+
+Persists table filter state in the browser's LocalStorage, so filters survive session expiry and page reloads without server-side storage.
+
+> For detailed usage, see [filter-persistence.md](filter-persistence.md).
+
+### Available Methods
+
+| Method | Description |
+|--------|-------------|
+| `getLocalStorageKey(): string` | Returns the LocalStorage key scoped to the component class |
+| `initLocalStoragePersistence(): void` | Dispatches the JS event to initialize persistence |
+| `mountPersistsFiltersInLocalStorage(): void` | Livewire mount hook — dispatches restore event |
+| `restoreFiltersFromLocalStorage(array $filters): void` | Livewire listener — applies restored filters |
+
+---
+
+## PersistsFiltersInSession
+
+Persists table filter state in the server-side Laravel session, so filters survive page refreshes within the same session.
+
+> For detailed usage, see [filter-persistence.md](filter-persistence.md).
+
+### Available Methods
+
+| Method | Description |
+|--------|-------------|
+| `getFilterSessionKey(): string` | Returns the session key scoped to the component class |
+| `bootPersistsFiltersInSession(): void` | Livewire boot hook — restores filters from session |
+| `restoreFiltersFromSession(): void` | Reads saved filters from session and applies them |
+| `saveFiltersToSession(): void` | Writes current filters to session |
+| `clearFiltersFromSession(): void` | Removes saved filters from session |
+| `updatedTableFilters(): void` | Livewire hook — auto-saves filters whenever they change |
+
+---
+
+## SyncsFiltersToUrl
+
+Syncs table filter state (filters, search, sort column, sort direction) to the browser URL using Livewire's query string feature. Browser history entries are created on each change, enabling the back button to restore previous filter states.
+
+> For detailed usage, see [url-sync.md](url-sync.md).
+
+### Available Methods
+
+| Method | Description |
+|--------|-------------|
+| `queryString(): array` | Returns Livewire query string config with `history: true` |
+| `getFilterQueryString(): array` | Returns the current filter state as a plain array for manual URL building |
+| `getShareableFilterUrl(): string` | Builds a full URL with the current filter state as query parameters |
+| `resetUrlParameters(): void` | Clears all synced URL parameters |
+
+---
+
+## SyncsFiltersToUrlWithoutHistory
+
+Identical to `SyncsFiltersToUrl` but sets `history: false` — the URL is updated via `replaceState` instead of `pushState`, so no browser history entries are created.
+
+> For detailed usage, see [url-sync.md](url-sync.md).
+
+---
+
 ## Combining Traits
 
 You can use multiple traits together:

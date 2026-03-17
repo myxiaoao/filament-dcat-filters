@@ -145,3 +145,16 @@ This filter uses the `REGEXP` operator which is supported by:
 - PostgreSQL (uses `~` or `~*` for case-insensitive)
 
 Note: SQLite has limited regex support and may require extensions.
+
+## Configuration
+
+You can configure the maximum allowed pattern length to mitigate ReDoS attacks:
+
+```php
+// config/filament-dcat-filters.php
+'regex' => [
+    'max_pattern_length' => 500, // Default: 500 characters
+],
+```
+
+Patterns exceeding this length are silently ignored.

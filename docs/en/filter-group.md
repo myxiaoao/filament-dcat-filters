@@ -133,6 +133,19 @@ FilterGroup::make('exact_match')
 - The logic affects how the filters are combined in the SQL WHERE clause
 - You can nest FilterGroups for more complex logic (though not recommended for usability)
 
+### Multi-Field Filter Support
+
+FilterGroup can handle child filters that use array-based form data (e.g., RangeFilter with `from`/`to` fields). When the child filter's data is an array, it is passed directly to the filter's `apply()` method:
+
+```php
+FilterGroup::make('date_and_price')
+    ->andLogic()
+    ->filters([
+        RangeFilter::make('created_at')->date(),
+        BetweenFilter::make('price'),
+    ])
+```
+
 ## Filter Compatibility
 
 FilterGroup works with any filter that extends `Filament\Tables\Filters\Filter`:

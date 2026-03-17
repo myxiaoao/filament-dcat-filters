@@ -145,3 +145,16 @@ RegexFilter::make('search_pattern')
 - PostgreSQL (使用 `~` 或 `~*` 不区分大小写)
 
 注意: SQLite 对正则表达式支持有限，可能需要扩展。
+
+## 配置
+
+可以配置最大允许的模式长度以降低 ReDoS 攻击风险：
+
+```php
+// config/filament-dcat-filters.php
+'regex' => [
+    'max_pattern_length' => 500, // 默认：500 个字符
+],
+```
+
+超出此长度的模式将被静默忽略。
