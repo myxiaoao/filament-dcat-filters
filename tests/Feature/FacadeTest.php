@@ -5,7 +5,7 @@ use Cooper\FilamentDcatFilters\Filters;
 
 it('facade resolves to correct instance', function () {
     $instance = FilamentDcatFilters::getFacadeRoot();
-    expect($instance)->toBeInstanceOf(\Cooper\FilamentDcatFilters\FilamentDcatFilters::class);
+    expect($instance)->toBeInstanceOf(Cooper\FilamentDcatFilters\FilamentDcatFilters::class);
 });
 
 it('facade creates scope filter', function () {

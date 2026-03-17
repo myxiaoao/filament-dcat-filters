@@ -1,6 +1,7 @@
 <?php
 
 use Cooper\FilamentDcatFilters\Concerns\HasDatabaseDriver;
+use Illuminate\Database\Connection;
 use Illuminate\Database\Eloquent\Builder;
 
 // Create a concrete test class that uses the trait
@@ -36,7 +37,7 @@ class HasDatabaseDriverTestFilter
 
 function createMockBuilder(string $driverName): Builder
 {
-    $connection = Mockery::mock(\Illuminate\Database\Connection::class);
+    $connection = Mockery::mock(Connection::class);
     $connection->shouldReceive('getDriverName')->andReturn($driverName);
 
     $builder = Mockery::mock(Builder::class);

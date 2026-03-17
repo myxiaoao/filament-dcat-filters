@@ -125,7 +125,7 @@ describe('Operators', function () {
     it('throws exception for invalid operator', function () {
         JsonFilter::make('metadata')
             ->operator('invalid');
-    })->throws(\InvalidArgumentException::class);
+    })->throws(InvalidArgumentException::class);
 });
 
 describe('Default Value', function () {

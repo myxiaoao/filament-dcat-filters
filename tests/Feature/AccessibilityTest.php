@@ -1,8 +1,10 @@
 <?php
 
+use Cooper\FilamentDcatFilters\FilamentDcatFiltersServiceProvider;
+
 beforeEach(function () {
     // Ensure lang files are loaded
-    $this->app->register(\Cooper\FilamentDcatFilters\FilamentDcatFiltersServiceProvider::class);
+    $this->app->register(FilamentDcatFiltersServiceProvider::class);
 });
 
 describe('Accessibility Translations', function () {

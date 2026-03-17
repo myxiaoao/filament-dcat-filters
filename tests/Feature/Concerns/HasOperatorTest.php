@@ -17,7 +17,7 @@ it('can set valid operators via shortcuts', function (string $method, string $ex
 
 it('throws on invalid operator', function () {
     ComparisonFilter::make('price')->operator('INVALID');
-})->throws(\InvalidArgumentException::class);
+})->throws(InvalidArgumentException::class);
 
 it('operator returns static for chaining', function () {
     $filter = ComparisonFilter::make('price');

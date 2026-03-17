@@ -79,7 +79,7 @@ describe('Operators', function () {
 
     it('throws exception for invalid operator', function () {
         expect(fn () => HiddenFilter::make('field')->operator('invalid'))
-            ->toThrow(\InvalidArgumentException::class);
+            ->toThrow(InvalidArgumentException::class);
     });
 });
 

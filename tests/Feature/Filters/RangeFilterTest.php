@@ -1,6 +1,7 @@
 <?php
 
 use Cooper\FilamentDcatFilters\Filters\RangeFilter;
+use Illuminate\Database\Eloquent\Builder;
 
 it('can be instantiated', function () {
     $filter = RangeFilter::make('price');
@@ -60,7 +61,7 @@ describe('Datetime Query', function () {
     it('passes datetime values directly without modification', function () {
         $filter = RangeFilter::make('created_at')->datetime('Y-m-d H:i:s');
 
-        $mockQuery = Mockery::mock(\Illuminate\Database\Eloquent\Builder::class);
+        $mockQuery = Mockery::mock(Builder::class);
         $capturedData = null;
 
         $mockQuery->shouldReceive('whereBetween')
@@ -83,7 +84,7 @@ describe('Datetime Query', function () {
     it('preserves 00:00:00 end time when explicitly set', function () {
         $filter = RangeFilter::make('created_at')->datetime('Y-m-d H:i:s');
 
-        $mockQuery = Mockery::mock(\Illuminate\Database\Eloquent\Builder::class);
+        $mockQuery = Mockery::mock(Builder::class);
         $capturedData = null;
 
         $mockQuery->shouldReceive('whereBetween')

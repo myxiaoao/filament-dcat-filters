@@ -17,7 +17,7 @@ it('can add levels using addLevel method', function () {
         name: 'country_id',
         label: 'Country',
         model: 'InvalidModelClass'
-    ))->toThrow(\InvalidArgumentException::class, 'Invalid model class');
+    ))->toThrow(InvalidArgumentException::class, 'Invalid model class');
 });
 
 it('stores level configurations correctly', function () {

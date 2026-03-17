@@ -88,7 +88,7 @@ describe('SQL Function Validation', function () {
         $method->setAccessible(true);
 
         expect(fn () => $method->invoke($filter, 'INVALID'))
-            ->toThrow(\InvalidArgumentException::class, 'Invalid SQL function');
+            ->toThrow(InvalidArgumentException::class, 'Invalid SQL function');
     });
 });
 

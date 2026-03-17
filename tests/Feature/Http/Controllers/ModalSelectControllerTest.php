@@ -1,6 +1,7 @@
 <?php
 
 use Cooper\FilamentDcatFilters\Http\Controllers\ModalSelectController;
+use Illuminate\Routing\Controller;
 
 describe('ModalSelectController', function () {
     it('can be instantiated', function () {
@@ -16,7 +17,7 @@ describe('ModalSelectController', function () {
     it('is a controller class', function () {
         $controller = new ModalSelectController;
 
-        expect($controller)->toBeInstanceOf(\Illuminate\Routing\Controller::class);
+        expect($controller)->toBeInstanceOf(Controller::class);
     });
 });
 

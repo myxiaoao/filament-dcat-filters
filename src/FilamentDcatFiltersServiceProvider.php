@@ -3,6 +3,7 @@
 namespace Cooper\FilamentDcatFilters;
 
 use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Enums\FiltersResetActionPosition;
 use Filament\Tables\Table;
 use Livewire\Livewire;
 use Spatie\LaravelPackageTools\Package;
@@ -72,9 +73,9 @@ class FilamentDcatFiltersServiceProvider extends PackageServiceProvider
             }
 
             if (config('filament-dcat-filters.table.reset_action_in_footer', true)) {
-                if (enum_exists(\Filament\Tables\Enums\FiltersResetActionPosition::class)) {
+                if (enum_exists(FiltersResetActionPosition::class)) {
                     $table->filtersResetActionPosition(
-                        \Filament\Tables\Enums\FiltersResetActionPosition::Footer
+                        FiltersResetActionPosition::Footer
                     );
                 }
             }

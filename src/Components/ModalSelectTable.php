@@ -14,6 +14,7 @@ use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Livewire\Component;
 
 /**
@@ -97,7 +98,7 @@ class ModalSelectTable extends Component implements HasActions, HasForms, HasTab
             throw new \RuntimeException('Model class is required.');
         }
 
-        if (! class_exists($this->modelClass) || ! is_subclass_of($this->modelClass, \Illuminate\Database\Eloquent\Model::class)) {
+        if (! class_exists($this->modelClass) || ! is_subclass_of($this->modelClass, Model::class)) {
             throw new \RuntimeException('Invalid model class.');
         }
 

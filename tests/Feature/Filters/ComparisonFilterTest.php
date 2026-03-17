@@ -59,7 +59,7 @@ describe('Operators', function () {
 
     it('throws exception for invalid operator', function () {
         expect(fn () => ComparisonFilter::make('price')->operator('invalid'))
-            ->toThrow(\InvalidArgumentException::class);
+            ->toThrow(InvalidArgumentException::class);
     });
 });
 
