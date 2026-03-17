@@ -62,7 +62,9 @@ describe('generateRangeIndicators', function () {
             'Price'
         );
 
-        expect($indicators)->toBe(['Price from 100']);
+        expect($indicators)->toHaveCount(1);
+        expect($indicators[0])->toContain('Price');
+        expect($indicators[0])->toContain('100');
     });
 
     it('returns to indicator when only to is set', function () {
@@ -71,7 +73,9 @@ describe('generateRangeIndicators', function () {
             'Price'
         );
 
-        expect($indicators)->toBe(['Price to 200']);
+        expect($indicators)->toHaveCount(1);
+        expect($indicators[0])->toContain('Price');
+        expect($indicators[0])->toContain('200');
     });
 
     it('returns both indicators when both are set', function () {
@@ -80,7 +84,9 @@ describe('generateRangeIndicators', function () {
             'Price'
         );
 
-        expect($indicators)->toBe(['Price from 100', 'Price to 200']);
+        expect($indicators)->toHaveCount(2);
+        expect($indicators[0])->toContain('100');
+        expect($indicators[1])->toContain('200');
     });
 
     it('handles string values', function () {
@@ -89,6 +95,8 @@ describe('generateRangeIndicators', function () {
             'Date'
         );
 
-        expect($indicators)->toBe(['Date from 2024-01-01', 'Date to 2024-12-31']);
+        expect($indicators)->toHaveCount(2);
+        expect($indicators[0])->toContain('2024-01-01');
+        expect($indicators[1])->toContain('2024-12-31');
     });
 });

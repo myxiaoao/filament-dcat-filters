@@ -40,6 +40,7 @@ class FindInSetFilter extends Filter
     public function options(array|\Closure $options): static
     {
         $this->options = is_callable($options) ? $options() : $options;
+        $this->configureForm();
 
         return $this;
     }
@@ -47,6 +48,7 @@ class FindInSetFilter extends Filter
     public function multiple(bool $condition = true): static
     {
         $this->isMultiple = $condition;
+        $this->configureForm();
 
         return $this;
     }
@@ -54,6 +56,7 @@ class FindInSetFilter extends Filter
     public function searchable(bool $condition = true): static
     {
         $this->isSearchable = $condition;
+        $this->configureForm();
 
         return $this;
     }
@@ -61,6 +64,7 @@ class FindInSetFilter extends Filter
     public function placeholder(?string $placeholder): static
     {
         $this->placeholder = $placeholder;
+        $this->configureForm();
 
         return $this;
     }
@@ -68,6 +72,7 @@ class FindInSetFilter extends Filter
     public function matchAny(bool $condition = true): static
     {
         $this->useMatchAny = $condition;
+        $this->configureForm();
 
         return $this;
     }
@@ -75,6 +80,7 @@ class FindInSetFilter extends Filter
     public function matchAll(): static
     {
         $this->useMatchAny = false;
+        $this->configureForm();
 
         return $this;
     }

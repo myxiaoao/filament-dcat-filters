@@ -125,6 +125,14 @@ class FilterGroup extends Filter
             return;
         }
 
+        // If value is already an array (e.g. from RangeFilter with from/to),
+        // pass it directly as the data array
+        if (is_array($value)) {
+            $filter->apply($query, array_merge($value, ['isActive' => true]));
+
+            return;
+        }
+
         $formSchema = $filter->getFormSchema();
         $fieldName = ! empty($formSchema) ? $formSchema[0]->getName() : 'value';
         $filter->apply($query, [$fieldName => $value, 'isActive' => true]);
