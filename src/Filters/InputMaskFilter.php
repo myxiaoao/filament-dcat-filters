@@ -78,6 +78,10 @@ class InputMaskFilter extends Filter
 
     public function stripPattern(string $pattern): static
     {
+        if (@preg_match($pattern, '') === false) {
+            throw new \InvalidArgumentException("Invalid regex pattern: {$pattern}");
+        }
+
         $this->stripPattern = $pattern;
         $this->stripMaskOnQuery = true;
 

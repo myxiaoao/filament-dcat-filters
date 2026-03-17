@@ -82,11 +82,6 @@ return [
         // Default time format
         'time_format' => 'H:i:s',
 
-        // Default placeholder for range inputs
-        'placeholders' => [
-            'from' => 'From',
-            'to' => 'To',
-        ],
     ],
 
     /*

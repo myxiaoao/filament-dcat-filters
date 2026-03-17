@@ -237,7 +237,7 @@ class ModalSelectFilter extends Filter
             // Handle relationship filtering
             if ($this->relationship) {
                 if ($this->multiple) {
-                    $values = is_array($value) ? $value : explode(',', (string) $value);
+                    $values = is_array($value) ? $value : array_filter(array_map('trim', explode(',', (string) $value)), fn ($v) => $v !== '');
 
                     return $query->whereHas(
                         $this->relationship,
@@ -253,7 +253,7 @@ class ModalSelectFilter extends Filter
 
             // Handle direct column filtering
             if ($this->multiple) {
-                $values = is_array($value) ? $value : explode(',', (string) $value);
+                $values = is_array($value) ? $value : array_filter(array_map('trim', explode(',', (string) $value)), fn ($v) => $v !== '');
 
                 return $query->whereIn($column, $values);
             }
@@ -277,7 +277,7 @@ class ModalSelectFilter extends Filter
 
             try {
                 if ($this->multiple) {
-                    $values = is_array($value) ? $value : explode(',', (string) $value);
+                    $values = is_array($value) ? $value : array_filter(array_map('trim', explode(',', (string) $value)), fn ($v) => $v !== '');
                     $names = $model::query()
                         ->whereIn($this->keyColumn, $values)
                         ->pluck($this->titleColumn)
@@ -301,7 +301,11 @@ class ModalSelectFilter extends Filter
             } catch (\Exception $e) {
                 report($e);
 
-                return [];
+                return [
+                    Indicator::make($label.': '.__('filament-dcat-filters::filament-dcat-filters.accessibility.error_occurred'))
+                        ->removeField('value')
+                        ->removeField('modal_select'),
+                ];
             }
         });
     }

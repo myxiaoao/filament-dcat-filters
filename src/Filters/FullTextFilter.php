@@ -167,7 +167,8 @@ class FullTextFilter extends Filter
                 if (str_contains($column, '.')) {
                     $this->applyRelationSearch($q, $column, $search, $likeOp);
                 } else {
-                    $q->orWhere($column, $likeOp, "%{$search}%");
+                    $wrapped = $q->getGrammar()->wrap($column);
+                    $q->orWhereRaw("{$wrapped} {$likeOp} ?", ["%{$search}%"]);
                 }
             }
         });
@@ -183,7 +184,8 @@ class FullTextFilter extends Filter
         $relation = implode('.', $parts);
 
         $query->orWhereHas($relation, function (Builder $q) use ($relationColumn, $search, $likeOp) {
-            $q->where($relationColumn, $likeOp, "%{$search}%");
+            $wrapped = $q->getGrammar()->wrap($relationColumn);
+            $q->whereRaw("{$wrapped} {$likeOp} ?", ["%{$search}%"]);
         });
     }
 
@@ -192,7 +194,8 @@ class FullTextFilter extends Filter
      */
     protected function applyFullTextSearch(Builder $query, string $search): Builder
     {
-        $columns = implode(', ', $this->searchColumns);
+        $grammar = $query->getGrammar();
+        $columns = implode(', ', array_map(fn (string $col) => $grammar->wrap($col), $this->searchColumns));
 
         return $query->whereRaw(
             "MATCH ({$columns}) AGAINST (? IN BOOLEAN MODE)",
@@ -205,8 +208,9 @@ class FullTextFilter extends Filter
      */
     protected function applyPostgresFullTextSearch(Builder $query, string $search): Builder
     {
+        $grammar = $query->getGrammar();
         $columns = array_map(
-            fn (string $col) => "coalesce({$col}, '')",
+            fn (string $col) => 'coalesce('.$grammar->wrap($col).", '')",
             $this->searchColumns,
         );
 

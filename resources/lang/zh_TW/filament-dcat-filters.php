@@ -156,4 +156,41 @@ return [
     'geo.mi' => '英里',
     'geo.m' => '米',
 
+    // Range indicator
+    'range.indicator_from' => '從 :value',
+    'range.indicator_to' => '到 :value',
+
+    // Modal select - additional
+    'modal_select.loading' => '載入中...',
+    'modal_select.fetch_error' => '載入選項失敗',
+    'modal_select.empty_state' => '未找到記錄',
+    'modal_select.empty_state_description' => '請嘗試調整搜尋條件',
+
+    // Reset filters
+    'reset_filters.label' => '重設篩選',
+    'reset_filters.confirm_heading' => '重設所有篩選',
+    'reset_filters.confirm_description' => '確定要重設所有篩選條件嗎？這將清除所有目前的篩選設定。',
+    'reset_filters.confirm_button' => '重設',
+
+    // Cascading select
+    'cascading.select_placeholder' => '請選擇...',
+    'cascading.country' => '國家',
+    'cascading.state' => '省份/州',
+    'cascading.city' => '城市',
+    'cascading.category' => '分類',
+    'cascading.subcategory' => '子分類',
+
+    // Accessibility
+    'accessibility.selection_updated' => '選擇已更新',
+    'accessibility.selection_cleared' => '選擇已清除',
+    'accessibility.change_selection' => '變更選擇',
+    'accessibility.open_selection' => '開啟選擇對話框',
+    'accessibility.clear_selection' => '清除選擇',
+    'accessibility.items_selected' => '已選擇項目',
+    'accessibility.no_selection' => '未選擇任何項目',
+    'accessibility.filter_applied' => '已套用篩選',
+    'accessibility.filter_cleared' => '已清除篩選',
+    'accessibility.loading' => '載入中',
+    'accessibility.error_occurred' => '發生錯誤',
+
 ];

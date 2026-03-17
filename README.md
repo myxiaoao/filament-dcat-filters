@@ -67,7 +67,7 @@ A modern collection of enhanced filters inspired by [Dcat Admin](https://github.
 - 🎨 **Highly Customizable** - Extensive customization options for each filter
 - 📱 **Mobile Friendly** - Responsive design for all screen sizes
 - 🌐 **Bilingual Docs** - Complete English and Chinese documentation
-- ✅ **Fully Tested** - Comprehensive test coverage with 620 tests
+- ✅ **Fully Tested** - Comprehensive test coverage with 653 tests
 
 ## Version Compatibility
 
@@ -455,9 +455,21 @@ This creates `app/Filament/Filters/MyCustomFilter.php`.
 | `null` | `NullFilter` |
 | `enum` | `EnumFilter` |
 | `range` | `RangeFilter` |
+| `between` | `BetweenFilter` |
+| `scope` | `ScopeFilter` |
 | `regex` | `RegexFilter` |
 | `fulltext` | `FullTextFilter` |
 | `json` | `JsonFilter` |
+| `date-component` | `DateComponentFilter` |
+| `select-table` | `SelectTableFilter` |
+| `modal-select` | `ModalSelectFilter` |
+| `hidden` | `HiddenFilter` |
+| `relative-date` | `RelativeDateFilter` |
+| `cascading-select` | `CascadingSelectFilter` |
+| `find-in-set` | `FindInSetFilter` |
+| `input-mask` | `InputMaskFilter` |
+| `geo-location` | `GeoLocationFilter` |
+| `filter-group` | `FilterGroup` |
 
 ### Examples
 

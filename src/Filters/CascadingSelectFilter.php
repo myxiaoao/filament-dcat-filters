@@ -58,6 +58,13 @@ class CascadingSelectFilter extends Filter
             throw new \InvalidArgumentException("Invalid model class: {$model}");
         }
 
+        // Validate column names
+        foreach (['foreignKey' => $foreignKey, 'titleColumn' => $titleColumn, 'keyColumn' => $keyColumn] as $param => $col) {
+            if (! preg_match('/^[a-zA-Z_][a-zA-Z0-9_.]*$/', $col)) {
+                throw new \InvalidArgumentException("Invalid {$param}: {$col}");
+            }
+        }
+
         $this->levels[] = $name;
         $this->levelConfigs[$name] = [
             'name' => $name,

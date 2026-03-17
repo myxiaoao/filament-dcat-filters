@@ -142,9 +142,7 @@ LikeFilter::make('name')->inlineLabel(false)
   - Ensures all records of the selected end day are included in query results
   
 
-## [Unreleased]
-
-## 1.0.7 - 2026-02-04
+## v1.0.7 - 2026-02-04
 
 ### Added
 
@@ -193,7 +191,7 @@ LikeFilter::make('name')->inlineLabel(false)
 
 ---
 
-## 1.0.3 - 2026-01-21
+## v1.0.3 - 2026-01-21
 
 ### Added
 
@@ -216,7 +214,7 @@ LikeFilter::make('name')->inlineLabel(false)
 
 ---
 
-## 1.0.2 - 2025-01-11
+## v1.0.2 - 2025-01-11
 
 ### Added
 
@@ -242,7 +240,7 @@ LikeFilter::make('name')->inlineLabel(false)
 
 ---
 
-## 1.0.1 - 2025-01-10
+## v1.0.1 - 2025-01-10
 
 ### Fixed
 
@@ -255,7 +253,7 @@ LikeFilter::make('name')->inlineLabel(false)
 
 ---
 
-## 1.0.0 - 2025-11-17
+## v1.0.0 - 2025-11-17
 
 ### Added
 

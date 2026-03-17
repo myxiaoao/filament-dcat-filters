@@ -42,6 +42,8 @@ class ModalSelectTable extends Component implements HasActions, HasForms, HasTab
 
     public array $selected = [];
 
+    public array $selectedSet = [];
+
     public string $filterKey = '';
 
     public int $renderKey = 0;
@@ -67,6 +69,7 @@ class ModalSelectTable extends Component implements HasActions, HasForms, HasTab
         $this->searchColumns = $searchColumns;
         $this->selected = $selected;
         $this->filterKey = $filterKey;
+        $this->selectedSet = array_flip($this->selected);
     }
 
     /**
@@ -125,7 +128,7 @@ class ModalSelectTable extends Component implements HasActions, HasForms, HasTab
             ->view('filament-dcat-filters::components.select-column')
             ->state(fn ($record) => [
                 'key' => $record->{$this->keyColumn},
-                'selected' => in_array($record->{$this->keyColumn}, $this->selected),
+                'selected' => isset($this->selectedSet[$record->{$this->keyColumn}]),
                 'multiple' => $this->multiple,
                 'renderKey' => $this->renderKey,
             ])
@@ -170,7 +173,7 @@ class ModalSelectTable extends Component implements HasActions, HasForms, HasTab
     public function selectRow(string|int $key): void
     {
         if ($this->multiple) {
-            if (in_array($key, $this->selected)) {
+            if (isset($this->selectedSet[$key])) {
                 $this->selected = array_values(array_diff($this->selected, [$key]));
             } else {
                 $this->selected[] = $key;
@@ -178,6 +181,7 @@ class ModalSelectTable extends Component implements HasActions, HasForms, HasTab
         } else {
             $this->selected = [$key];
         }
+        $this->selectedSet = array_flip($this->selected);
     }
 
     /**
@@ -210,6 +214,7 @@ class ModalSelectTable extends Component implements HasActions, HasForms, HasTab
     public function clearSelection(): void
     {
         $this->selected = [];
+        $this->selectedSet = [];
 
         // Increment renderKey to force re-render all checkboxes
         $this->renderKey++;

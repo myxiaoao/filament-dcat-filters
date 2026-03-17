@@ -31,6 +31,8 @@ class EnumFilter extends Filter
 
     protected bool $searchable = false;
 
+    protected ?array $cachedOptions = null;
+
     /**
      * Setup default configuration.
      */
@@ -47,6 +49,7 @@ class EnumFilter extends Filter
     public function enum(string $class): static
     {
         $this->enumClass = $class;
+        $this->cachedOptions = null;
         $this->configureForm();
 
         return $this;
@@ -58,6 +61,7 @@ class EnumFilter extends Filter
     public function exclude(array $cases): static
     {
         $this->excluded = $cases;
+        $this->cachedOptions = null;
         $this->configureForm();
 
         return $this;
@@ -102,6 +106,7 @@ class EnumFilter extends Filter
     public function labelUsing(string|Closure $method): static
     {
         $this->labelUsing = $method;
+        $this->cachedOptions = null;
         $this->configureForm();
 
         return $this;
@@ -113,6 +118,7 @@ class EnumFilter extends Filter
     public function valueUsing(string|Closure $method): static
     {
         $this->valueUsing = $method;
+        $this->cachedOptions = null;
         $this->configureForm();
 
         return $this;
@@ -123,6 +129,10 @@ class EnumFilter extends Filter
      */
     protected function getEnumOptions(): array
     {
+        if ($this->cachedOptions !== null) {
+            return $this->cachedOptions;
+        }
+
         if (! $this->enumClass || ! enum_exists($this->enumClass)) {
             return [];
         }
@@ -139,6 +149,8 @@ class EnumFilter extends Filter
 
             $options[$value] = $label;
         }
+
+        $this->cachedOptions = $options;
 
         return $options;
     }

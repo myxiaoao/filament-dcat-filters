@@ -130,6 +130,10 @@ class ComparisonFilter extends Filter
                 return $query;
             }
 
+            if (! is_numeric($value)) {
+                return $query;
+            }
+
             $column = $this->resolveColumnName();
 
             // Apply money conversion: multiply user input by divider

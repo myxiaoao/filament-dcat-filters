@@ -522,3 +522,56 @@ describe('RangeFilter Query', function () {
             ->and($sql)->toContain('between');
     });
 });
+
+// ─── Edge Cases ──────────────────────────────────────────────────
+
+describe('Edge Cases', function () {
+    it('LikeFilter escapes percent wildcard in search value', function () {
+        $filter = LikeFilter::make('title')->sensitive();
+        $query = applyFilterQuery($filter, freshQuery(), ['value' => '100%']);
+
+        expect($query->toSql())->toContain('like')
+            ->and($query->getBindings())->toContain('%100\%%');
+    });
+
+    it('LikeFilter escapes underscore in search value', function () {
+        $filter = LikeFilter::make('code')->sensitive();
+        $query = applyFilterQuery($filter, freshQuery(), ['value' => 'A_B']);
+
+        expect($query->toSql())->toContain('like')
+            ->and($query->getBindings())->toContain('%A\_B%');
+    });
+
+    it('ComparisonFilter ignores non-numeric string input', function () {
+        $filter = ComparisonFilter::make('price')->gte();
+        $query = applyFilterQuery($filter, freshQuery(), ['value' => 'abc']);
+
+        // Non-numeric input is rejected at query level
+        expect($query->toSql())->not->toContain('>=');
+    });
+
+    it('RangeFilter swaps from and to when from is greater', function () {
+        $filter = RangeFilter::make('amount')->integer();
+        $query = applyFilterQuery($filter, freshQuery(), ['from' => '100', 'to' => '50']);
+
+        // HasRangeQuery swaps values so bindings are [50, 100]
+        expect($query->toSql())->toContain('between')
+            ->and($query->getBindings())->toEqual(['50', '100']);
+    });
+
+    it('BooleanFilter handles string zero correctly', function () {
+        $filter = BooleanFilter::make('is_active');
+        $query = applyFilterQuery($filter, freshQuery(), ['value' => '0']);
+
+        expect($query->toSql())->toContain('"is_active"')
+            ->and($query->getBindings())->toContain(false);
+    });
+
+    it('HiddenFilter handles zero value correctly', function () {
+        $filter = HiddenFilter::make('status')->eq()->default(0);
+        $query = applyFilterQuery($filter, freshQuery(), ['value' => 0]);
+
+        expect($query->toSql())->toContain('"status"')
+            ->and($query->getBindings())->toContain(0);
+    });
+});

@@ -268,8 +268,43 @@ class SelectTableFilter extends Filter
             } catch (\Exception $e) {
                 report($e);
 
-                return [];
+                return [
+                    Indicator::make($label.': '.__('filament-dcat-filters::filament-dcat-filters.accessibility.error_occurred'))
+                        ->removeField($this->multiple ? 'values' : 'value'),
+                ];
             }
         });
+    }
+
+    /**
+     * Get the model class.
+     */
+    public function getModelClass(): ?string
+    {
+        return $this->modelClass;
+    }
+
+    /**
+     * Get the title column.
+     */
+    public function getTitleColumn(): ?string
+    {
+        return $this->titleColumn;
+    }
+
+    /**
+     * Get the key column.
+     */
+    public function getKeyColumn(): string
+    {
+        return $this->keyColumn;
+    }
+
+    /**
+     * Check if multiple selection is enabled.
+     */
+    public function isMultiple(): bool
+    {
+        return $this->multiple;
     }
 }

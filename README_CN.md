@@ -67,7 +67,7 @@
 - 🎨 **高度可定制** - 每个过滤器都有丰富的自定义选项
 - 📱 **移动端友好** - 响应式设计，适配所有屏幕尺寸
 - 🌐 **双语文档** - 完整的中英文文档
-- ✅ **全面测试** - 620 测试用例的全面覆盖
+- ✅ **全面测试** - 653 测试用例的全面覆盖
 
 ## 版本兼容性
 
@@ -446,7 +446,7 @@ php artisan make:dcat-filter MyCustom
 ### 可用类型
 
 | 类型 | 基类 |
-|------|------|
+|------|-----------|
 | `basic` | `Filament\Tables\Filters\Filter` |
 | `like` | `LikeFilter` |
 | `in` | `InFilter` |
@@ -455,9 +455,21 @@ php artisan make:dcat-filter MyCustom
 | `null` | `NullFilter` |
 | `enum` | `EnumFilter` |
 | `range` | `RangeFilter` |
+| `between` | `BetweenFilter` |
+| `scope` | `ScopeFilter` |
 | `regex` | `RegexFilter` |
 | `fulltext` | `FullTextFilter` |
 | `json` | `JsonFilter` |
+| `date-component` | `DateComponentFilter` |
+| `select-table` | `SelectTableFilter` |
+| `modal-select` | `ModalSelectFilter` |
+| `hidden` | `HiddenFilter` |
+| `relative-date` | `RelativeDateFilter` |
+| `cascading-select` | `CascadingSelectFilter` |
+| `find-in-set` | `FindInSetFilter` |
+| `input-mask` | `InputMaskFilter` |
+| `geo-location` | `GeoLocationFilter` |
+| `filter-group` | `FilterGroup` |
 
 ### 示例
 
