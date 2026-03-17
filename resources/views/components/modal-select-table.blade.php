@@ -5,9 +5,9 @@
     </div>
 
     {{-- Bottom action bar --}}
-    <div style="margin-top: 1rem; padding-top: 1rem; padding-bottom: 0.25rem; border-top: 1px solid rgb(229 231 235); display: flex; flex-direction: column; gap: 1rem;" class="dark:border-gray-700">
+    <div class="mt-4 pt-4 pb-1 border-t border-gray-200 dark:border-gray-700 flex flex-col gap-4">
         {{-- Selection status --}}
-        <div style="min-height: 28px; display: flex; align-items: center;">
+        <div class="min-h-7 flex items-center">
             @if(count($selected) > 0)
                 <div class="inline-flex items-center gap-2 rounded-lg bg-primary-50 dark:bg-primary-500/10 px-3 py-1.5">
                     <x-filament::badge color="primary">
@@ -25,9 +25,9 @@
         </div>
 
         {{-- Button group - force single row --}}
-        <div style="display: flex; flex-wrap: nowrap; align-items: center; justify-content: space-between; gap: 1rem;">
+        <div class="flex flex-nowrap items-center justify-between gap-4">
             {{-- Left side --}}
-            <div style="flex-shrink: 0;">
+            <div class="shrink-0">
                 @if(count($selected) > 0)
                     <x-filament::button
                         wire:click="clearSelection"
@@ -41,7 +41,7 @@
             </div>
 
             {{-- Right side button group --}}
-            <div style="display: flex; flex-wrap: nowrap; align-items: center; gap: 0.75rem; flex-shrink: 0;">
+            <div class="flex flex-nowrap items-center gap-3 shrink-0">
                 <x-filament::button
                     color="gray"
                     wire:click="cancel"
@@ -64,9 +64,10 @@
 @push('scripts')
 <script>
     document.addEventListener('livewire:init', () => {
-        // Handle table row click
         Livewire.on('table-row-clicked', (event) => {
-            @this.call('selectRow', event.key);
+            if (event && event.key !== undefined) {
+                @this.call('selectRow', event.key);
+            }
         });
     });
 </script>

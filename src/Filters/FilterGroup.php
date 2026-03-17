@@ -125,7 +125,9 @@ class FilterGroup extends Filter
             return;
         }
 
-        $filter->apply($query, ['value' => $value, 'isActive' => true]);
+        $formSchema = $filter->getFormSchema();
+        $fieldName = ! empty($formSchema) ? $formSchema[0]->getName() : 'value';
+        $filter->apply($query, [$fieldName => $value, 'isActive' => true]);
     }
 
     public function getLogic(): string

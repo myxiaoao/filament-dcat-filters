@@ -5,6 +5,9 @@ namespace Cooper\FilamentDcatFilters\Concerns;
 use Closure;
 use Illuminate\Database\Eloquent\Builder;
 
+/**
+ * @requires Classes using this trait must implement getBaseQueryForScopeCounting(): Builder
+ */
 trait HasScopeBadgeCounts
 {
     /** @var array<string, int> */

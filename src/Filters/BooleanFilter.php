@@ -6,8 +6,6 @@ use Cooper\FilamentDcatFilters\Concerns\HasColumnName;
 use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
 use Cooper\FilamentDcatFilters\Concerns\HasLabelResolver;
 use Cooper\FilamentDcatFilters\Concerns\HasSelectRadioDisplay;
-use Filament\Forms\Components\Radio;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
@@ -105,37 +103,16 @@ class BooleanFilter extends Filter
                 ->inline(false)
                 ->columnSpanFull(),
 
-            'radio' => Radio::make('value')
-                ->label($labelResolver)
-                ->options($options)
-                ->default('')
-                ->inline()
-                ->columns($this->radioColumns)
-                ->columnSpanFull(),
-
-            default => $this->buildSelectComponent($labelResolver, $options),
+            default => $this->buildFormComponent(
+                'value',
+                $labelResolver,
+                $options,
+                __('filament-dcat-filters::filament-dcat-filters.boolean.placeholder')
+            ),
         };
 
         $this->form([$formComponent]);
         $this->configureQuery();
-    }
-
-    /**
-     * Build the select component with inline label support.
-     */
-    protected function buildSelectComponent(\Closure $labelResolver, array $options): Select
-    {
-        $select = Select::make('value')
-            ->label($labelResolver)
-            ->options($options)
-            ->default('')
-            ->native(false)
-            ->placeholder(__('filament-dcat-filters::filament-dcat-filters.boolean.placeholder'))
-            ->columnSpanFull();
-
-        $this->applyInlineLabel($select, $labelResolver);
-
-        return $select;
     }
 
     /**

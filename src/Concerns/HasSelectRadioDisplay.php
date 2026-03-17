@@ -2,6 +2,9 @@
 
 namespace Cooper\FilamentDcatFilters\Concerns;
 
+use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\Select;
+
 trait HasSelectRadioDisplay
 {
     protected string $displayStyle = 'select';
@@ -39,5 +42,35 @@ trait HasSelectRadioDisplay
         $this->configureForm();
 
         return $this;
+    }
+
+    /**
+     * Build a select or radio component based on display style.
+     */
+    protected function buildFormComponent(string $fieldName, \Closure $labelResolver, array $options, string $placeholder): Select|Radio
+    {
+        if ($this->displayStyle === 'radio') {
+            return Radio::make($fieldName)
+                ->label($labelResolver)
+                ->options($options)
+                ->default('')
+                ->inline()
+                ->columns($this->radioColumns)
+                ->columnSpanFull();
+        }
+
+        $select = Select::make($fieldName)
+            ->label($labelResolver)
+            ->options($options)
+            ->default('')
+            ->native(false)
+            ->placeholder($placeholder)
+            ->columnSpanFull();
+
+        if (method_exists($this, 'applyInlineLabel')) {
+            $this->applyInlineLabel($select, $labelResolver);
+        }
+
+        return $select;
     }
 }

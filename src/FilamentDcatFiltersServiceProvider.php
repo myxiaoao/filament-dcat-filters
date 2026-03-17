@@ -54,12 +54,10 @@ class FilamentDcatFiltersServiceProvider extends PackageServiceProvider
      */
     protected function registerLivewireComponents(): void
     {
-        if (class_exists(Livewire::class)) {
-            Livewire::component(
-                'cooper.filament-dcat-filters.modal-select-table',
-                Components\ModalSelectTable::class
-            );
-        }
+        Livewire::component(
+            'cooper.filament-dcat-filters.modal-select-table',
+            Components\ModalSelectTable::class
+        );
     }
 
     /**
@@ -73,11 +71,9 @@ class FilamentDcatFiltersServiceProvider extends PackageServiceProvider
             }
 
             if (config('filament-dcat-filters.table.reset_action_in_footer', true)) {
-                if (enum_exists(FiltersResetActionPosition::class)) {
-                    $table->filtersResetActionPosition(
-                        FiltersResetActionPosition::Footer
-                    );
-                }
+                $table->filtersResetActionPosition(
+                    FiltersResetActionPosition::Footer
+                );
             }
 
             $columns = config('filament-dcat-filters.table.filters_form_columns');

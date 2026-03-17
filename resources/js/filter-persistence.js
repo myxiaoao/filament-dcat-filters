@@ -35,7 +35,7 @@ document.addEventListener('livewire:init', () => {
             const savedFilters = localStorage.getItem(key);
             if (savedFilters) {
                 const filters = JSON.parse(savedFilters);
-                if (filters && typeof filters === 'object') {
+                if (filters !== null && typeof filters === 'object' && !Array.isArray(filters)) {
                     Livewire.dispatch('restoreFiltersFromLocalStorage', { filters });
                 }
             }

@@ -18,21 +18,29 @@
             selectedLabels: [],
             open: false,
             loading: false,
+            _fetchController: null,
             error: null,
 
             init() {
-                window.addEventListener('modal-select-confirmed', (event) => {
+                this._handleConfirmed = (event) => {
                     const detail = event.detail;
-                    if (detail.filterKey === '{{ $filterName }}') {
+                    if (detail.filterKey === @json($filterName)) {
                         this.handleSelection(detail.selected, detail.modelClass, detail.titleColumn, detail.keyColumn);
                     }
-                });
+                };
+                window.addEventListener('modal-select-confirmed', this._handleConfirmed);
+            },
+
+            destroy() {
+                if (this._handleConfirmed) {
+                    window.removeEventListener('modal-select-confirmed', this._handleConfirmed);
+                }
             },
 
             openModal() {
                 this.open = true;
                 this.error = null;
-                this.$dispatch('open-modal', { id: '{{ $modalId }}' });
+                this.$dispatch('open-modal', { id: @json($modalId) });
             },
 
             handleSelection(selected, modelClass, titleColumn, keyColumn) {
@@ -43,20 +51,25 @@
 
             fetchLabels(modelClass, titleColumn, keyColumn) {
                 @if($modelClass)
+                if (this._fetchController) {
+                    this._fetchController.abort();
+                }
+                this._fetchController = new AbortController();
                 this.loading = true;
                 const requestBody = {
-                    model: modelClass || '{{ addslashes($modelClass) }}',
+                    model: modelClass || @json($modelClass ?? ''),
                     ids: this.selected,
-                    column: titleColumn || '{{ $titleColumn }}',
-                    keyColumn: keyColumn || '{{ $keyColumn }}'
+                    column: titleColumn || @json($titleColumn ?? 'name'),
+                    keyColumn: keyColumn || @json($keyColumn ?? 'id')
                 };
-                fetch('{{ route('filament-dcat-filters.fetch-labels') }}', {
+                fetch(@json(route('filament-dcat-filters.fetch-labels')), {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || @json(csrf_token())
                     },
-                    body: JSON.stringify(requestBody)
+                    body: JSON.stringify(requestBody),
+                    signal: this._fetchController.signal
                 })
                 .then(response => {
                     if (!response.ok) {
@@ -73,6 +86,7 @@
                     this.updateInput();
                 })
                 .catch(error => {
+                    if (error.name === 'AbortError') return;
                     console.error('Fetch labels error:', error);
                     this.selectedLabels = this.selected.map(id => '#' + id);
                     this.updateInput();
@@ -105,7 +119,7 @@
             },
 
             getDisplayText() {
-                if (this.loading) return '{{ __('filament-dcat-filters::filament-dcat-filters.modal_select.loading') }}';
+                if (this.loading) return @json(__('filament-dcat-filters::filament-dcat-filters.modal_select.loading'));
                 if (this.selectedLabels.length === 0) return '';
                 return this.selectedLabels.join(', ');
             }
@@ -121,6 +135,8 @@
                     type="button"
                     x-on:click="openModal()"
                     class="fi-select-input-btn"
+                    aria-haspopup="dialog"
+                    :aria-label="getDisplayText() || @json($placeholder)"
                 >
                     @if($multiple)
                         {{-- Multiple selection: show badges --}}

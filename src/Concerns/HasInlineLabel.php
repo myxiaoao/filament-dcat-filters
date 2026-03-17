@@ -3,11 +3,6 @@
 namespace Cooper\FilamentDcatFilters\Concerns;
 
 use Closure;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\TimePicker;
 use Filament\Schemas\Components\Component;
 
 trait HasInlineLabel
@@ -67,14 +62,8 @@ trait HasInlineLabel
         $component->hiddenLabel();
         $component->prefix($label);
 
-        if ($this->shouldPlaceholderFromLabel()) {
-            if ($component instanceof TextInput
-                || $component instanceof Select
-                || $component instanceof DatePicker
-                || $component instanceof DateTimePicker
-                || $component instanceof TimePicker) {
-                $component->placeholder($label);
-            }
+        if ($this->shouldPlaceholderFromLabel() && method_exists($component, 'placeholder')) {
+            $component->placeholder($label);
         }
 
         return $component;

@@ -2,6 +2,9 @@
 
 namespace Cooper\FilamentDcatFilters\Concerns;
 
+/**
+ * @requires Classes using this trait should implement configureQuery(): void
+ */
 trait HasOperator
 {
     protected string $operator = '=';
