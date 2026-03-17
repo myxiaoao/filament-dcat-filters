@@ -1,0 +1,19 @@
+{
+  "enabledMcpjsonServers": [
+    "laravel-boost"
+  ],
+  "enableAllProjectMcpServers": true,
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -n \"$CLAUDE_TOOL_INPUT_FILE_PATH\" ] && echo \"$CLAUDE_TOOL_INPUT_FILE_PATH\" | grep -qE '\\.php$'; then vendor/bin/pint --dirty \"$CLAUDE_TOOL_INPUT_FILE_PATH\" 2>/dev/null; fi"
+          }
+        ]
+      }
+    ]
+  }
+}
