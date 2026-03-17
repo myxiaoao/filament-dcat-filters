@@ -202,6 +202,60 @@ describe('Encryption', function () {
 
         expect(true)->toBeTrue();
     });
+
+    it('encrypted export and import roundtrip works', function () {
+        config(['app.key' => 'base64:'.base64_encode(random_bytes(32))]);
+
+        $originalFilters = ['status' => ['value' => 'active']];
+
+        $this->listRecords->encryptFilters(true);
+        $this->listRecords->tableFilters = $originalFilters;
+        $exported = $this->listRecords->exportFilters();
+
+        $newInstance = new TestListRecordsWithExportImport;
+        $newInstance->encryptFilters(true);
+        $result = $newInstance->importFilters($exported);
+
+        expect($result)->toBeTrue();
+        expect($newInstance->tableFilters)->toBe($originalFilters);
+    });
+
+    it('importing encrypted data without encryption enabled returns false', function () {
+        config(['app.key' => 'base64:'.base64_encode(random_bytes(32))]);
+
+        $this->listRecords->encryptFilters(true);
+        $this->listRecords->tableFilters = ['status' => ['value' => 'active']];
+        $encrypted = $this->listRecords->exportFilters();
+
+        // New instance with encryption disabled tries to import encrypted payload
+        $newInstance = new TestListRecordsWithExportImport;
+        $result = $newInstance->importFilters($encrypted);
+
+        expect($result)->toBeFalse();
+    });
+});
+
+describe('URL Loading', function () {
+    it('loadFiltersFromUrl returns false when query param is absent', function () {
+        // No 'filters' query parameter in the request
+        $result = $this->listRecords->loadFiltersFromUrl();
+
+        expect($result)->toBeFalse();
+    });
+});
+
+describe('Version Compatibility', function () {
+    it('returns false when version is incompatible', function () {
+        $json = json_encode([
+            'version' => '2.0',
+            'timestamp' => now()->toIso8601String(),
+            'filters' => ['status' => ['value' => 'active']],
+        ]);
+
+        $result = $this->listRecords->importFilters($json);
+
+        expect($result)->toBeFalse();
+    });
 });
 
 describe('Roundtrip', function () {

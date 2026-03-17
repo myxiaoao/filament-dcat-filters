@@ -86,6 +86,10 @@ describe('Format Badge Count', function () {
         expect($this->listRecords->formatScopeBadgeCount(999))->toBe('999');
     });
 
+    it('formats 500 as "500"', function () {
+        expect($this->listRecords->formatScopeBadgeCount(500))->toBe('500');
+    });
+
     it('formats thousands with K', function () {
         expect($this->listRecords->formatScopeBadgeCount(1000))->toBe('1K');
         expect($this->listRecords->formatScopeBadgeCount(1500))->toBe('1.5K');
@@ -96,5 +100,35 @@ describe('Format Badge Count', function () {
         expect($this->listRecords->formatScopeBadgeCount(1000000))->toBe('1M');
         expect($this->listRecords->formatScopeBadgeCount(1500000))->toBe('1.5M');
         expect($this->listRecords->formatScopeBadgeCount(2500000))->toBe('2.5M');
+    });
+});
+
+describe('clearScopeBadgeCountCache', function () {
+    it('empties the badge count cache', function () {
+        // Manually populate the cache via reflection
+        $reflection = new ReflectionClass($this->listRecords);
+        $prop = $reflection->getProperty('scopeBadgeCounts');
+        $prop->setAccessible(true);
+        $prop->setValue($this->listRecords, ['published' => 42, 'draft' => 7]);
+
+        $this->listRecords->clearScopeBadgeCountCache();
+
+        expect($prop->getValue($this->listRecords))->toBe([]);
+    });
+});
+
+describe('refreshScopeBadgeCount', function () {
+    it('clears the cached value for the given scope key', function () {
+        // Seed the cache directly
+        $reflection = new ReflectionClass($this->listRecords);
+        $prop = $reflection->getProperty('scopeBadgeCounts');
+        $prop->setAccessible(true);
+        $prop->setValue($this->listRecords, ['published' => 99]);
+
+        // Refresh without a defined scope definition returns null and removes cached entry
+        $result = $this->listRecords->refreshScopeBadgeCount('published');
+
+        expect($result)->toBeNull();
+        expect($prop->getValue($this->listRecords))->not->toHaveKey('published');
     });
 });

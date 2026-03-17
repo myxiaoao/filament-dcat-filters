@@ -3,11 +3,22 @@
 use Cooper\FilamentDcatFilters\Filters\BetweenFilter;
 use Cooper\FilamentDcatFilters\Filters\BooleanFilter;
 use Cooper\FilamentDcatFilters\Filters\ComparisonFilter;
+use Cooper\FilamentDcatFilters\Filters\DateComponentFilter;
+use Cooper\FilamentDcatFilters\Filters\EnumFilter;
+use Cooper\FilamentDcatFilters\Filters\FilterGroup;
+use Cooper\FilamentDcatFilters\Filters\FindInSetFilter;
+use Cooper\FilamentDcatFilters\Filters\FullTextFilter;
+use Cooper\FilamentDcatFilters\Filters\GeoLocationFilter;
 use Cooper\FilamentDcatFilters\Filters\HiddenFilter;
 use Cooper\FilamentDcatFilters\Filters\InFilter;
+use Cooper\FilamentDcatFilters\Filters\InputMaskFilter;
+use Cooper\FilamentDcatFilters\Filters\JsonFilter;
 use Cooper\FilamentDcatFilters\Filters\LikeFilter;
 use Cooper\FilamentDcatFilters\Filters\NullFilter;
 use Cooper\FilamentDcatFilters\Filters\RangeFilter;
+use Cooper\FilamentDcatFilters\Filters\RegexFilter;
+use Cooper\FilamentDcatFilters\Filters\RelativeDateFilter;
+use Cooper\FilamentDcatFilters\Filters\ScopeFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -573,5 +584,600 @@ describe('Edge Cases', function () {
 
         expect($query->toSql())->toContain('"status"')
             ->and($query->getBindings())->toContain(0);
+    });
+});
+
+// ─── ScopeFilter ─────────────────────────────────────────────────
+
+describe('ScopeFilter Query', function () {
+    it('applies query closure when a non-default scope is selected', function () {
+        $filter = ScopeFilter::make('status')->scopes([
+            'all' => ['label' => 'All', 'default' => true],
+            'published' => [
+                'label' => 'Published',
+                'query' => fn (Builder $q) => $q->where('status', 'published'),
+            ],
+        ]);
+        $query = applyFilterQuery($filter, freshQuery(), ['scope' => 'published']);
+        $sql = $query->toSql();
+
+        expect($sql)->toContain('"status"')
+            ->and($query->getBindings())->toContain('published');
+    });
+
+    it('does not add where clauses when the default scope is selected', function () {
+        $filter = ScopeFilter::make('status')->scopes([
+            'all' => ['label' => 'All', 'default' => true],
+            'published' => [
+                'label' => 'Published',
+                'query' => fn (Builder $q) => $q->where('status', 'published'),
+            ],
+        ]);
+        $query = applyFilterQuery($filter, freshQuery(), ['scope' => 'all']);
+        $sql = $query->toSql();
+
+        expect($sql)->not->toContain('where');
+    });
+
+    it('falls back to default scope when data is empty', function () {
+        $filter = ScopeFilter::make('status')->scopes([
+            'all' => ['label' => 'All', 'default' => true],
+            'published' => [
+                'label' => 'Published',
+                'query' => fn (Builder $q) => $q->where('status', 'published'),
+            ],
+        ]);
+        $query = applyFilterQuery($filter, freshQuery(), []);
+        $sql = $query->toSql();
+
+        // Default scope 'all' has no query closure, so no where clause
+        expect($sql)->not->toContain('where');
+    });
+
+    it('falls back to default scope when scope is null', function () {
+        $filter = ScopeFilter::make('status')->scopes([
+            'all' => ['label' => 'All', 'default' => true],
+            'active' => [
+                'label' => 'Active',
+                'query' => fn (Builder $q) => $q->where('status', 'active'),
+            ],
+        ]);
+        $query = applyFilterQuery($filter, freshQuery(), ['scope' => null]);
+        $sql = $query->toSql();
+
+        expect($sql)->not->toContain('where');
+    });
+});
+
+// ─── FullTextFilter ───────────────────────────────────────────────
+
+describe('FullTextFilter Query', function () {
+    it('applies LIKE search across multiple columns', function () {
+        $filter = FullTextFilter::make('search')
+            ->searchIn(['title', 'body'])
+            ->minLength(1);
+        $query = applyFilterQuery($filter, freshQuery(), ['search' => 'hello']);
+        $sql = $query->toSql();
+
+        expect($sql)->toContain('LIKE')
+            ->and($sql)->toContain('"title"')
+            ->and($sql)->toContain('"body"')
+            ->and($query->getBindings())->toContain('%hello%');
+    });
+
+    it('does not apply query when search is shorter than minLength', function () {
+        $filter = FullTextFilter::make('search')
+            ->searchIn(['title'])
+            ->minLength(3);
+        $query = applyFilterQuery($filter, freshQuery(), ['search' => 'ab']);
+        $sql = $query->toSql();
+
+        expect($sql)->not->toContain('where');
+    });
+
+    it('does not apply query when searchColumns is empty', function () {
+        $filter = FullTextFilter::make('search')->minLength(1);
+        $query = applyFilterQuery($filter, freshQuery(), ['search' => 'hello']);
+        $sql = $query->toSql();
+
+        expect($sql)->not->toContain('where');
+    });
+
+    it('does not apply query for empty search', function () {
+        $filter = FullTextFilter::make('search')->searchIn(['title'])->minLength(1);
+        $query = applyFilterQuery($filter, freshQuery(), ['search' => '']);
+        $sql = $query->toSql();
+
+        expect($sql)->not->toContain('where');
+    });
+
+    it('does not apply query when search key is missing', function () {
+        $filter = FullTextFilter::make('search')->searchIn(['title'])->minLength(1);
+        $query = applyFilterQuery($filter, freshQuery(), []);
+        $sql = $query->toSql();
+
+        expect($sql)->not->toContain('where');
+    });
+});
+
+// ─── EnumFilter ───────────────────────────────────────────────────
+
+enum QueryTestStatus: string
+{
+    case Active = 'active';
+    case Inactive = 'inactive';
+    case Pending = 'pending';
+}
+
+describe('EnumFilter Query', function () {
+    it('applies where clause for a single value', function () {
+        $filter = EnumFilter::make('status')->enum(QueryTestStatus::class);
+        $query = applyFilterQuery($filter, freshQuery(), ['value' => 'active']);
+        $sql = $query->toSql();
+
+        expect($sql)->toContain('"status"')
+            ->and($query->getBindings())->toContain('active');
+    });
+
+    it('applies whereIn clause for multiple values', function () {
+        $filter = EnumFilter::make('status')->enum(QueryTestStatus::class)->multiple();
+        $query = applyFilterQuery($filter, freshQuery(), ['values' => ['active', 'pending']]);
+        $sql = $query->toSql();
+
+        expect($sql)->toContain('"status"')
+            ->and($sql)->toContain('in')
+            ->and($query->getBindings())->toEqual(['active', 'pending']);
+    });
+
+    it('does not apply query for empty single value', function () {
+        $filter = EnumFilter::make('status')->enum(QueryTestStatus::class);
+        $query = applyFilterQuery($filter, freshQuery(), ['value' => '']);
+        $sql = $query->toSql();
+
+        expect($sql)->not->toContain('where');
+    });
+
+    it('does not apply query for empty multiple values', function () {
+        $filter = EnumFilter::make('status')->enum(QueryTestStatus::class)->multiple();
+        $query = applyFilterQuery($filter, freshQuery(), ['values' => []]);
+        $sql = $query->toSql();
+
+        expect($sql)->not->toContain('where');
+    });
+
+    it('uses custom column name', function () {
+        $filter = EnumFilter::make('state')->enum(QueryTestStatus::class)->column('status');
+        $query = applyFilterQuery($filter, freshQuery(), ['value' => 'active']);
+        $sql = $query->toSql();
+
+        expect($sql)->toContain('"status"')
+            ->and($sql)->not->toContain('"state"');
+    });
+});
+
+// ─── DateComponentFilter ──────────────────────────────────────────
+
+describe('DateComponentFilter Query', function () {
+    it('applies YEAR() function to the column', function () {
+        $filter = DateComponentFilter::make('created_at')->year();
+        $query = applyFilterQuery($filter, freshQuery(), ['value' => '2024']);
+        $sql = $query->toSql();
+
+        expect($sql)->toContain('YEAR(')
+            ->and($sql)->toContain('"created_at"')
+            ->and($query->getBindings())->toContain('2024');
+    });
+
+    it('applies MONTH() function to the column', function () {
+        $filter = DateComponentFilter::make('created_at')->month();
+        $query = applyFilterQuery($filter, freshQuery(), ['value' => '06']);
+        $sql = $query->toSql();
+
+        expect($sql)->toContain('MONTH(')
+            ->and($sql)->toContain('"created_at"')
+            ->and($query->getBindings())->toContain('06');
+    });
+
+    it('applies DAY() function to the column', function () {
+        $filter = DateComponentFilter::make('created_at')->day();
+        $query = applyFilterQuery($filter, freshQuery(), ['value' => '15']);
+        $sql = $query->toSql();
+
+        expect($sql)->toContain('DAY(')
+            ->and($sql)->toContain('"created_at"')
+            ->and($query->getBindings())->toContain('15');
+    });
+
+    it('does not apply query for empty value', function () {
+        $filter = DateComponentFilter::make('created_at')->year();
+        $query = applyFilterQuery($filter, freshQuery(), ['value' => '']);
+        $sql = $query->toSql();
+
+        expect($sql)->not->toContain('where');
+    });
+
+    it('does not apply query when value is missing', function () {
+        $filter = DateComponentFilter::make('created_at')->year();
+        $query = applyFilterQuery($filter, freshQuery(), []);
+        $sql = $query->toSql();
+
+        expect($sql)->not->toContain('where');
+    });
+});
+
+// ─── RegexFilter ──────────────────────────────────────────────────
+
+describe('RegexFilter Query', function () {
+    it('applies REGEXP clause in user pattern mode', function () {
+        $filter = RegexFilter::make('email')->userPattern();
+        $query = applyFilterQuery($filter, freshQuery(), ['pattern' => '^test']);
+        $sql = $query->toSql();
+
+        expect($sql)->toContain('REGEXP')
+            ->and($query->getBindings())->toContain('^test');
+    });
+
+    it('applies REGEXP clause when pattern mode is enabled', function () {
+        $filter = RegexFilter::make('phone')->pattern('^1[3-9][0-9]{9}$');
+        $query = applyFilterQuery($filter, freshQuery(), ['enabled' => true]);
+        $sql = $query->toSql();
+
+        expect($sql)->toContain('REGEXP')
+            ->and($query->getBindings())->toContain('^1[3-9][0-9]{9}$');
+    });
+
+    it('does not apply query when pattern mode is enabled but toggle is false', function () {
+        $filter = RegexFilter::make('phone')->pattern('^1[3-9][0-9]{9}$');
+        $query = applyFilterQuery($filter, freshQuery(), ['enabled' => false]);
+        $sql = $query->toSql();
+
+        expect($sql)->not->toContain('where');
+    });
+
+    it('does not apply query for empty pattern in user pattern mode', function () {
+        $filter = RegexFilter::make('email')->userPattern();
+        $query = applyFilterQuery($filter, freshQuery(), ['pattern' => '']);
+        $sql = $query->toSql();
+
+        expect($sql)->not->toContain('where');
+    });
+
+    it('does not apply query when pattern exceeds max length', function () {
+        $filter = RegexFilter::make('content')->userPattern();
+        $longPattern = str_repeat('a', 501);
+        $query = applyFilterQuery($filter, freshQuery(), ['pattern' => $longPattern]);
+        $sql = $query->toSql();
+
+        expect($sql)->not->toContain('REGEXP');
+    });
+});
+
+// ─── JsonFilter ───────────────────────────────────────────────────
+
+describe('JsonFilter Query', function () {
+    it('applies eq operator with json path', function () {
+        $filter = JsonFilter::make('settings')->path('theme')->eq();
+        $query = applyFilterQuery($filter, freshQuery(), ['value' => 'dark']);
+        $sql = $query->toSql();
+
+        expect($sql)->toContain('settings')
+            ->and($sql)->toContain('theme')
+            ->and($query->getBindings())->toContain('dark');
+    });
+
+    it('wraps value with % when using like operator', function () {
+        $filter = JsonFilter::make('settings')->path('theme')->like();
+        $query = applyFilterQuery($filter, freshQuery(), ['value' => 'dark']);
+
+        expect($query->getBindings())->toContain('%dark%');
+    });
+
+    it('does not apply query for empty value', function () {
+        $filter = JsonFilter::make('settings')->path('theme')->eq();
+        $query = applyFilterQuery($filter, freshQuery(), ['value' => '']);
+        $sql = $query->toSql();
+
+        expect($sql)->not->toContain('where');
+    });
+
+    it('does not apply query when value is missing', function () {
+        $filter = JsonFilter::make('settings')->path('theme')->eq();
+        $query = applyFilterQuery($filter, freshQuery(), []);
+        $sql = $query->toSql();
+
+        expect($sql)->not->toContain('where');
+    });
+
+    it('uses custom column name', function () {
+        $filter = JsonFilter::make('meta_data')->column('settings')->path('color')->eq();
+        $query = applyFilterQuery($filter, freshQuery(), ['value' => 'blue']);
+        $sql = $query->toSql();
+
+        expect($sql)->toContain('settings')
+            ->and($sql)->not->toContain('meta_data');
+    });
+});
+
+// ─── FindInSetFilter ──────────────────────────────────────────────
+
+describe('FindInSetFilter Query', function () {
+    it('applies FIND_IN_SET for a single value', function () {
+        $filter = FindInSetFilter::make('tags')->options(['php' => 'PHP', 'js' => 'JavaScript']);
+        $query = applyFilterQuery($filter, freshQuery(), ['value' => 'php']);
+        $sql = $query->toSql();
+
+        expect($sql)->toContain('FIND_IN_SET')
+            ->and($query->getBindings())->toContain('php');
+    });
+
+    it('applies OR logic for multiple values with matchAny', function () {
+        $filter = FindInSetFilter::make('tags')
+            ->options(['php' => 'PHP', 'js' => 'JavaScript', 'css' => 'CSS'])
+            ->multiple()
+            ->matchAny();
+        $query = applyFilterQuery($filter, freshQuery(), ['value' => ['php', 'js']]);
+        $sql = $query->toSql();
+
+        expect($sql)->toContain('FIND_IN_SET')
+            ->and($sql)->toContain('or')
+            ->and($query->getBindings())->toContain('php')
+            ->and($query->getBindings())->toContain('js');
+    });
+
+    it('applies AND logic for multiple values with matchAll (default)', function () {
+        $filter = FindInSetFilter::make('tags')
+            ->options(['php' => 'PHP', 'js' => 'JavaScript', 'css' => 'CSS'])
+            ->multiple()
+            ->matchAll();
+        $query = applyFilterQuery($filter, freshQuery(), ['value' => ['php', 'js']]);
+        $sql = $query->toSql();
+
+        // matchAll: two separate FIND_IN_SET conditions without a top-level or
+        expect($sql)->toContain('FIND_IN_SET')
+            ->and($query->getBindings())->toContain('php')
+            ->and($query->getBindings())->toContain('js');
+    });
+
+    it('does not apply query for empty value', function () {
+        $filter = FindInSetFilter::make('tags')->options(['php' => 'PHP']);
+        $query = applyFilterQuery($filter, freshQuery(), ['value' => null]);
+        $sql = $query->toSql();
+
+        expect($sql)->not->toContain('where');
+    });
+
+    it('does not apply query for empty array value', function () {
+        $filter = FindInSetFilter::make('tags')->options(['php' => 'PHP'])->multiple();
+        $query = applyFilterQuery($filter, freshQuery(), ['value' => []]);
+        $sql = $query->toSql();
+
+        expect($sql)->not->toContain('where');
+    });
+});
+
+// ─── GeoLocationFilter ────────────────────────────────────────────
+
+describe('GeoLocationFilter Query', function () {
+    it('applies haversine formula when lat, lng, and radius are provided', function () {
+        $filter = GeoLocationFilter::make('location');
+        $query = applyFilterQuery($filter, freshQuery(), [
+            'latitude' => '40.7128',
+            'longitude' => '-74.0060',
+            'radius' => '10',
+        ]);
+        $sql = $query->toSql();
+
+        expect($sql)->toContain('acos')
+            ->and($sql)->toContain('radians')
+            ->and($sql)->toContain('"latitude"')
+            ->and($sql)->toContain('"longitude"');
+    });
+
+    it('does not apply query when latitude is empty', function () {
+        $filter = GeoLocationFilter::make('location');
+        $query = applyFilterQuery($filter, freshQuery(), [
+            'latitude' => '',
+            'longitude' => '-74.0060',
+            'radius' => '10',
+        ]);
+        $sql = $query->toSql();
+
+        expect($sql)->not->toContain('where');
+    });
+
+    it('does not apply query when longitude is empty', function () {
+        $filter = GeoLocationFilter::make('location');
+        $query = applyFilterQuery($filter, freshQuery(), [
+            'latitude' => '40.7128',
+            'longitude' => '',
+            'radius' => '10',
+        ]);
+        $sql = $query->toSql();
+
+        expect($sql)->not->toContain('where');
+    });
+
+    it('uses custom coordinate columns when set', function () {
+        $filter = GeoLocationFilter::make('location')->coordinates('lat', 'lng');
+        $query = applyFilterQuery($filter, freshQuery(), [
+            'latitude' => '40.7128',
+            'longitude' => '-74.0060',
+            'radius' => '5',
+        ]);
+        $sql = $query->toSql();
+
+        expect($sql)->toContain('"lat"')
+            ->and($sql)->toContain('"lng"');
+    });
+});
+
+// ─── RelativeDateFilter ───────────────────────────────────────────
+
+describe('RelativeDateFilter Query', function () {
+    it('applies whereBetween for the today preset', function () {
+        $filter = RelativeDateFilter::make('created_at');
+        $query = applyFilterQuery($filter, freshQuery(), ['preset' => 'today']);
+        $sql = $query->toSql();
+
+        expect($sql)->toContain('"created_at"')
+            ->and($sql)->toContain('between');
+    });
+
+    it('applies whereBetween for the last_7_days preset', function () {
+        $filter = RelativeDateFilter::make('created_at');
+        $query = applyFilterQuery($filter, freshQuery(), ['preset' => 'last_7_days']);
+        $sql = $query->toSql();
+
+        expect($sql)->toContain('"created_at"')
+            ->and($sql)->toContain('between')
+            ->and($query->getBindings())->toHaveCount(2);
+    });
+
+    it('does not apply query for empty preset', function () {
+        $filter = RelativeDateFilter::make('created_at');
+        $query = applyFilterQuery($filter, freshQuery(), ['preset' => '']);
+        $sql = $query->toSql();
+
+        expect($sql)->not->toContain('where');
+    });
+
+    it('does not apply query when preset is missing', function () {
+        $filter = RelativeDateFilter::make('created_at');
+        $query = applyFilterQuery($filter, freshQuery(), []);
+        $sql = $query->toSql();
+
+        expect($sql)->not->toContain('where');
+    });
+
+    it('applies whereBetween for a custom preset added via addPresets', function () {
+        $filter = RelativeDateFilter::make('created_at')->addPresets([
+            'last_90_days' => [
+                'label' => 'Last 90 Days',
+                'range' => fn () => [\Carbon\Carbon::now()->subDays(89)->startOfDay(), \Carbon\Carbon::now()->endOfDay()],
+            ],
+        ]);
+        $query = applyFilterQuery($filter, freshQuery(), ['preset' => 'last_90_days']);
+        $sql = $query->toSql();
+
+        expect($sql)->toContain('"created_at"')
+            ->and($sql)->toContain('between')
+            ->and($query->getBindings())->toHaveCount(2);
+    });
+});
+
+// ─── InputMaskFilter ──────────────────────────────────────────────
+
+describe('InputMaskFilter Query', function () {
+    it('applies LIKE with % wrapping for like operator', function () {
+        $filter = InputMaskFilter::make('phone')->like()->stripMask(false);
+        $query = applyFilterQuery($filter, freshQuery(), ['value' => '1234567890']);
+        $sql = $query->toSql();
+
+        expect($sql)->toContain('"phone"')
+            ->and($sql)->toContain('like')
+            ->and($query->getBindings())->toContain('%1234567890%');
+    });
+
+    it('applies exact equality for exact operator', function () {
+        $filter = InputMaskFilter::make('code')->exact()->stripMask(false);
+        $query = applyFilterQuery($filter, freshQuery(), ['value' => 'ABC123']);
+        $sql = $query->toSql();
+
+        expect($sql)->toContain('"code"')
+            ->and($sql)->toContain('=')
+            ->and($query->getBindings())->toContain('ABC123');
+    });
+
+    it('strips non-alphanumeric characters when stripMask is enabled', function () {
+        $filter = InputMaskFilter::make('phone')->like()->stripMask(true);
+        $query = applyFilterQuery($filter, freshQuery(), ['value' => '(123) 456-7890']);
+
+        // stripMaskCharacters removes non-alphanumeric chars → '1234567890'
+        expect($query->getBindings())->toContain('%1234567890%');
+    });
+
+    it('does not apply query for empty value', function () {
+        $filter = InputMaskFilter::make('phone')->like();
+        $query = applyFilterQuery($filter, freshQuery(), ['value' => '']);
+        $sql = $query->toSql();
+
+        expect($sql)->not->toContain('where');
+    });
+
+    it('does not apply query when value is missing', function () {
+        $filter = InputMaskFilter::make('phone')->like();
+        $query = applyFilterQuery($filter, freshQuery(), []);
+        $sql = $query->toSql();
+
+        expect($sql)->not->toContain('where');
+    });
+});
+
+// ─── FilterGroup ──────────────────────────────────────────────────
+
+describe('FilterGroup Query', function () {
+    it('applies all child filter conditions with AND logic', function () {
+        $group = FilterGroup::make('search_group')
+            ->filters([
+                LikeFilter::make('title')->sensitive(),
+                LikeFilter::make('body')->sensitive(),
+            ])
+            ->andLogic();
+
+        $query = applyFilterQuery($group, freshQuery(), [
+            'title' => 'hello',
+            'body' => 'world',
+        ]);
+        $sql = $query->toSql();
+
+        expect($sql)->toContain('"title"')
+            ->and($sql)->toContain('"body"');
+    });
+
+    it('wraps conditions in orWhere with OR logic', function () {
+        $group = FilterGroup::make('search_group')
+            ->filters([
+                LikeFilter::make('title')->sensitive(),
+                LikeFilter::make('body')->sensitive(),
+            ])
+            ->orLogic();
+
+        $query = applyFilterQuery($group, freshQuery(), [
+            'title' => 'hello',
+            'body' => 'world',
+        ]);
+        $sql = $query->toSql();
+
+        expect($sql)->toContain('or')
+            ->and($sql)->toContain('"title"')
+            ->and($sql)->toContain('"body"');
+    });
+
+    it('does not apply query when all data values are empty', function () {
+        $group = FilterGroup::make('search_group')
+            ->filters([
+                LikeFilter::make('title')->sensitive(),
+            ])
+            ->andLogic();
+
+        $query = applyFilterQuery($group, freshQuery(), [
+            'title' => '',
+        ]);
+        $sql = $query->toSql();
+
+        expect($sql)->not->toContain('where');
+    });
+
+    it('does not apply query when data is empty', function () {
+        $group = FilterGroup::make('search_group')
+            ->filters([
+                LikeFilter::make('title')->sensitive(),
+            ])
+            ->andLogic();
+
+        $query = applyFilterQuery($group, freshQuery(), []);
+        $sql = $query->toSql();
+
+        expect($sql)->not->toContain('where');
     });
 });

@@ -1,6 +1,8 @@
 <?php
 
 use Cooper\FilamentDcatFilters\Concerns\HasRelationship;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 // Create a concrete test class that uses the trait
 class HasRelationshipTestFilter
@@ -16,6 +18,31 @@ class HasRelationshipTestFilter
     {
         return $this->relationshipTitleColumn;
     }
+
+    public function testApplyRelationshipConstraint(Builder $query, string $column, string $operator, mixed $value): Builder
+    {
+        return $this->applyRelationshipConstraint($query, $column, $operator, $value);
+    }
+
+    public function testApplyRelationshipWhereIn(Builder $query, string $column, array $values, bool $negate = false): Builder
+    {
+        return $this->applyRelationshipWhereIn($query, $column, $values, $negate);
+    }
+}
+
+function freshRelationshipQuery(): Builder
+{
+    $model = new class extends Model
+    {
+        protected $table = 'test_items';
+
+        public function tags(): \Illuminate\Database\Eloquent\Relations\HasMany
+        {
+            return $this->hasMany(self::class, 'test_item_id');
+        }
+    };
+
+    return $model->newQuery();
 }
 
 describe('Relationship Configuration', function () {
@@ -53,5 +80,47 @@ describe('Fluent Interface', function () {
         $result = $filter->relationship('author', 'name');
 
         expect($result)->toBeInstanceOf(HasRelationshipTestFilter::class);
+    });
+});
+
+describe('applyRelationshipConstraint', function () {
+    it('adds whereHas subquery to the query', function () {
+        $filter = new HasRelationshipTestFilter;
+        $filter->relationship('tags');
+
+        $query = $filter->testApplyRelationshipConstraint(freshRelationshipQuery(), 'name', '=', 'php');
+        $sql = $query->toSql();
+
+        expect($sql)->toContain('exists');
+        expect($query->getBindings())->toContain('php');
+    });
+});
+
+describe('applyRelationshipWhereIn', function () {
+    it('adds whereHas + whereIn subquery to the query', function () {
+        $filter = new HasRelationshipTestFilter;
+        $filter->relationship('tags');
+
+        $query = $filter->testApplyRelationshipWhereIn(freshRelationshipQuery(), 'id', [1, 2, 3]);
+        $sql = $query->toSql();
+
+        expect($sql)->toContain('exists');
+        expect($sql)->toContain(' in ');
+        expect($query->getBindings())->toContain(1);
+        expect($query->getBindings())->toContain(2);
+        expect($query->getBindings())->toContain(3);
+    });
+
+    it('adds whereHas + whereNotIn subquery when negate is true', function () {
+        $filter = new HasRelationshipTestFilter;
+        $filter->relationship('tags');
+
+        $query = $filter->testApplyRelationshipWhereIn(freshRelationshipQuery(), 'id', [1, 2], negate: true);
+        $sql = $query->toSql();
+
+        expect($sql)->toContain('exists');
+        expect($sql)->toContain('not in');
+        expect($query->getBindings())->toContain(1);
+        expect($query->getBindings())->toContain(2);
     });
 });
