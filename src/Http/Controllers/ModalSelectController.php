@@ -68,7 +68,7 @@ class ModalSelectController extends Controller
         try {
             $labels = $modelClass::query()
                 ->whereIn($keyColumn, $ids)
-                ->pluck($column)
+                ->pluck($column, $keyColumn)
                 ->toArray();
 
             return response()->json([

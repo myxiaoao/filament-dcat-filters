@@ -3,9 +3,10 @@
 namespace Cooper\FilamentDcatFilters\Filters;
 
 use Closure;
+use Cooper\FilamentDcatFilters\Concerns\HasColumnName;
 use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
+use Cooper\FilamentDcatFilters\Concerns\HasLabelResolver;
 use Filament\Forms\Components\Select;
-use Filament\Tables\Columns\Column;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
 use Illuminate\Database\Eloquent\Builder;
@@ -13,27 +14,23 @@ use Illuminate\Database\Eloquent\Model;
 
 class SelectTableFilter extends Filter
 {
+    use HasColumnName;
     use HasInlineLabel;
+    use HasLabelResolver;
 
     protected ?string $modelClass = null;
 
     protected ?string $relationship = null;
 
-    protected array $tableColumns = [];
-
     protected array $searchColumns = [];
 
     protected bool $multiple = false;
-
-    protected ?string $modalWidth = null;
 
     protected ?string $titleColumn = 'name';
 
     protected ?Closure $modifyQueryUsing = null;
 
     protected ?int $optionsLimit = null;
-
-    protected ?string $columnName = null;
 
     /**
      * Setup default configuration.
@@ -63,22 +60,7 @@ class SelectTableFilter extends Filter
     {
         $this->relationship = $relationship;
         $this->titleColumn = $titleColumn;
-
-        // Try to get model class from relationship
-        // Note: This is a simplified version, might need adjustment based on actual usage
-        $this->configureForm();
-
-        return $this;
-    }
-
-    /**
-     * Set the columns to display in the table.
-     *
-     * @param  array<Column>  $columns
-     */
-    public function tableColumns(array $columns): static
-    {
-        $this->tableColumns = $columns;
+        $this->configureQuery();
 
         return $this;
     }
@@ -109,16 +91,6 @@ class SelectTableFilter extends Filter
     }
 
     /**
-     * Set the modal width.
-     */
-    public function modalWidth(string $width): static
-    {
-        $this->modalWidth = $width;
-
-        return $this;
-    }
-
-    /**
      * Modify the query used to fetch records.
      */
     public function modifyQueryUsing(?Closure $callback): static
@@ -140,8 +112,7 @@ class SelectTableFilter extends Filter
     }
 
     /**
-     * Set the column name for the comparison.
-     * This allows the filter name to differ from the actual database column.
+     * Set the column name and reconfigure the form.
      */
     public function column(string $column): static
     {
@@ -168,7 +139,7 @@ class SelectTableFilter extends Filter
             return;
         }
 
-        $labelResolver = fn (): string => $this->getLabel() ?? $this->getName();
+        $labelResolver = $this->labelResolver();
         $modelClass = $this->modelClass;
         $titleColumn = $this->titleColumn;
 
@@ -207,8 +178,7 @@ class SelectTableFilter extends Filter
     protected function configureQuery(): void
     {
         $this->query(function (Builder $query, array $data): Builder {
-            // Use custom column name if set, otherwise default to filter name
-            $column = $this->columnName ?? $this->getName();
+            $column = $this->resolveColumnName();
 
             if ($this->multiple) {
                 $values = $data['values'] ?? [];
@@ -248,8 +218,8 @@ class SelectTableFilter extends Filter
         });
 
         $this->indicateUsing(function (array $data): array {
-            $label = $this->getLabel() ?? $this->getName();
-            $model = $this->getModel();
+            $label = $this->resolveLabel();
+            $model = $this->modelClass;
 
             if (! $model || ! class_exists($model) || ! is_subclass_of($model, Model::class)) {
                 return [];
@@ -293,13 +263,5 @@ class SelectTableFilter extends Filter
                 return [];
             }
         });
-    }
-
-    /**
-     * Get the model class.
-     */
-    protected function getModel(): ?string
-    {
-        return $this->modelClass;
     }
 }

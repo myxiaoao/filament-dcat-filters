@@ -2,6 +2,7 @@
 
 namespace Cooper\FilamentDcatFilters\Filters;
 
+use Cooper\FilamentDcatFilters\Concerns\HasColumnName;
 use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Filters\Filter;
@@ -10,6 +11,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class JsonFilter extends Filter
 {
+    use HasColumnName;
     use HasInlineLabel;
 
     protected const VALID_OPERATORS = ['=', '!=', '>', '>=', '<', '<=', 'like', 'not like'];
@@ -19,19 +21,6 @@ class JsonFilter extends Filter
     protected string $operator = '=';
 
     protected ?string $defaultValue = null;
-
-    protected ?string $columnName = null;
-
-    /**
-     * Set the column name for the comparison.
-     * This allows the filter name to differ from the actual database column.
-     */
-    public function column(string $column): static
-    {
-        $this->columnName = $column;
-
-        return $this;
-    }
 
     protected function setUp(): void
     {
@@ -59,6 +48,7 @@ class JsonFilter extends Filter
         }
 
         $this->operator = $operator;
+        $this->configureQuery();
 
         return $this;
     }
@@ -112,7 +102,7 @@ class JsonFilter extends Filter
 
     protected function buildJsonAccessor(): string
     {
-        $column = $this->columnName ?? $this->getName();
+        $column = $this->resolveColumnName();
 
         if (! $this->jsonPath) {
             return $column;

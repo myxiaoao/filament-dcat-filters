@@ -2,10 +2,8 @@
 
 namespace Cooper\FilamentDcatFilters\Filters;
 
-use Closure;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
-use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\HtmlString;
 
 /**
@@ -93,13 +91,5 @@ class BetweenFilter extends RangeFilter
         $this->buildBetweenForm();
 
         return $this;
-    }
-
-    /**
-     * Override to return BetweenFilter type.
-     */
-    public function label(Htmlable|Closure|string|null $label): static
-    {
-        return parent::label($label);
     }
 }

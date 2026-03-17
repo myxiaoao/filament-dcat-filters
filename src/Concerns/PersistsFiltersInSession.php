@@ -17,7 +17,9 @@ trait PersistsFiltersInSession
      */
     protected function getFilterSessionKey(): string
     {
-        return 'filament-dcat-filters:'.static::class;
+        $prefix = config('filament-dcat-filters.persistence.session_prefix', 'filament-dcat-filters');
+
+        return $prefix.':'.static::class;
     }
 
     /**

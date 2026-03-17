@@ -3,6 +3,7 @@
 namespace Cooper\FilamentDcatFilters\Filters;
 
 use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
+use Cooper\FilamentDcatFilters\Concerns\HasLabelResolver;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Filters\Filter;
@@ -12,6 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
 class NullFilter extends Filter
 {
     use HasInlineLabel;
+    use HasLabelResolver;
 
     protected string $nullLabel = 'Is Null';
 
@@ -109,7 +111,7 @@ class NullFilter extends Filter
      */
     protected function configureForm(): void
     {
-        $labelResolver = fn (): string => $this->getLabel() ?? ucfirst(str_replace('_', ' ', $this->getName()));
+        $labelResolver = $this->labelResolver();
 
         $options = [
             '' => $this->allLabel,
@@ -183,7 +185,7 @@ class NullFilter extends Filter
                 return [];
             }
 
-            $label = $this->getLabel() ?? ucfirst(str_replace('_', ' ', $this->getName()));
+            $label = $this->resolveLabel();
 
             $valueLabel = match ($value) {
                 'null' => $this->nullLabel,

@@ -2,6 +2,7 @@
 
 namespace Cooper\FilamentDcatFilters\Filters;
 
+use Cooper\FilamentDcatFilters\Concerns\HasColumnName;
 use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Filters\Filter;
@@ -10,22 +11,10 @@ use Illuminate\Database\Eloquent\Builder;
 
 class DateComponentFilter extends Filter
 {
+    use HasColumnName;
     use HasInlineLabel;
 
     protected string $component = 'year'; // 'year', 'month', 'day'
-
-    protected ?string $columnName = null;
-
-    /**
-     * Set the column name for the comparison.
-     * This allows the filter name to differ from the actual database column.
-     */
-    public function column(string $column): static
-    {
-        $this->columnName = $column;
-
-        return $this;
-    }
 
     /**
      * Setup default configuration.
@@ -157,7 +146,7 @@ class DateComponentFilter extends Filter
                 return $query;
             }
 
-            $column = $this->columnName ?? $this->getName();
+            $column = $this->resolveColumnName();
 
             // Use grammar to safely wrap column name
             $wrappedColumn = $query->getGrammar()->wrap($column);

@@ -2,8 +2,8 @@
 
 namespace Cooper\FilamentDcatFilters\Filters;
 
-use Closure;
 use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
+use Cooper\FilamentDcatFilters\Concerns\HasLabelResolver;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Filters\Filter;
@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
 class ScopeFilter extends Filter
 {
     use HasInlineLabel;
+    use HasLabelResolver;
 
     protected array $scopes = [];
 
@@ -128,7 +129,7 @@ class ScopeFilter extends Filter
         }
 
         // Create form component based on style
-        $labelResolver = fn (): string => $this->getLabel() ?? ucfirst($this->getName());
+        $labelResolver = $this->labelResolver();
 
         $formComponent = match ($this->displayStyle) {
             'select' => $this->buildScopeSelectComponent($labelResolver, $options),
@@ -196,29 +197,6 @@ class ScopeFilter extends Filter
         $this->applyInlineLabel($select, $labelResolver);
 
         return $select;
-    }
-
-    /**
-     * Get the count for a specific scope (for badge display).
-     *
-     * Note: This is a placeholder. Actual implementation would require
-     * access to the base query and might be implemented differently
-     * depending on the use case.
-     */
-    protected function getScopeCount(string $scopeKey): ?int
-    {
-        $scopeConfig = $this->scopes[$scopeKey] ?? null;
-
-        if (! is_array($scopeConfig) || ! isset($scopeConfig['badge'])) {
-            return null;
-        }
-
-        if ($scopeConfig['badge'] instanceof Closure) {
-            // This would need to be called with appropriate context
-            return null;
-        }
-
-        return null;
     }
 
     /**

@@ -2,7 +2,9 @@
 
 namespace Cooper\FilamentDcatFilters\Filters;
 
+use Cooper\FilamentDcatFilters\Concerns\HasColumnName;
 use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
+use Cooper\FilamentDcatFilters\Concerns\HasLabelResolver;
 use Cooper\FilamentDcatFilters\Concerns\HasRelationship;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Filters\Filter;
@@ -11,7 +13,9 @@ use Illuminate\Database\Eloquent\Builder;
 
 class InFilter extends Filter
 {
+    use HasColumnName;
     use HasInlineLabel;
+    use HasLabelResolver;
     use HasRelationship;
 
     protected array $options = [];
@@ -21,8 +25,6 @@ class InFilter extends Filter
     protected bool $searchable = false;
 
     protected bool $negate = false;
-
-    protected ?string $columnName = null;
 
     /**
      * Setup default configuration.
@@ -86,17 +88,6 @@ class InFilter extends Filter
     }
 
     /**
-     * Set the column name for the comparison.
-     * This allows the filter name to differ from the actual database column.
-     */
-    public function column(string $column): static
-    {
-        $this->columnName = $column;
-
-        return $this;
-    }
-
-    /**
      * Configure form component based on settings.
      */
     protected function configureForm(): void
@@ -106,7 +97,7 @@ class InFilter extends Filter
         }
 
         // Use Select component uniformly, supporting both single and multiple selection
-        $labelResolver = fn (): string => $this->getLabel() ?? $this->getName();
+        $labelResolver = $this->labelResolver();
 
         $select = Select::make($this->multiple ? 'values' : 'value')
             ->label($labelResolver)
@@ -131,7 +122,7 @@ class InFilter extends Filter
     {
         $this->query(function (Builder $query, array $data): Builder {
             // Use relationship title column, custom column, or filter name
-            $column = $this->relationshipTitleColumn ?? $this->columnName ?? $this->getName();
+            $column = $this->relationshipTitleColumn ?? $this->resolveColumnName();
 
             if ($this->multiple) {
                 $values = $data['values'] ?? [];

@@ -33,14 +33,12 @@ This document compares the native Dcat Admin Filter features with the implemente
 |-----------------|---------|----------------------|---------------------|
 | `Like` | Contains text (case-sensitive) | `LikeFilter::make()` | ✅ Implemented |
 | `Ilike` | Contains text (case-insensitive) | `LikeFilter::make()->insensitive()` | ✅ Implemented |
-| `NotLike` | Does not contain text | ❌ Not implemented | ⚠️ Missing |
+| `NotLike` | Does not contain text | `LikeFilter::make()->notLike()` | ✅ Implemented |
 | `StartWith` | Starts with... | `LikeFilter::make()->startsWith()` | ✅ Implemented |
 | `EndWith` | Ends with... | `LikeFilter::make()->endsWith()` | ✅ Implemented |
-| `FindInSet` | FIND_IN_SET SQL function | ❌ Not implemented | ⚠️ Missing |
+| `FindInSet` | FIND_IN_SET SQL function | `FindInSetFilter::make()` | ✅ Implemented |
 
-**Missing Features**:
-- ❌ `NotLike` - Exclude records containing specific text
-- ❌ `FindInSet` - For comma-separated string queries
+**Summary**: All pattern matching features are fully implemented.
 
 ---
 
@@ -67,12 +65,12 @@ This document compares the native Dcat Admin Filter features with the implemente
 
 | Dcat Admin Class | Feature | Filament Dcat Filters | Implementation Status |
 |-----------------|---------|----------------------|---------------------|
-| `Year` | Filter by year | ❌ Not implemented | ⚠️ Missing |
-| `Month` | Filter by month | ❌ Not implemented | ⚠️ Missing |
-| `Day` | Filter by day | ❌ Not implemented | ⚠️ Missing |
-| `Date` | Exact date | `RangeFilter::make()->date()` (can be used for single date) | ⚠️ Partially implemented |
+| `Year` | Filter by year | `DateComponentFilter::make()->year()` | ✅ Implemented |
+| `Month` | Filter by month | `DateComponentFilter::make()->month()` | ✅ Implemented |
+| `Day` | Filter by day | `DateComponentFilter::make()->day()` | ✅ Implemented |
+| `Date` | Exact date | `RangeFilter::make()->date()` (can be used for single date) | ✅ Implemented |
 
-**Missing Features**: Dedicated year/month/day single-select filters (can be implemented using `ComparisonFilter` + custom query)
+**Summary**: All date/time component filters are fully implemented through the `DateComponentFilter` class.
 
 ---
 
@@ -84,7 +82,7 @@ This document compares the native Dcat Admin Filter features with the implemente
 |------------------|---------|----------------------|---------------------|
 | `in()->multipleSelect()` | Multi-select dropdown | `InFilter::make()->multiple()` | ✅ Implemented |
 | `equal()->select()` | Single-select dropdown | `InFilter::make()` | ✅ Implemented |
-| `notIn()` | Exclude options | ❌ Not implemented | ⚠️ Missing |
+| `notIn()` | Exclude options | `InFilter::make()->notIn()` | ✅ Implemented |
 | `select()` (API data source) | Dynamic options | ❌ Not implemented | ⚠️ Missing |
 | `multipleSelectTable()` | Table modal multi-select | `SelectTableFilter::make()->multiple()` | ✅ Implemented |
 | `selectTable()` | Table modal single-select | `SelectTableFilter::make()` | ✅ Implemented |
@@ -93,7 +91,6 @@ This document compares the native Dcat Admin Filter features with the implemente
 | `radio()` | Radio button | ❌ Not implemented (replaced with Select) | ⚠️ Difference |
 
 **Missing Features**:
-- ❌ `notIn()` - Exclude filtering
 - ❌ API data source support
 - ⚠️ Checkbox/Radio components (Filament uses Select uniformly)
 
@@ -120,10 +117,10 @@ This document compares the native Dcat Admin Filter features with the implemente
 
 | Dcat Admin Feature | Function | Filament Dcat Filters | Implementation Status |
 |-------------------|----------|----------------------|---------------------|
-| `group($label, function() {})` | Filter grouping | ❌ Not implemented | ⚠️ Missing |
-| Multiple conditions within group | Logical combination | ❌ Not implemented | ⚠️ Missing |
+| `group($label, function() {})` | Filter grouping | `FilterGroup::make()` | ✅ Implemented |
+| Multiple conditions within group | Logical combination | `FilterGroup::make()->filters([...])` | ✅ Implemented |
 
-**Missing Features**: Complete Group Filter (but can be implemented through Filament native grouping features)
+**Summary**: Group filter features are fully implemented through the `FilterGroup` class.
 
 ---
 
@@ -135,9 +132,9 @@ This document compares the native Dcat Admin Filter features with the implemente
 |-----------------|---------|----------------------|---------------------|
 | `Where` | Custom WHERE conditions | Filament native `query()` method | ✅ Implemented |
 | `WhereBetween` | Custom BETWEEN | `RangeFilter` + custom logic | ✅ Implemented |
-| `Hidden` | Hidden filter | ❌ Not implemented | ⚠️ Missing |
+| `Hidden` | Hidden filter | `HiddenFilter::make()` | ✅ Implemented |
 
-**Missing Features**: `Hidden` Filter (hidden filter, commonly used for URL parameter passing)
+**Summary**: All custom filter features are implemented.
 
 ---
 
@@ -163,11 +160,11 @@ This document compares the native Dcat Admin Filter features with the implemente
 
 | Dcat Admin Feature | Function | Filament Dcat Filters | Implementation Status |
 |-------------------|----------|----------------------|---------------------|
-| `inputmask()` | Client-side input mask | ❌ Not implemented | ⚠️ Missing |
-| Numeric/currency/percentage format | Formatted input | ❌ Not implemented | ⚠️ Missing |
-| Phone/email/URL validation | Input validation | ❌ Not implemented | ⚠️ Missing |
+| `inputmask()` | Client-side input mask | `InputMaskFilter::make()` | ✅ Implemented |
+| Numeric/currency/percentage format | Formatted input | `InputMaskFilter::make()` | ✅ Implemented |
+| Phone/email/URL validation | Input validation | `InputMaskFilter::make()` | ✅ Implemented |
 
-**Missing Features**: InputMask client-side validation (but server-side validation can be implemented through Filament's native form validation rules)
+**Summary**: InputMask features are fully implemented through the `InputMaskFilter` class.
 
 ---
 
@@ -187,39 +184,25 @@ This document compares the native Dcat Admin Filter features with the implemente
 
 ## Feature Implementation Summary
 
-### ✅ Fully Implemented (8/11 Core Features)
+### ✅ Fully Implemented (11/11 Core Features)
 
 1. ✅ **Basic Comparison Filters** - All operators (=, !=, >, >=, <, <=)
 2. ✅ **Range Filters** - Between (date/time/numeric)
 3. ✅ **Scope Quick Filters** - Tab-style quick filtering
 4. ✅ **Selection Filters** - Single/multi-select dropdowns, table selection
-5. ✅ **Pattern Matching** - Like, StartsWith, EndsWith (Case-sensitive/insensitive)
+5. ✅ **Pattern Matching** - Like, NotLike, StartsWith, EndsWith, FindInSet (Case-sensitive/insensitive)
 6. ✅ **Layout Configuration** - Responsive, deferred filtering, panel/dropdown layout
 7. ✅ **Relationship Filtering** - Via Filament native support
-8. ✅ **Custom Filtering** - Via query() callback
+8. ✅ **Custom Filtering** - Via query() callback, HiddenFilter
+9. ✅ **Date/Time Filters** - Year/Month/Day via DateComponentFilter
+10. ✅ **Input Validation** - InputMaskFilter for client-side input masking
+11. ✅ **Group Filters** - FilterGroup for filter grouping
 
-### ⚠️ Partially Implemented or Needs Improvement (3/11)
-
-9. ⚠️ **Date/Time Filters** - Missing Year/Month/Day independent filters
-10. ⚠️ **Input Validation** - Missing InputMask client-side validation
-11. ⚠️ **Group Filters** - Missing Group Filter (can use Filament native grouping)
-
-### ❌ Missing Features List
-
-#### High Priority
-- `NotLike` - Exclude text matches
-- `NotIn` - Exclude options
-- `Hidden` Filter - Hidden filter
-- API Data Source - Dynamically load options
-
-#### Medium Priority
-- `FindInSet` - Comma-separated string queries
-- `Year/Month/Day` - Independent date components
-- InputMask - Client-side input validation
+### ⚠️ Minor Missing Features
 
 #### Low Priority
-- `Group` Filter - Filter grouping (Filament has native solution)
-- Checkbox/Radio - Checkbox/radio buttons (replaced with Select)
+- API Data Source - Dynamically load options (can use Filament's async options)
+- Checkbox/Radio - Dedicated checkbox/radio buttons (replaced with Select)
 
 ---
 
@@ -236,42 +219,35 @@ This document compares the native Dcat Admin Filter features with the implemente
 
 ### Dcat Admin Advantages
 
-1. **Feature Completeness**: More built-in filter types
-2. **InputMask**: Client-side input validation
-3. **Group Filter**: Complex filter condition grouping
-4. **API Integration**: Support for remote data sources
+1. **API Integration**: Support for remote data sources
+2. **Mature Ecosystem**: Long-established with extensive community usage
 
 ---
 
 ## Recommended Future Development
 
-### Phase 1: Add Core Missing Features
-1. Implement `NotLike` Filter
-2. Implement `NotIn` Filter
-3. Implement `Hidden` Filter
-4. Add Year/Month/Day shortcut filters
-
-### Phase 2: Enhanced Features
+### Phase 1: Enhanced Features
 1. API data source support (via Filament's async options)
-2. Add FindInSet filter
-3. Client-side validation enhancement
+2. Add more preset Scopes (common date ranges, etc.)
 
-### Phase 3: Experience Optimization
-1. Add more preset Scopes (common date ranges, etc.)
-2. Improve documentation and examples
-3. Performance optimization
+### Phase 2: Experience Optimization
+1. Improve documentation and examples
+2. Performance optimization
+3. Additional InputMask presets for common formats
 
 ---
 
 ## Conclusion
 
-**Filament Dcat Filters** has successfully implemented approximately **80%** of Dcat Admin's core filtering features, including:
+**Filament Dcat Filters** has successfully implemented nearly **100%** of Dcat Admin's core filtering features, including:
 - ✅ All basic comparison operations
 - ✅ Complete range filtering
 - ✅ Scope quick filtering
-- ✅ Selection and table filtering
-- ✅ Text pattern matching
+- ✅ Selection and table filtering (including NotIn)
+- ✅ Text pattern matching (including NotLike, FindInSet)
+- ✅ Date component filters (Year/Month/Day)
+- ✅ Hidden Filter
+- ✅ Filter Group
+- ✅ InputMask client-side validation
 
-**Main Missing Features**: NotLike, NotIn, Hidden Filter, Year/Month/Day filters, API data source support.
-
-Most of these missing features can be implemented through existing components + custom query callbacks, and core filtering scenarios are fully covered.
+**Remaining minor gaps**: API data source support and dedicated checkbox/radio components. All core filtering scenarios are fully covered.

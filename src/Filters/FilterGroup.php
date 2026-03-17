@@ -125,7 +125,7 @@ class FilterGroup extends Filter
             return;
         }
 
-        $query->where($filter->getName(), 'like', "%{$value}%");
+        $query->where($filter->getName(), $value);
     }
 
     public function getLogic(): string

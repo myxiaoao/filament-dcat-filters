@@ -67,7 +67,7 @@ A modern collection of enhanced filters inspired by [Dcat Admin](https://github.
 - 🎨 **Highly Customizable** - Extensive customization options for each filter
 - 📱 **Mobile Friendly** - Responsive design for all screen sizes
 - 🌐 **Bilingual Docs** - Complete English and Chinese documentation
-- ✅ **Fully Tested** - Comprehensive test coverage with 461 tests
+- ✅ **Fully Tested** - Comprehensive test coverage with 550 tests
 
 ## Version Compatibility
 
@@ -416,6 +416,63 @@ use Cooper\FilamentDcatFilters\Facades\FilamentDcatFilters;
 
 FilamentDcatFilters::scopeFilter('status')->scopes([...]);
 FilamentDcatFilters::rangeFilter('created_at')->datetime();
+
+// All available filter shortcuts
+FilamentDcatFilters::booleanFilter('is_active');
+FilamentDcatFilters::nullFilter('deleted_at');
+FilamentDcatFilters::enumFilter('status');
+FilamentDcatFilters::fullTextFilter('search');
+FilamentDcatFilters::hiddenFilter('tenant_id');
+FilamentDcatFilters::filterGroup('combined');
+```
+
+## Artisan Command
+
+Generate a custom filter class using the Artisan command:
+
+```bash
+php artisan make:dcat-filter MyCustom
+```
+
+This creates `app/Filament/Filters/MyCustomFilter.php`.
+
+### Options
+
+| Option | Description | Default |
+|--------|-------------|---------|
+| `--type` | Filter type to extend | `basic` |
+| `--force` | Overwrite existing file | `false` |
+
+### Available Types
+
+| Type | Base Class |
+|------|-----------|
+| `basic` | `Filament\Tables\Filters\Filter` |
+| `like` | `LikeFilter` |
+| `in` | `InFilter` |
+| `comparison` | `ComparisonFilter` |
+| `boolean` | `BooleanFilter` |
+| `null` | `NullFilter` |
+| `enum` | `EnumFilter` |
+| `range` | `RangeFilter` |
+| `regex` | `RegexFilter` |
+| `fulltext` | `FullTextFilter` |
+| `json` | `JsonFilter` |
+
+### Examples
+
+```bash
+# Create a basic filter
+php artisan make:dcat-filter ProductStatus
+
+# Create a filter extending LikeFilter
+php artisan make:dcat-filter ProductSearch --type=like
+
+# Create a filter extending ComparisonFilter
+php artisan make:dcat-filter MinPrice --type=comparison
+
+# Overwrite existing
+php artisan make:dcat-filter ProductStatus --force
 ```
 
 ## Testing

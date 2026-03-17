@@ -2,8 +2,10 @@
 
 namespace Cooper\FilamentDcatFilters\Filters;
 
+use Cooper\FilamentDcatFilters\Concerns\HasColumnName;
 use Cooper\FilamentDcatFilters\Concerns\HasDatabaseDriver;
 use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
+use Cooper\FilamentDcatFilters\Concerns\HasLabelResolver;
 use Cooper\FilamentDcatFilters\Concerns\HasRelationship;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Filters\Filter;
@@ -12,8 +14,10 @@ use Illuminate\Database\Eloquent\Builder;
 
 class LikeFilter extends Filter
 {
+    use HasColumnName;
     use HasDatabaseDriver;
     use HasInlineLabel;
+    use HasLabelResolver;
     use HasRelationship;
 
     protected string $operator = 'like';
@@ -23,8 +27,6 @@ class LikeFilter extends Filter
     protected string $wildcardPosition = 'both'; // 'both', 'start', 'end', 'none'
 
     protected bool $negate = false;
-
-    protected ?string $columnName = null;
 
     /**
      * Create a new LIKE filter instance.
@@ -37,7 +39,7 @@ class LikeFilter extends Filter
         $filter->caseSensitive = config('filament-dcat-filters.quick_filters.case_sensitive', false);
         $filter->wildcardPosition = config('filament-dcat-filters.quick_filters.like_wildcards', 'both');
 
-        $labelResolver = fn (): string => $filter->getLabel() ?? $filter->getName();
+        $labelResolver = $filter->labelResolver();
 
         $input = TextInput::make('value')
             ->label($labelResolver)
@@ -144,17 +146,6 @@ class LikeFilter extends Filter
     }
 
     /**
-     * Set the column name for the comparison.
-     * This allows the filter name to differ from the actual database column.
-     */
-    public function column(string $column): static
-    {
-        $this->columnName = $column;
-
-        return $this;
-    }
-
-    /**
      * Configure the query logic for this filter.
      */
     protected function configureQuery(): void
@@ -167,7 +158,7 @@ class LikeFilter extends Filter
             }
 
             // Use relationship title column, custom column, or filter name
-            $column = $this->relationshipTitleColumn ?? $this->columnName ?? $this->getName();
+            $column = $this->relationshipTitleColumn ?? $this->resolveColumnName();
             $pattern = $this->buildPattern((string) $value);
 
             // Relationship query: wrap constraint inside whereHas

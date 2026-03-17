@@ -11,17 +11,19 @@ document.addEventListener('livewire:init', () => {
         if (!key || !componentId) return;
 
         // Listen for filter changes and save to LocalStorage
-        Livewire.hook('message.processed', (message, component) => {
-            if (component.id !== componentId) return;
+        Livewire.hook('commit', ({ component, respond }) => {
+            respond(() => {
+                if (component.id !== componentId) return;
 
-            const filters = component.snapshot?.data?.tableFilters;
-            if (filters) {
-                try {
-                    localStorage.setItem(key, JSON.stringify(filters));
-                } catch (e) {
-                    console.warn('Failed to save filters to LocalStorage:', e);
+                const filters = component.snapshot?.data?.tableFilters?.[0];
+                if (filters) {
+                    try {
+                        localStorage.setItem(key, JSON.stringify(filters));
+                    } catch (e) {
+                        console.warn('Failed to save filters to LocalStorage:', e);
+                    }
                 }
-            }
+            });
         });
     });
 

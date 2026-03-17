@@ -2,7 +2,10 @@
 
 namespace Cooper\FilamentDcatFilters\Filters;
 
+use Cooper\FilamentDcatFilters\Concerns\HasColumnName;
 use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
+use Cooper\FilamentDcatFilters\Concerns\HasLabelResolver;
+use Cooper\FilamentDcatFilters\Concerns\HasOperator;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
@@ -10,15 +13,14 @@ use Illuminate\Database\Eloquent\Builder;
 
 class ComparisonFilter extends Filter
 {
+    use HasColumnName;
     use HasInlineLabel;
+    use HasLabelResolver;
+    use HasOperator;
 
     protected const ALLOWED_OPERATORS = ['=', '!=', '>', '>=', '<', '<='];
 
-    protected string $operator = '=';
-
     protected string $inputType = 'numeric';
-
-    protected ?string $columnName = null;
 
     protected ?int $moneyDivider = null;
 
@@ -31,18 +33,7 @@ class ComparisonFilter extends Filter
     {
         $filter = parent::make($name);
 
-        $labelResolver = fn (): string => $filter->getLabel() ?? $filter->getName();
-
-        $input = TextInput::make('value')
-            ->label($labelResolver)
-            ->placeholder(__('filament-dcat-filters::filament-dcat-filters.comparison.placeholder'))
-            ->numeric()
-            ->live()
-            ->columnSpanFull();
-
-        $filter->applyInlineLabel($input, $labelResolver);
-
-        $filter->form([$input]);
+        $filter->form([$filter->buildValueInput()]);
 
         $filter->configureQuery();
         $filter->columnSpan(1);
@@ -51,74 +42,26 @@ class ComparisonFilter extends Filter
     }
 
     /**
-     * Set operator to greater than (>).
+     * Build the value TextInput component.
      */
-    public function gt(): static
+    protected function buildValueInput(): TextInput
     {
-        $this->operator = '>';
-        $this->configureQuery();
+        $labelResolver = $this->labelResolver();
 
-        return $this;
+        $input = TextInput::make('value')
+            ->label($labelResolver)
+            ->placeholder(__('filament-dcat-filters::filament-dcat-filters.comparison.placeholder'))
+            ->numeric()
+            ->live()
+            ->columnSpanFull();
+
+        $this->applyInlineLabel($input, $labelResolver);
+
+        return $input;
     }
 
     /**
-     * Set operator to greater than or equal (>=).
-     */
-    public function gte(): static
-    {
-        $this->operator = '>=';
-        $this->configureQuery();
-
-        return $this;
-    }
-
-    /**
-     * Set operator to less than (<).
-     */
-    public function lt(): static
-    {
-        $this->operator = '<';
-        $this->configureQuery();
-
-        return $this;
-    }
-
-    /**
-     * Set operator to less than or equal (<=).
-     */
-    public function lte(): static
-    {
-        $this->operator = '<=';
-        $this->configureQuery();
-
-        return $this;
-    }
-
-    /**
-     * Set operator to equal (=).
-     */
-    public function eq(): static
-    {
-        $this->operator = '=';
-        $this->configureQuery();
-
-        return $this;
-    }
-
-    /**
-     * Set operator to not equal (!=).
-     */
-    public function ne(): static
-    {
-        $this->operator = '!=';
-        $this->configureQuery();
-
-        return $this;
-    }
-
-    /**
-     * Set the column name for the comparison.
-     * This allows the filter name to differ from the actual database column.
+     * Set the column name and reconfigure the query.
      */
     public function column(string $column): static
     {
@@ -145,19 +88,8 @@ class ComparisonFilter extends Filter
     public function moneySuffix(string $suffix): static
     {
         $this->moneySuffix = $suffix;
-        $labelResolver = fn (): string => $this->getLabel() ?? $this->getName();
 
-        $input = TextInput::make('value')
-            ->label($labelResolver)
-            ->placeholder(__('filament-dcat-filters::filament-dcat-filters.comparison.placeholder'))
-            ->numeric()
-            ->suffix($suffix)
-            ->live()
-            ->columnSpanFull();
-
-        $this->applyInlineLabel($input, $labelResolver);
-
-        $this->form([$input]);
+        $this->form([$this->buildValueInput()->suffix($suffix)]);
 
         return $this;
     }
@@ -168,19 +100,8 @@ class ComparisonFilter extends Filter
     public function integer(): static
     {
         $this->inputType = 'integer';
-        $labelResolver = fn (): string => $this->getLabel() ?? $this->getName();
 
-        $input = TextInput::make('value')
-            ->label($labelResolver)
-            ->placeholder(__('filament-dcat-filters::filament-dcat-filters.comparison.placeholder'))
-            ->numeric()
-            ->integer()
-            ->live()
-            ->columnSpanFull();
-
-        $this->applyInlineLabel($input, $labelResolver);
-
-        $this->form([$input]);
+        $this->form([$this->buildValueInput()->integer()]);
 
         return $this;
     }
@@ -191,36 +112,8 @@ class ComparisonFilter extends Filter
     public function numeric(): static
     {
         $this->inputType = 'numeric';
-        $labelResolver = fn (): string => $this->getLabel() ?? $this->getName();
 
-        $input = TextInput::make('value')
-            ->label($labelResolver)
-            ->placeholder(__('filament-dcat-filters::filament-dcat-filters.comparison.placeholder'))
-            ->numeric()
-            ->step('any')
-            ->live()
-            ->columnSpanFull();
-
-        $this->applyInlineLabel($input, $labelResolver);
-
-        $this->form([$input]);
-
-        return $this;
-    }
-
-    /**
-     * Set a custom operator with validation.
-     */
-    public function operator(string $operator): static
-    {
-        if (! in_array($operator, self::ALLOWED_OPERATORS, true)) {
-            throw new \InvalidArgumentException(
-                "Invalid operator: {$operator}. Allowed: ".implode(', ', self::ALLOWED_OPERATORS)
-            );
-        }
-
-        $this->operator = $operator;
-        $this->configureQuery();
+        $this->form([$this->buildValueInput()->step('any')]);
 
         return $this;
     }
@@ -237,8 +130,7 @@ class ComparisonFilter extends Filter
                 return $query;
             }
 
-            // Use custom column name if set, otherwise default to filter name
-            $column = $this->columnName ?? $this->getName();
+            $column = $this->resolveColumnName();
 
             // Apply money conversion: multiply user input by divider
             $queryValue = $this->moneyDivider !== null

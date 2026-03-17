@@ -67,7 +67,7 @@
 - 🎨 **高度可定制** - 每个过滤器都有丰富的自定义选项
 - 📱 **移动端友好** - 响应式设计，适配所有屏幕尺寸
 - 🌐 **双语文档** - 完整的中英文文档
-- ✅ **全面测试** - 461 测试用例的全面覆盖
+- ✅ **全面测试** - 550 测试用例的全面覆盖
 
 ## 版本兼容性
 
@@ -416,6 +416,63 @@ use Cooper\FilamentDcatFilters\Facades\FilamentDcatFilters;
 
 FilamentDcatFilters::scopeFilter('status')->scopes([...]);
 FilamentDcatFilters::rangeFilter('created_at')->datetime();
+
+// 所有可用的过滤器快捷方式
+FilamentDcatFilters::booleanFilter('is_active');
+FilamentDcatFilters::nullFilter('deleted_at');
+FilamentDcatFilters::enumFilter('status');
+FilamentDcatFilters::fullTextFilter('search');
+FilamentDcatFilters::hiddenFilter('tenant_id');
+FilamentDcatFilters::filterGroup('combined');
+```
+
+## Artisan 命令
+
+使用 Artisan 命令生成自定义过滤器类：
+
+```bash
+php artisan make:dcat-filter MyCustom
+```
+
+这将创建 `app/Filament/Filters/MyCustomFilter.php`。
+
+### 选项
+
+| 选项 | 说明 | 默认值 |
+|------|------|--------|
+| `--type` | 要继承的过滤器类型 | `basic` |
+| `--force` | 覆盖已存在的文件 | `false` |
+
+### 可用类型
+
+| 类型 | 基类 |
+|------|------|
+| `basic` | `Filament\Tables\Filters\Filter` |
+| `like` | `LikeFilter` |
+| `in` | `InFilter` |
+| `comparison` | `ComparisonFilter` |
+| `boolean` | `BooleanFilter` |
+| `null` | `NullFilter` |
+| `enum` | `EnumFilter` |
+| `range` | `RangeFilter` |
+| `regex` | `RegexFilter` |
+| `fulltext` | `FullTextFilter` |
+| `json` | `JsonFilter` |
+
+### 示例
+
+```bash
+# 创建基础过滤器
+php artisan make:dcat-filter ProductStatus
+
+# 创建继承 LikeFilter 的过滤器
+php artisan make:dcat-filter ProductSearch --type=like
+
+# 创建继承 ComparisonFilter 的过滤器
+php artisan make:dcat-filter MinPrice --type=comparison
+
+# 覆盖已存在的文件
+php artisan make:dcat-filter ProductStatus --force
 ```
 
 ## 测试

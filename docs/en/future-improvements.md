@@ -15,7 +15,7 @@ All originally planned features have been successfully implemented.
 | URL Query Parameter Sync | ✅ Implemented | [url-sync.md](url-sync.md) |
 | Cascading Filter Dependencies | ✅ Implemented | [cascading-filters.md](cascading-filters.md) |
 | Accessibility Improvements | ✅ Implemented | [accessibility.md](accessibility.md) |
-| Comprehensive Test Coverage | ✅ Implemented | 461 tests, 630 assertions |
+| Comprehensive Test Coverage | ✅ Implemented | 550 tests, 753 assertions |
 
 ### Filter Types - ✅ All Implemented
 
@@ -186,7 +186,7 @@ We welcome contributions!
 
 ### v1.0.2 (Current)
 - Added `column()` method to all applicable filters
-- 461 tests with 630 assertions
+- 550 tests with 753 assertions
 - All planned features implemented
 
 ### v1.0.1

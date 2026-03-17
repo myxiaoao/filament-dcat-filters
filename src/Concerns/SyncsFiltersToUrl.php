@@ -2,39 +2,34 @@
 
 namespace Cooper\FilamentDcatFilters\Concerns;
 
-use Livewire\Attributes\Url;
-
-/**
- * Trait for syncing table filters to URL query parameters.
- *
- * This trait uses Livewire's URL attribute to automatically sync
- * filter state with the browser URL, enabling bookmarking and sharing.
- */
 trait SyncsFiltersToUrl
 {
-    /**
-     * Table filters synced to URL.
-     */
-    #[Url(except: [], history: true, keep: false)]
     public array $tableFilters = [];
 
-    /**
-     * Table search synced to URL.
-     */
-    #[Url(except: '', history: true, keep: false)]
     public ?string $tableSearch = null;
 
-    /**
-     * Table sort column synced to URL.
-     */
-    #[Url(except: '', history: true, keep: false)]
     public ?string $tableSortColumn = null;
 
-    /**
-     * Table sort direction synced to URL.
-     */
-    #[Url(except: '', history: true, keep: false)]
     public ?string $tableSortDirection = null;
+
+    protected bool $urlHistory = true;
+
+    public function withoutUrlHistory(): static
+    {
+        $this->urlHistory = false;
+
+        return $this;
+    }
+
+    public function queryString(): array
+    {
+        return [
+            'tableFilters' => ['except' => [], 'history' => $this->urlHistory, 'keep' => false],
+            'tableSearch' => ['except' => '', 'history' => $this->urlHistory, 'keep' => false],
+            'tableSortColumn' => ['except' => '', 'history' => $this->urlHistory, 'keep' => false],
+            'tableSortDirection' => ['except' => '', 'history' => $this->urlHistory, 'keep' => false],
+        ];
+    }
 
     /**
      * Get the current filter query string for manual URL building.

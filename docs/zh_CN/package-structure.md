@@ -35,13 +35,23 @@ packages/filament-dcat-filters/
 │   │   ├── RelativeDateFilter.php
 │   │   ├── ScopeFilter.php
 │   │   └── SelectTableFilter.php
-│   ├── Concerns/ (6 个 traits)
+│   ├── Commands/
+│   │   └── MakeDcatFilterCommand.php
+│   ├── Concerns/ (15 个 traits)
+│   │   ├── HasColumnName.php
+│   │   ├── HasDatabaseDriver.php
 │   │   ├── HasFilterExportImport.php
-│   │   ├── HasFilterPersistence.php
 │   │   ├── HasFilterPresets.php
+│   │   ├── HasInlineLabel.php
+│   │   ├── HasLabelResolver.php
+│   │   ├── HasOperator.php
 │   │   ├── HasRangeQuery.php
+│   │   ├── HasRelationship.php
 │   │   ├── HasResetFilters.php
 │   │   ├── HasScopeBadgeCounts.php
+│   │   ├── PersistsFiltersInLocalStorage.php
+│   │   ├── PersistsFiltersInSession.php
+│   │   ├── SyncsFiltersToUrl.php
 │   │   └── SyncsFiltersToUrlWithoutHistory.php
 │   ├── Http/
 │   │   └── Controllers/
@@ -91,12 +101,12 @@ packages/filament-dcat-filters/
   - 仅保留 `filament/filament: ^4.0` (核心依赖)
   - ❌ 移除 `illuminate/contracts` - Filament 已包含
   - ❌ 移除 `livewire/livewire` - Filament 已包含
-  - ❌ 移除 `spatie/laravel-package-tools` - Filament 已包含
+  - ✅ 添加 `spatie/laravel-package-tools` - 用于 ServiceProvider 重构
 - **require-dev**：仅支持 Laravel 12+ (按字母顺序排序)
   - `laravel/pint: ^1.0`
   - `nunomaduro/larastan: ^3.0`
   - `orchestra/testbench: ^10.0`
-  - `pestphp/pest: ^3.0`
+  - `pestphp/pest: ^4.0`
   - `pestphp/pest-plugin-arch: ^3.0`
   - `pestphp/pest-plugin-laravel: ^4.0`
   - `phpstan/phpstan: ^2.0`
@@ -117,6 +127,20 @@ packages/filament-dcat-filters/
 - `comparisonFilter()` - 快速创建 Comparison Filter
 - `dateComponentFilter()` - 快速创建 Date Component Filter
 - `selectTableFilter()` - 快速创建 SelectTable Filter
+- `modalSelectFilter()` - 快速创建 Modal Select Filter
+- `booleanFilter()` - 快速创建 Boolean Filter
+- `nullFilter()` - 快速创建 Null Filter
+- `enumFilter()` - 快速创建 Enum Filter
+- `fullTextFilter()` - 快速创建 Full Text Filter
+- `regexFilter()` - 快速创建 Regex Filter
+- `geoLocationFilter()` - 快速创建 GeoLocation Filter
+- `cascadingSelectFilter()` - 快速创建 Cascading Select Filter
+- `relativeDateFilter()` - 快速创建 Relative Date Filter
+- `inputMaskFilter()` - 快速创建 Input Mask Filter
+- `jsonFilter()` - 快速创建 JSON Filter
+- `findInSetFilter()` - 快速创建 Find In Set Filter
+- `filterGroup()` - 快速创建 Filter Group
+- `hiddenFilter()` - 快速创建 Hidden Filter
 
 **使用示例**：
 ```php
@@ -202,7 +226,7 @@ composer analyse         # 静态分析
    - 创建了 `Facades\FilamentDcatFilters` Facade 类
    - 在 ServiceProvider 中注册为单例
    - 在 composer.json 中配置别名
-   - 提供 10 个便捷方法快速创建各类过滤器
+   - 提供 23 个便捷方法快速创建各类过滤器
 
 3. ✅ **代码格式化**：运行 `composer format` 成功
    - 最终结果：**PASS**
@@ -211,8 +235,8 @@ composer analyse         # 静态分析
    - 最终结果：**0 errors**
 
 5. ✅ **测试覆盖**：完整的测试套件
-   - **461 个测试**
-   - **630 个断言**
+   - **550 个测试**
+   - **753 个断言**
    - 所有测试通过
 
 ## 参考资料

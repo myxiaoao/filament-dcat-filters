@@ -3,7 +3,9 @@
 namespace Cooper\FilamentDcatFilters\Filters;
 
 use Carbon\Carbon;
+use Cooper\FilamentDcatFilters\Concerns\HasColumnName;
 use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
+use Cooper\FilamentDcatFilters\Concerns\HasLabelResolver;
 use Cooper\FilamentDcatFilters\Concerns\HasRangeQuery;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
@@ -13,10 +15,13 @@ use Filament\Schemas\Components\Grid;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\HtmlString;
 
 class RangeFilter extends Filter
 {
+    use HasColumnName;
     use HasInlineLabel;
+    use HasLabelResolver;
     use HasRangeQuery;
 
     protected string $rangeType = 'numeric';
@@ -24,19 +29,6 @@ class RangeFilter extends Filter
     protected ?string $dateFormat = null;
 
     protected array $placeholders = [];
-
-    protected ?string $columnName = null;
-
-    /**
-     * Set the column name for the comparison.
-     * This allows the filter name to differ from the actual database column.
-     */
-    public function column(string $column): static
-    {
-        $this->columnName = $column;
-
-        return $this;
-    }
 
     /**
      * Setup default configuration.
@@ -56,7 +48,7 @@ class RangeFilter extends Filter
         $this->rangeType = 'date';
         $this->dateFormat = config('filament-dcat-filters.range.date_format', 'Y-m-d');
 
-        $labelResolver = fn (): string => $this->getLabel() ?? ucfirst($this->getName());
+        $labelResolver = $this->labelResolver();
         $displayFormat = config('filament-dcat-filters.range.date_display_format', 'M j, Y');
 
         $from = DatePicker::make('from')
@@ -69,7 +61,7 @@ class RangeFilter extends Filter
             ->maxDate(fn (callable $get): ?string => $get('to') ?: null);
 
         $to = DatePicker::make('to')
-            ->label(new \Illuminate\Support\HtmlString('&nbsp;'))
+            ->label(new HtmlString('&nbsp;'))
             ->placeholder($this->placeholders['to'] ?? __('filament-dcat-filters::filament-dcat-filters.range.to'))
             ->format($this->dateFormat)
             ->displayFormat($displayFormat)
@@ -98,7 +90,7 @@ class RangeFilter extends Filter
         $this->rangeType = 'datetime';
         $this->dateFormat = $format ?? config('filament-dcat-filters.range.datetime_format', 'Y-m-d H:i:s');
 
-        $labelResolver = fn (): string => $this->getLabel() ?? ucfirst($this->getName());
+        $labelResolver = $this->labelResolver();
         $displayFormat = config('filament-dcat-filters.range.datetime_display_format', 'M j, Y H:i');
         $hasSeconds = str_contains($this->dateFormat, ':s');
         $defaultEndTime = $hasSeconds ? '23:59:59' : '23:59:00';
@@ -114,7 +106,7 @@ class RangeFilter extends Filter
             ->maxDate(fn (callable $get): ?string => $get('to') ?: null);
 
         $to = DateTimePicker::make('to')
-            ->label(new \Illuminate\Support\HtmlString('&nbsp;'))
+            ->label(new HtmlString('&nbsp;'))
             ->placeholder($this->placeholders['to'] ?? __('filament-dcat-filters::filament-dcat-filters.range.to'))
             ->format($this->dateFormat)
             ->displayFormat($displayFormat)
@@ -160,7 +152,7 @@ class RangeFilter extends Filter
         $this->rangeType = 'time';
         $this->dateFormat = config('filament-dcat-filters.range.time_format', 'H:i:s');
 
-        $labelResolver = fn (): string => $this->getLabel() ?? ucfirst($this->getName());
+        $labelResolver = $this->labelResolver();
 
         $from = TimePicker::make('from')
             ->label($labelResolver)
@@ -170,7 +162,7 @@ class RangeFilter extends Filter
             ->live(onBlur: true);
 
         $to = TimePicker::make('to')
-            ->label(new \Illuminate\Support\HtmlString('&nbsp;'))
+            ->label(new HtmlString('&nbsp;'))
             ->placeholder($this->placeholders['to'] ?? __('filament-dcat-filters::filament-dcat-filters.range.to'))
             ->seconds(str_contains($this->dateFormat, ':s'))
             ->native(false)
@@ -202,7 +194,7 @@ class RangeFilter extends Filter
     {
         $this->rangeType = 'numeric';
 
-        $labelResolver = fn (): string => $this->getLabel() ?? ucfirst($this->getName());
+        $labelResolver = $this->labelResolver();
 
         $from = TextInput::make('from')
             ->label($labelResolver)
@@ -213,7 +205,7 @@ class RangeFilter extends Filter
             ->maxValue(fn (callable $get): ?float => $get('to') !== null && $get('to') !== '' ? (float) $get('to') : null);
 
         $to = TextInput::make('to')
-            ->label(new \Illuminate\Support\HtmlString('&nbsp;'))
+            ->label(new HtmlString('&nbsp;'))
             ->placeholder($this->placeholders['to'] ?? __('filament-dcat-filters::filament-dcat-filters.range.to'))
             ->numeric()
             ->step('any')
@@ -240,7 +232,7 @@ class RangeFilter extends Filter
     {
         $this->rangeType = 'integer';
 
-        $labelResolver = fn (): string => $this->getLabel() ?? ucfirst($this->getName());
+        $labelResolver = $this->labelResolver();
 
         $from = TextInput::make('from')
             ->label($labelResolver)
@@ -251,7 +243,7 @@ class RangeFilter extends Filter
             ->maxValue(fn (callable $get): ?int => $get('to') !== null && $get('to') !== '' ? (int) $get('to') : null);
 
         $to = TextInput::make('to')
-            ->label(new \Illuminate\Support\HtmlString('&nbsp;'))
+            ->label(new HtmlString('&nbsp;'))
             ->placeholder($this->placeholders['to'] ?? __('filament-dcat-filters::filament-dcat-filters.range.to'))
             ->numeric()
             ->integer()
@@ -286,28 +278,12 @@ class RangeFilter extends Filter
     }
 
     /**
-     * Get placeholder text for the specified field.
-     */
-    protected function getPlaceholder(string $field): string
-    {
-        $baseLabel = $this->getLabel() ?? ucfirst($this->getName());
-
-        if (isset($this->placeholders[$field])) {
-            return "{$baseLabel} - {$this->placeholders[$field]}";
-        }
-
-        $defaultPlaceholder = config("filament-dcat-filters.range.placeholders.{$field}", ucfirst($field));
-
-        return "{$baseLabel} - {$defaultPlaceholder}";
-    }
-
-    /**
      * Configure the query logic for this filter.
      */
     protected function configureQuery(): void
     {
         $this->query(function (Builder $query, array $data): Builder {
-            $column = $this->columnName ?? $this->getName();
+            $column = $this->resolveColumnName();
 
             return $this->applyRangeQuery($query, $column, $data);
         });
@@ -330,7 +306,7 @@ class RangeFilter extends Filter
     public function toTimestamp(): static
     {
         $this->query(function (Builder $query, array $data): Builder {
-            $column = $this->columnName ?? $this->getName();
+            $column = $this->resolveColumnName();
             $from = $data['from'] ?? null;
             $to = $data['to'] ?? null;
 

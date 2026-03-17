@@ -1,6 +1,105 @@
 # Concerns (Traits)
 
-This package provides several traits that can be used in your Filament ListRecords classes to add additional functionality.
+This package provides several traits that can be used in your filter classes and Filament ListRecords classes to add additional functionality.
+
+## HasLabelResolver
+
+Provides a unified label resolution mechanism for filters that need to display a human-readable label. It consolidates what previously required 3 different label resolution variants across the codebase into a single reusable trait.
+
+### Available Methods
+
+```php
+// Resolve the display label for this filter
+// Returns the filter's configured label if set, otherwise generates one from the filter name
+// e.g. 'created_at' becomes 'Created at'
+$label = $this->resolveLabel();
+
+// Returns a Closure that resolves the label (useful for deferred evaluation)
+$resolver = $this->labelResolver();
+```
+
+### Filters Using This Trait
+
+All filters that display a label in the UI use this trait, including LikeFilter, InFilter, ComparisonFilter, BetweenFilter, BooleanFilter, NullFilter, EnumFilter, FullTextFilter, RangeFilter, RelativeDateFilter, and others.
+
+### Background
+
+Previously, label resolution logic was duplicated across multiple filters with slight variations. `HasLabelResolver` centralises this into two methods (`resolveLabel()` and `labelResolver()`) so every filter resolves labels consistently.
+
+---
+
+## HasColumnName
+
+Allows the filter name to differ from the actual database column name. This is useful when you want a semantic filter name in the URL or form state while querying a different column.
+
+### Usage
+
+```php
+use Cooper\FilamentDcatFilters\Filters\LikeFilter;
+
+// Filter name is 'search_title', but queries the 'title' column
+LikeFilter::make('search_title')
+    ->column('title');
+```
+
+### Available Methods
+
+```php
+// Set the database column name
+$filter->column('actual_column_name');
+
+// Resolve the column name (used internally by filters)
+// Returns the custom column name if set, otherwise falls back to the filter name
+$column = $filter->resolveColumnName();
+```
+
+### Filters Using This Trait
+
+ComparisonFilter, LikeFilter, InFilter, RangeFilter, EnumFilter, DateComponentFilter, RelativeDateFilter, RegexFilter, HiddenFilter, SelectTableFilter, FindInSetFilter, JsonFilter
+
+---
+
+## HasOperator
+
+Provides a unified set of comparison operator methods. The using class must define an `ALLOWED_OPERATORS` constant that lists valid operators.
+
+### Usage
+
+```php
+use Cooper\FilamentDcatFilters\Filters\ComparisonFilter;
+
+ComparisonFilter::make('price')->gt();   // WHERE price > ?
+ComparisonFilter::make('stock')->lte();  // WHERE stock <= ?
+ComparisonFilter::make('age')->operator('!='); // WHERE age != ?
+```
+
+### Available Methods
+
+```php
+$filter->gt();    // Set operator to >
+$filter->gte();   // Set operator to >=
+$filter->lt();    // Set operator to <
+$filter->lte();   // Set operator to <=
+$filter->eq();    // Set operator to =
+$filter->ne();    // Set operator to !=
+$filter->operator(string $operator); // Set a custom operator (validated against ALLOWED_OPERATORS)
+```
+
+### Filters Using This Trait
+
+ComparisonFilter, HiddenFilter
+
+### Requirements
+
+The class using this trait must define an `ALLOWED_OPERATORS` constant:
+
+```php
+const ALLOWED_OPERATORS = ['=', '!=', '>', '>=', '<', '<='];
+```
+
+An `InvalidArgumentException` is thrown if an unsupported operator is passed.
+
+---
 
 ## HasFilterPresets
 

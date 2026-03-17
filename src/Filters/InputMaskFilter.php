@@ -3,6 +3,7 @@
 namespace Cooper\FilamentDcatFilters\Filters;
 
 use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
+use Cooper\FilamentDcatFilters\Concerns\HasLabelResolver;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
@@ -11,6 +12,7 @@ use Illuminate\Database\Eloquent\Builder;
 class InputMaskFilter extends Filter
 {
     use HasInlineLabel;
+    use HasLabelResolver;
 
     protected ?string $inputMask = null;
 
@@ -134,7 +136,7 @@ class InputMaskFilter extends Filter
 
     protected function configureForm(): void
     {
-        $labelResolver = fn (): string => $this->getLabel() ?? ucfirst(str_replace('_', ' ', $this->getName()));
+        $labelResolver = $this->labelResolver();
 
         $input = TextInput::make('value')
             ->label($labelResolver)
@@ -180,7 +182,7 @@ class InputMaskFilter extends Filter
                 return [];
             }
 
-            $label = $this->getLabel() ?? ucfirst(str_replace('_', ' ', $this->getName()));
+            $label = $this->resolveLabel();
 
             return [
                 Indicator::make("{$label}: {$value}")

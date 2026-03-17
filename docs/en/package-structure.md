@@ -28,12 +28,12 @@ This document records the optimization of the `filament-dcat-filters` package st
   - Only keep `filament/filament: ^4.0` (core dependency)
   - ❌ Removed `illuminate/contracts` - Already included in Filament
   - ❌ Removed `livewire/livewire` - Already included in Filament
-  - ❌ Removed `spatie/laravel-package-tools` - Already included in Filament
+  - ✅ Added `spatie/laravel-package-tools` - For ServiceProvider refactoring
 - **require-dev**: Only supports Laravel 12+ (sorted alphabetically)
   - `laravel/pint: ^1.0`
   - `nunomaduro/larastan: ^3.0` (Laravel 12+ only)
   - `orchestra/testbench: ^10.0` (corresponding to Laravel 12+)
-  - `pestphp/pest: ^3.0`
+  - `pestphp/pest: ^4.0`
   - `pestphp/pest-plugin-arch: ^3.0`
   - `pestphp/pest-plugin-laravel: ^4.0` (Laravel 12+ only)
   - `phpstan/phpstan: ^2.0` (latest version)
@@ -62,6 +62,20 @@ src/
 - `comparisonFilter()` - Quickly create Comparison Filter
 - `dateComponentFilter()` - Quickly create Date Component Filter
 - `selectTableFilter()` - Quickly create SelectTable Filter
+- `modalSelectFilter()` - Quickly create ModalSelect Filter
+- `booleanFilter()` - Quickly create Boolean Filter
+- `nullFilter()` - Quickly create Null Filter
+- `enumFilter()` - Quickly create Enum Filter
+- `fullTextFilter()` - Quickly create FullText Filter
+- `regexFilter()` - Quickly create Regex Filter
+- `geoLocationFilter()` - Quickly create GeoLocation Filter
+- `cascadingSelectFilter()` - Quickly create CascadingSelect Filter
+- `relativeDateFilter()` - Quickly create RelativeDate Filter
+- `inputMaskFilter()` - Quickly create InputMask Filter
+- `jsonFilter()` - Quickly create Json Filter
+- `findInSetFilter()` - Quickly create FindInSet Filter
+- `filterGroup()` - Quickly create Filter Group
+- `hiddenFilter()` - Quickly create Hidden Filter
 
 **Usage Example**:
 ```php
@@ -199,13 +213,23 @@ packages/filament-dcat-filters/
 │   │   ├── RelativeDateFilter.php
 │   │   ├── ScopeFilter.php
 │   │   └── SelectTableFilter.php
-│   ├── Concerns/ (6 traits)
+│   ├── Commands/
+│   │   └── MakeDcatFilterCommand.php
+│   ├── Concerns/ (15 traits)
+│   │   ├── HasColumnName.php
+│   │   ├── HasDatabaseDriver.php
 │   │   ├── HasFilterExportImport.php
-│   │   ├── HasFilterPersistence.php
 │   │   ├── HasFilterPresets.php
+│   │   ├── HasInlineLabel.php
+│   │   ├── HasLabelResolver.php
+│   │   ├── HasOperator.php
 │   │   ├── HasRangeQuery.php
+│   │   ├── HasRelationship.php
 │   │   ├── HasResetFilters.php
 │   │   ├── HasScopeBadgeCounts.php
+│   │   ├── PersistsFiltersInLocalStorage.php
+│   │   ├── PersistsFiltersInSession.php
+│   │   ├── SyncsFiltersToUrl.php
 │   │   └── SyncsFiltersToUrlWithoutHistory.php
 │   ├── Http/
 │   │   └── Controllers/
@@ -267,7 +291,7 @@ composer analyse         # Static analysis
    - Created `Facades\FilamentDcatFilters` Facade class
    - Registered as singleton in ServiceProvider
    - Configured alias in composer.json
-   - Provides 10 convenient methods to quickly create various filters
+   - Provides 24 convenient methods (including `version()`, `config()`, and 22 filter factory methods)
 
 3. ✅ **Code Formatting**: Running `composer format` successfully fixed 4 code style issues in 13 files
    - Final result: **PASS 15 files** (including newly added Facade files)

@@ -18,6 +18,19 @@ use Illuminate\Support\Facades\Facade;
  * @method static \Cooper\FilamentDcatFilters\Filters\DateComponentFilter dateComponentFilter(string $name)
  * @method static \Cooper\FilamentDcatFilters\Filters\SelectTableFilter selectTableFilter(string $name)
  * @method static \Cooper\FilamentDcatFilters\Filters\ModalSelectFilter modalSelectFilter(string $name)
+ * @method static \Cooper\FilamentDcatFilters\Filters\BooleanFilter booleanFilter(string $name)
+ * @method static \Cooper\FilamentDcatFilters\Filters\NullFilter nullFilter(string $name)
+ * @method static \Cooper\FilamentDcatFilters\Filters\EnumFilter enumFilter(string $name)
+ * @method static \Cooper\FilamentDcatFilters\Filters\FullTextFilter fullTextFilter(string $name)
+ * @method static \Cooper\FilamentDcatFilters\Filters\RegexFilter regexFilter(string $name)
+ * @method static \Cooper\FilamentDcatFilters\Filters\GeoLocationFilter geoLocationFilter(string $name)
+ * @method static \Cooper\FilamentDcatFilters\Filters\CascadingSelectFilter cascadingSelectFilter(string $name)
+ * @method static \Cooper\FilamentDcatFilters\Filters\RelativeDateFilter relativeDateFilter(string $name)
+ * @method static \Cooper\FilamentDcatFilters\Filters\InputMaskFilter inputMaskFilter(string $name)
+ * @method static \Cooper\FilamentDcatFilters\Filters\JsonFilter jsonFilter(string $name)
+ * @method static \Cooper\FilamentDcatFilters\Filters\FindInSetFilter findInSetFilter(string $name)
+ * @method static \Cooper\FilamentDcatFilters\Filters\FilterGroup filterGroup(string $name)
+ * @method static \Cooper\FilamentDcatFilters\Filters\HiddenFilter hiddenFilter(string $name)
  */
 class FilamentDcatFilters extends Facade
 {

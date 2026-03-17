@@ -58,11 +58,11 @@ trait HasRangeQuery
         $from = $data['from'] ?? null;
         $to = $data['to'] ?? null;
 
-        if ($from) {
+        if (! $this->isRangeValueEmpty($from)) {
             $indicators[] = "{$label} from {$from}";
         }
 
-        if ($to) {
+        if (! $this->isRangeValueEmpty($to)) {
             $indicators[] = "{$label} to {$to}";
         }
 

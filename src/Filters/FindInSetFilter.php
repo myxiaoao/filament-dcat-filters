@@ -2,8 +2,10 @@
 
 namespace Cooper\FilamentDcatFilters\Filters;
 
+use Cooper\FilamentDcatFilters\Concerns\HasColumnName;
 use Cooper\FilamentDcatFilters\Concerns\HasDatabaseDriver;
 use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
+use Cooper\FilamentDcatFilters\Concerns\HasLabelResolver;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
@@ -12,8 +14,10 @@ use Illuminate\Support\Arr;
 
 class FindInSetFilter extends Filter
 {
+    use HasColumnName;
     use HasDatabaseDriver;
     use HasInlineLabel;
+    use HasLabelResolver;
 
     protected array $options = [];
 
@@ -24,8 +28,6 @@ class FindInSetFilter extends Filter
     protected ?string $placeholder = null;
 
     protected bool $useMatchAny = false;
-
-    protected ?string $columnName = null;
 
     protected function setUp(): void
     {
@@ -78,17 +80,6 @@ class FindInSetFilter extends Filter
     }
 
     /**
-     * Set the column name for the comparison.
-     * This allows the filter name to differ from the actual database column.
-     */
-    public function column(string $column): static
-    {
-        $this->columnName = $column;
-
-        return $this;
-    }
-
-    /**
      * Generate a FIND_IN_SET expression adapted to the database driver.
      * PostgreSQL: ? = ANY(string_to_array(column, ','))
      * MySQL: FIND_IN_SET(?, column)
@@ -128,7 +119,7 @@ class FindInSetFilter extends Filter
 
     protected function configureForm(): void
     {
-        $labelResolver = fn (): string => $this->getLabel() ?? ucfirst(str_replace('_', ' ', $this->getName()));
+        $labelResolver = $this->labelResolver();
         $placeholder = $this->placeholder ?? __('filament-dcat-filters::filament-dcat-filters.find_in_set.placeholder_'.($this->isMultiple ? 'multiple' : 'single'));
 
         $component = Select::make('value')
@@ -157,7 +148,7 @@ class FindInSetFilter extends Filter
                 return $query;
             }
 
-            $column = $this->columnName ?? $this->getName();
+            $column = $this->resolveColumnName();
             $values = Arr::wrap($value);
 
             if (count($values) === 1) {
@@ -188,7 +179,7 @@ class FindInSetFilter extends Filter
 
             $values = Arr::wrap($value);
             $labels = array_map(fn ($val) => $this->options[$val] ?? $val, $values);
-            $filterLabel = $this->getLabel() ?? ucfirst(str_replace('_', ' ', $this->getName()));
+            $filterLabel = $this->resolveLabel();
             $separator = ' '.__('filament-dcat-filters::filament-dcat-filters.find_in_set.'.($this->useMatchAny ? 'or' : 'and')).' ';
 
             return [

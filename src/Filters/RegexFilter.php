@@ -2,8 +2,10 @@
 
 namespace Cooper\FilamentDcatFilters\Filters;
 
+use Cooper\FilamentDcatFilters\Concerns\HasColumnName;
 use Cooper\FilamentDcatFilters\Concerns\HasDatabaseDriver;
 use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
+use Cooper\FilamentDcatFilters\Concerns\HasLabelResolver;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Tables\Filters\Filter;
@@ -12,8 +14,10 @@ use Illuminate\Database\Eloquent\Builder;
 
 class RegexFilter extends Filter
 {
+    use HasColumnName;
     use HasDatabaseDriver;
     use HasInlineLabel;
+    use HasLabelResolver;
 
     protected ?string $regexPattern = null;
 
@@ -22,19 +26,6 @@ class RegexFilter extends Filter
     protected ?string $placeholder = null;
 
     protected bool $patternMode = false;
-
-    protected ?string $columnName = null;
-
-    /**
-     * Set the column name for the comparison.
-     * This allows the filter name to differ from the actual database column.
-     */
-    public function column(string $column): static
-    {
-        $this->columnName = $column;
-
-        return $this;
-    }
 
     protected function setUp(): void
     {
@@ -110,7 +101,7 @@ class RegexFilter extends Filter
 
     protected function configureForm(): void
     {
-        $labelResolver = fn (): string => $this->getLabel() ?? ucfirst(str_replace('_', ' ', $this->getName()));
+        $labelResolver = $this->labelResolver();
 
         if ($this->patternMode && $this->regexPattern) {
             $this->form([
@@ -162,7 +153,7 @@ class RegexFilter extends Filter
     protected function configureQuery(): void
     {
         $this->query(function (Builder $query, array $data): Builder {
-            $column = $this->columnName ?? $this->getName();
+            $column = $this->resolveColumnName();
 
             if ($this->patternMode && $this->regexPattern) {
                 if (empty($data['enabled'])) {
@@ -182,7 +173,7 @@ class RegexFilter extends Filter
         });
 
         $this->indicateUsing(function (array $data): array {
-            $label = $this->getLabel() ?? ucfirst(str_replace('_', ' ', $this->getName()));
+            $label = $this->resolveLabel();
 
             if ($this->patternMode && $this->regexPattern) {
                 if (empty($data['enabled'])) {

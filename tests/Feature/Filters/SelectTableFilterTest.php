@@ -30,18 +30,6 @@ describe('Model Configuration', function () {
     });
 });
 
-describe('Table Columns', function () {
-    it('can set table columns', function () {
-        $filter = SelectTableFilter::make('category_id')
-            ->tableColumns([
-                \Filament\Tables\Columns\TextColumn::make('id'),
-                \Filament\Tables\Columns\TextColumn::make('name'),
-            ]);
-
-        expect($filter)->toBeInstanceOf(SelectTableFilter::class);
-    });
-});
-
 describe('Searchable', function () {
     it('can enable searchable with true', function () {
         $filter = SelectTableFilter::make('category_id')
@@ -76,15 +64,6 @@ describe('Multiple Selection', function () {
     it('can disable multiple selection', function () {
         $filter = SelectTableFilter::make('category_id')
             ->multiple(false);
-
-        expect($filter)->toBeInstanceOf(SelectTableFilter::class);
-    });
-});
-
-describe('Modal Width', function () {
-    it('can set modal width', function () {
-        $filter = SelectTableFilter::make('category_id')
-            ->modalWidth('7xl');
 
         expect($filter)->toBeInstanceOf(SelectTableFilter::class);
     });
@@ -153,7 +132,6 @@ describe('Chained Configuration', function () {
             ->model('App\\Models\\Category')
             ->searchable(['name', 'description'])
             ->multiple()
-            ->modalWidth('6xl')
             ->optionsLimit(200)
             ->modifyQueryUsing(fn ($query) => $query);
 

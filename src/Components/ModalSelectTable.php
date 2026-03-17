@@ -97,6 +97,15 @@ class ModalSelectTable extends Component implements HasActions, HasForms, HasTab
             throw new \RuntimeException('Model class is required.');
         }
 
+        if (! class_exists($this->modelClass) || ! is_subclass_of($this->modelClass, \Illuminate\Database\Eloquent\Model::class)) {
+            throw new \RuntimeException('Invalid model class.');
+        }
+
+        $allowedModels = config('filament-dcat-filters.allowed_models', []);
+        if (! empty($allowedModels) && ! in_array($this->modelClass, $allowedModels, true)) {
+            throw new \RuntimeException('Model not allowed.');
+        }
+
         return $this->modelClass::query();
     }
 

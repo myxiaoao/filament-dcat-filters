@@ -95,4 +95,108 @@ class FilamentDcatFilters
     {
         return Filters\ModalSelectFilter::make($name);
     }
+
+    /**
+     * Quick access to create a Boolean Filter.
+     */
+    public function booleanFilter(string $name): Filters\BooleanFilter
+    {
+        return Filters\BooleanFilter::make($name);
+    }
+
+    /**
+     * Quick access to create a Null Filter.
+     */
+    public function nullFilter(string $name): Filters\NullFilter
+    {
+        return Filters\NullFilter::make($name);
+    }
+
+    /**
+     * Quick access to create an Enum Filter.
+     */
+    public function enumFilter(string $name): Filters\EnumFilter
+    {
+        return Filters\EnumFilter::make($name);
+    }
+
+    /**
+     * Quick access to create a Full Text Filter.
+     */
+    public function fullTextFilter(string $name): Filters\FullTextFilter
+    {
+        return Filters\FullTextFilter::make($name);
+    }
+
+    /**
+     * Quick access to create a Regex Filter.
+     */
+    public function regexFilter(string $name): Filters\RegexFilter
+    {
+        return Filters\RegexFilter::make($name);
+    }
+
+    /**
+     * Quick access to create a GeoLocation Filter.
+     */
+    public function geoLocationFilter(string $name): Filters\GeoLocationFilter
+    {
+        return Filters\GeoLocationFilter::make($name);
+    }
+
+    /**
+     * Quick access to create a Cascading Select Filter.
+     */
+    public function cascadingSelectFilter(string $name): Filters\CascadingSelectFilter
+    {
+        return Filters\CascadingSelectFilter::make($name);
+    }
+
+    /**
+     * Quick access to create a Relative Date Filter.
+     */
+    public function relativeDateFilter(string $name): Filters\RelativeDateFilter
+    {
+        return Filters\RelativeDateFilter::make($name);
+    }
+
+    /**
+     * Quick access to create an Input Mask Filter.
+     */
+    public function inputMaskFilter(string $name): Filters\InputMaskFilter
+    {
+        return Filters\InputMaskFilter::make($name);
+    }
+
+    /**
+     * Quick access to create a JSON Filter.
+     */
+    public function jsonFilter(string $name): Filters\JsonFilter
+    {
+        return Filters\JsonFilter::make($name);
+    }
+
+    /**
+     * Quick access to create a Find In Set Filter.
+     */
+    public function findInSetFilter(string $name): Filters\FindInSetFilter
+    {
+        return Filters\FindInSetFilter::make($name);
+    }
+
+    /**
+     * Quick access to create a Filter Group.
+     */
+    public function filterGroup(string $name): Filters\FilterGroup
+    {
+        return Filters\FilterGroup::make($name);
+    }
+
+    /**
+     * Quick access to create a Hidden Filter.
+     */
+    public function hiddenFilter(string $name): Filters\HiddenFilter
+    {
+        return Filters\HiddenFilter::make($name);
+    }
 }

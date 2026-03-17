@@ -3,7 +3,9 @@
 namespace Cooper\FilamentDcatFilters\Filters;
 
 use Carbon\Carbon;
+use Cooper\FilamentDcatFilters\Concerns\HasColumnName;
 use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
+use Cooper\FilamentDcatFilters\Concerns\HasLabelResolver;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
@@ -11,24 +13,13 @@ use Illuminate\Database\Eloquent\Builder;
 
 class RelativeDateFilter extends Filter
 {
+    use HasColumnName;
     use HasInlineLabel;
+    use HasLabelResolver;
 
     protected array $presets = [];
 
     protected bool $includeCustomRange = false;
-
-    protected ?string $columnName = null;
-
-    /**
-     * Set the column name for the comparison.
-     * This allows the filter name to differ from the actual database column.
-     */
-    public function column(string $column): static
-    {
-        $this->columnName = $column;
-
-        return $this;
-    }
 
     /**
      * Setup default configuration.
@@ -113,7 +104,7 @@ class RelativeDateFilter extends Filter
      */
     protected function configureForm(): void
     {
-        $labelResolver = fn (): string => $this->getLabel() ?? ucfirst(str_replace('_', ' ', $this->getName()));
+        $labelResolver = $this->labelResolver();
 
         $select = Select::make('preset')
             ->label($labelResolver)
@@ -141,7 +132,7 @@ class RelativeDateFilter extends Filter
                 return $query;
             }
 
-            $column = $this->columnName ?? $this->getName();
+            $column = $this->resolveColumnName();
             $range = $this->getDateRange($preset);
 
             if (! $range) {
@@ -160,7 +151,7 @@ class RelativeDateFilter extends Filter
                 return [];
             }
 
-            $label = $this->getLabel() ?? ucfirst(str_replace('_', ' ', $this->getName()));
+            $label = $this->resolveLabel();
             $presetLabel = $this->presets[$preset] ?? $preset;
 
             return [

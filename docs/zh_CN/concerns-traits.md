@@ -1,6 +1,106 @@
 # Concerns (Traits)
 
-本包提供了多个 trait，可在 Filament ListRecords 类中使用以添加额外功能。
+本包提供了多个 trait，用于在 Filter 类和 Filament ListRecords 类中复用通用逻辑。
+
+---
+
+## HasLabelResolver
+
+提供统一的 label 解析机制，用于所有需要显示可读标签的 Filter。它将之前散落在各处的 3 种不同 label 解析变体统一为一个可复用的 trait。
+
+### 方法
+
+| 方法 | 描述 |
+|------|------|
+| `resolveLabel(): string` | 解析当前 filter 的显示标签。若已配置 label 则返回该值，否则根据 filter name 自动生成（如 `created_at` → `Created at`） |
+| `labelResolver(): \Closure` | 返回一个解析 label 的闭包，用于需要延迟求值的场景 |
+
+### 使用的 Filter
+
+所有需要在 UI 中显示标签的 Filter 均使用此 trait，包括 LikeFilter、InFilter、ComparisonFilter、BetweenFilter、BooleanFilter、NullFilter、EnumFilter、FullTextFilter、RangeFilter、RelativeDateFilter 等。
+
+### 背景
+
+之前 label 解析逻辑在多个 Filter 中重复实现，存在细微差异。`HasLabelResolver` 将其集中为 `resolveLabel()` 和 `labelResolver()` 两个方法，使所有 Filter 的 label 解析行为保持一致。
+
+---
+
+## HasColumnName
+
+允许 filter name 与数据库列名不同，适用于需要自定义查询列的场景。
+
+### 方法
+
+| 方法 | 描述 |
+|------|------|
+| `column(string $column)` | 设置自定义数据库列名 |
+| `resolveColumnName(): string` | 解析实际使用的列名（优先返回自定义列名，否则返回 filter name） |
+
+### 使用的 Filter
+
+ComparisonFilter, LikeFilter, InFilter, RangeFilter, EnumFilter, DateComponentFilter, RelativeDateFilter, RegexFilter, HiddenFilter, SelectTableFilter, FindInSetFilter, JsonFilter
+
+### 用法示例
+
+```php
+use Cooper\FilamentDcatFilters\Filters\LikeFilter;
+
+// filter name 为 'search'，但实际查询 'title' 列
+LikeFilter::make('search')
+    ->column('title')
+    ->label('搜索标题');
+
+// 不设置 column 时，默认使用 filter name 作为列名
+LikeFilter::make('title')->label('标题');
+```
+
+---
+
+## HasOperator
+
+提供统一的比较操作符方法，避免各 Filter 重复定义操作符逻辑。
+
+### 方法
+
+| 方法 | 操作符 | 描述 |
+|------|--------|------|
+| `gt()` | `>` | 大于 |
+| `gte()` | `>=` | 大于等于 |
+| `lt()` | `<` | 小于 |
+| `lte()` | `<=` | 小于等于 |
+| `eq()` | `=` | 等于（默认） |
+| `ne()` | `!=` | 不等于 |
+| `operator(string $operator)` | 自定义 | 设置任意允许的操作符 |
+
+### 使用的 Filter
+
+ComparisonFilter, HiddenFilter
+
+### 约束
+
+使用此 trait 的类需要定义 `ALLOWED_OPERATORS` 常量，用于验证操作符合法性：
+
+```php
+const ALLOWED_OPERATORS = ['=', '!=', '>', '>=', '<', '<='];
+```
+
+### 用法示例
+
+```php
+use Cooper\FilamentDcatFilters\Filters\ComparisonFilter;
+use Cooper\FilamentDcatFilters\Filters\HiddenFilter;
+
+// 价格大于指定值
+ComparisonFilter::make('price')->gt()->label('最低价格');
+
+// 隐藏筛选器，固定条件
+HiddenFilter::make('tenant_id')->eq()->default(1);
+
+// 自定义操作符
+ComparisonFilter::make('stock')->operator('<=')->label('库存不超过');
+```
+
+---
 
 ## HasFilterPresets
 

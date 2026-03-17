@@ -4,7 +4,9 @@ namespace Cooper\FilamentDcatFilters\Filters;
 
 use BackedEnum;
 use Closure;
+use Cooper\FilamentDcatFilters\Concerns\HasColumnName;
 use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
+use Cooper\FilamentDcatFilters\Concerns\HasLabelResolver;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
@@ -13,7 +15,9 @@ use UnitEnum;
 
 class EnumFilter extends Filter
 {
+    use HasColumnName;
     use HasInlineLabel;
+    use HasLabelResolver;
 
     protected ?string $enumClass = null;
 
@@ -26,8 +30,6 @@ class EnumFilter extends Filter
     protected bool $multiple = false;
 
     protected bool $searchable = false;
-
-    protected ?string $columnName = null;
 
     /**
      * Setup default configuration.
@@ -84,8 +86,7 @@ class EnumFilter extends Filter
     }
 
     /**
-     * Set the column name for the comparison.
-     * This allows the filter name to differ from the actual database column.
+     * Set the column name and reconfigure the form.
      */
     public function column(string $column): static
     {
@@ -197,7 +198,7 @@ class EnumFilter extends Filter
             return;
         }
 
-        $labelResolver = fn (): string => $this->getLabel() ?? ucfirst(str_replace('_', ' ', $this->getName()));
+        $labelResolver = $this->labelResolver();
 
         if ($this->multiple) {
             $select = Select::make('values')
@@ -231,7 +232,7 @@ class EnumFilter extends Filter
     protected function configureQuery(array $options): void
     {
         $this->query(function (Builder $query, array $data): Builder {
-            $column = $this->columnName ?? $this->getName();
+            $column = $this->resolveColumnName();
 
             if ($this->multiple) {
                 $values = $data['values'] ?? [];
@@ -253,7 +254,7 @@ class EnumFilter extends Filter
         });
 
         $this->indicateUsing(function (array $data) use ($options): array {
-            $label = $this->getLabel() ?? ucfirst(str_replace('_', ' ', $this->getName()));
+            $label = $this->resolveLabel();
 
             if ($this->multiple) {
                 $values = $data['values'] ?? [];

@@ -30,6 +30,12 @@ class FilamentDcatFiltersServiceProvider extends PackageServiceProvider
     {
         $this->registerLivewireComponents();
         $this->configureTable();
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                Commands\MakeDcatFilterCommand::class,
+            ]);
+        }
     }
 
     /**

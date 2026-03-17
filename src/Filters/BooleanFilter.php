@@ -3,6 +3,7 @@
 namespace Cooper\FilamentDcatFilters\Filters;
 
 use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
+use Cooper\FilamentDcatFilters\Concerns\HasLabelResolver;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
@@ -13,6 +14,7 @@ use Illuminate\Database\Eloquent\Builder;
 class BooleanFilter extends Filter
 {
     use HasInlineLabel;
+    use HasLabelResolver;
 
     protected string $trueLabel = 'Yes';
 
@@ -122,7 +124,7 @@ class BooleanFilter extends Filter
      */
     protected function configureForm(): void
     {
-        $labelResolver = fn (): string => $this->getLabel() ?? ucfirst(str_replace('_', ' ', $this->getName()));
+        $labelResolver = $this->labelResolver();
 
         $options = [
             '' => $this->allLabel,
@@ -201,7 +203,7 @@ class BooleanFilter extends Filter
                 return [];
             }
 
-            $label = $this->getLabel() ?? ucfirst(str_replace('_', ' ', $this->getName()));
+            $label = $this->resolveLabel();
 
             $valueLabel = match ((string) $value) {
                 '1', 'true' => $this->trueLabel,

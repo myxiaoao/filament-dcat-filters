@@ -3,6 +3,7 @@
 namespace Cooper\FilamentDcatFilters\Filters;
 
 use Closure;
+use Cooper\FilamentDcatFilters\Concerns\HasColumnName;
 use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
 use Filament\Forms\Components\ViewField;
 use Filament\Tables\Filters\Filter;
@@ -25,6 +26,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ModalSelectFilter extends Filter
 {
+    use HasColumnName;
     use HasInlineLabel;
 
     protected ?string $modelClass = null;
@@ -46,8 +48,6 @@ class ModalSelectFilter extends Filter
     protected array $searchColumns = [];
 
     protected array $displayColumns = [];
-
-    protected ?string $columnName = null;
 
     /**
      * Setup default configuration.
@@ -206,17 +206,6 @@ class ModalSelectFilter extends Filter
     }
 
     /**
-     * Set the column name for the comparison.
-     * This allows the filter name to differ from the actual database column.
-     */
-    public function column(string $column): static
-    {
-        $this->columnName = $column;
-
-        return $this;
-    }
-
-    /**
      * Check if a filter value is considered empty.
      */
     protected function isValueEmpty(mixed $value): bool
@@ -237,7 +226,12 @@ class ModalSelectFilter extends Filter
             }
 
             // Use custom column name if set, otherwise default to filter name
-            $column = $this->columnName ?? $this->getName();
+            $column = $this->resolveColumnName();
+
+            // Apply custom query modifier if set
+            if ($this->modifyQueryUsing) {
+                return ($this->modifyQueryUsing)($query, $value, $column);
+            }
 
             // Handle relationship filtering
             if ($this->relationship) {
