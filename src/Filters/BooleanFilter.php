@@ -5,6 +5,7 @@ namespace Cooper\FilamentDcatFilters\Filters;
 use Cooper\FilamentDcatFilters\Concerns\HasColumnName;
 use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
 use Cooper\FilamentDcatFilters\Concerns\HasLabelResolver;
+use Cooper\FilamentDcatFilters\Concerns\HasSelectRadioDisplay;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
@@ -17,16 +18,13 @@ class BooleanFilter extends Filter
     use HasColumnName;
     use HasInlineLabel;
     use HasLabelResolver;
+    use HasSelectRadioDisplay;
 
     protected string $trueLabel = 'Yes';
 
     protected string $falseLabel = 'No';
 
     protected string $allLabel = 'All';
-
-    protected string $displayStyle = 'select';
-
-    protected array|int|null $radioColumns = 3;
 
     /**
      * Setup default configuration.
@@ -83,39 +81,6 @@ class BooleanFilter extends Filter
     public function toggle(): static
     {
         $this->displayStyle = 'toggle';
-        $this->configureForm();
-
-        return $this;
-    }
-
-    /**
-     * Use radio buttons display style.
-     */
-    public function radio(): static
-    {
-        $this->displayStyle = 'radio';
-        $this->configureForm();
-
-        return $this;
-    }
-
-    /**
-     * Use select dropdown display style (default).
-     */
-    public function select(): static
-    {
-        $this->displayStyle = 'select';
-        $this->configureForm();
-
-        return $this;
-    }
-
-    /**
-     * Set the number of columns for radio button layout.
-     */
-    public function columns(array|int|null $columns = 3): static
-    {
-        $this->radioColumns = $columns;
         $this->configureForm();
 
         return $this;

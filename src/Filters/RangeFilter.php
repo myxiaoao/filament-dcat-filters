@@ -311,11 +311,11 @@ class RangeFilter extends Filter
             $to = $data['to'] ?? null;
 
             try {
-                if ($from) {
+                if (! $this->isRangeValueEmpty($from)) {
                     $from = Carbon::parse($from)->timestamp;
                 }
 
-                if ($to) {
+                if (! $this->isRangeValueEmpty($to)) {
                     $to = Carbon::parse($to)->timestamp;
                 }
             } catch (\Exception $e) {

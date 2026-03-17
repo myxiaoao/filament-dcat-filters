@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 class MakeDcatFilterCommand extends Command
 {
     protected $signature = 'make:dcat-filter {name : The name of the filter class}
-                            {--type=basic : The filter type (basic, like, in, comparison, boolean, null, enum, range, regex, fulltext, json)}
+                            {--type=basic : The filter type (basic, like, in, comparison, boolean, null, enum, range, regex, fulltext, json, between, scope, date-component, select-table, modal-select, hidden, relative-date, cascading-select, find-in-set, input-mask, geo-location, filter-group)}
                             {--force : Overwrite existing file}';
 
     protected $description = 'Create a new Dcat-style Filament filter class';
@@ -26,6 +26,18 @@ class MakeDcatFilterCommand extends Command
         'regex' => 'Cooper\FilamentDcatFilters\Filters\RegexFilter',
         'fulltext' => 'Cooper\FilamentDcatFilters\Filters\FullTextFilter',
         'json' => 'Cooper\FilamentDcatFilters\Filters\JsonFilter',
+        'between' => 'Cooper\FilamentDcatFilters\Filters\BetweenFilter',
+        'scope' => 'Cooper\FilamentDcatFilters\Filters\ScopeFilter',
+        'date-component' => 'Cooper\FilamentDcatFilters\Filters\DateComponentFilter',
+        'select-table' => 'Cooper\FilamentDcatFilters\Filters\SelectTableFilter',
+        'modal-select' => 'Cooper\FilamentDcatFilters\Filters\ModalSelectFilter',
+        'hidden' => 'Cooper\FilamentDcatFilters\Filters\HiddenFilter',
+        'relative-date' => 'Cooper\FilamentDcatFilters\Filters\RelativeDateFilter',
+        'cascading-select' => 'Cooper\FilamentDcatFilters\Filters\CascadingSelectFilter',
+        'find-in-set' => 'Cooper\FilamentDcatFilters\Filters\FindInSetFilter',
+        'input-mask' => 'Cooper\FilamentDcatFilters\Filters\InputMaskFilter',
+        'geo-location' => 'Cooper\FilamentDcatFilters\Filters\GeoLocationFilter',
+        'filter-group' => 'Cooper\FilamentDcatFilters\Filters\FilterGroup',
     ];
 
     public function handle(Filesystem $filesystem): int
