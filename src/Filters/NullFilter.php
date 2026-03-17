@@ -2,6 +2,7 @@
 
 namespace Cooper\FilamentDcatFilters\Filters;
 
+use Cooper\FilamentDcatFilters\Concerns\HasColumnName;
 use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
 use Cooper\FilamentDcatFilters\Concerns\HasLabelResolver;
 use Filament\Forms\Components\Radio;
@@ -12,6 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class NullFilter extends Filter
 {
+    use HasColumnName;
     use HasInlineLabel;
     use HasLabelResolver;
 
@@ -165,7 +167,7 @@ class NullFilter extends Filter
                 return $query;
             }
 
-            $column = $this->getName();
+            $column = $this->resolveColumnName();
 
             if ($value === 'null') {
                 return $query->whereNull($column);

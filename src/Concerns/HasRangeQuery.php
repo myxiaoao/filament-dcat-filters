@@ -59,11 +59,11 @@ trait HasRangeQuery
         $to = $data['to'] ?? null;
 
         if (! $this->isRangeValueEmpty($from)) {
-            $indicators[] = "{$label} from {$from}";
+            $indicators[] = "{$label} " . __('filament-dcat-filters::filament-dcat-filters.range.indicator_from', ['value' => $from]);
         }
 
         if (! $this->isRangeValueEmpty($to)) {
-            $indicators[] = "{$label} to {$to}";
+            $indicators[] = "{$label} " . __('filament-dcat-filters::filament-dcat-filters.range.indicator_to', ['value' => $to]);
         }
 
         return $indicators;

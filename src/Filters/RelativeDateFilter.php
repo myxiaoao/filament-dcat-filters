@@ -19,8 +19,6 @@ class RelativeDateFilter extends Filter
 
     protected array $presets = [];
 
-    protected bool $includeCustomRange = false;
-
     /**
      * Setup default configuration.
      */

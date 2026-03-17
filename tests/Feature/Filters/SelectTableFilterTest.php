@@ -30,29 +30,6 @@ describe('Model Configuration', function () {
     });
 });
 
-describe('Searchable', function () {
-    it('can enable searchable with true', function () {
-        $filter = SelectTableFilter::make('category_id')
-            ->searchable(true);
-
-        expect($filter)->toBeInstanceOf(SelectTableFilter::class);
-    });
-
-    it('can disable searchable with false', function () {
-        $filter = SelectTableFilter::make('category_id')
-            ->searchable(false);
-
-        expect($filter)->toBeInstanceOf(SelectTableFilter::class);
-    });
-
-    it('can set specific searchable columns', function () {
-        $filter = SelectTableFilter::make('category_id')
-            ->searchable(['name', 'description']);
-
-        expect($filter)->toBeInstanceOf(SelectTableFilter::class);
-    });
-});
-
 describe('Multiple Selection', function () {
     it('can enable multiple selection', function () {
         $filter = SelectTableFilter::make('category_id')
@@ -119,8 +96,7 @@ describe('Column Name', function () {
         $filter = SelectTableFilter::make('tag_picker')
             ->column('tag_id')
             ->model('App\\Models\\Tag')
-            ->multiple()
-            ->searchable(['name']);
+            ->multiple();
 
         expect($filter)->toBeInstanceOf(SelectTableFilter::class);
     });
@@ -130,7 +106,6 @@ describe('Chained Configuration', function () {
     it('can chain all configuration methods', function () {
         $filter = SelectTableFilter::make('category_id')
             ->model('App\\Models\\Category')
-            ->searchable(['name', 'description'])
             ->multiple()
             ->optionsLimit(200)
             ->modifyQueryUsing(fn ($query) => $query);

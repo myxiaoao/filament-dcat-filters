@@ -22,13 +22,11 @@ class SelectTableFilter extends Filter
 
     protected ?string $relationship = null;
 
-    protected array $searchColumns = [];
-
     protected bool $multiple = false;
 
     protected ?string $titleColumn = 'name';
 
-    protected ?Closure $modifyQueryUsing = null;
+    protected ?Closure $customQueryModifier = null;
 
     protected ?int $optionsLimit = null;
 
@@ -66,20 +64,6 @@ class SelectTableFilter extends Filter
     }
 
     /**
-     * Set the columns that can be searched.
-     */
-    public function searchable(array|bool $columns = true): static
-    {
-        if (is_bool($columns)) {
-            $this->searchColumns = $columns ? ['name'] : [];
-        } else {
-            $this->searchColumns = $columns;
-        }
-
-        return $this;
-    }
-
-    /**
      * Enable multiple selection.
      */
     public function multiple(bool $multiple = true): static
@@ -95,7 +79,7 @@ class SelectTableFilter extends Filter
      */
     public function modifyQueryUsing(?Closure $callback): static
     {
-        $this->modifyQueryUsing = $callback;
+        $this->customQueryModifier = $callback;
 
         return $this;
     }
@@ -187,6 +171,11 @@ class SelectTableFilter extends Filter
                     return $query;
                 }
 
+                // Apply custom query modifier if set
+                if ($this->customQueryModifier) {
+                    return ($this->customQueryModifier)($query, $data);
+                }
+
                 // Handle relationship filtering
                 if ($this->relationship) {
                     return $query->whereHas(
@@ -203,6 +192,11 @@ class SelectTableFilter extends Filter
 
             if ($value === null || $value === '') {
                 return $query;
+            }
+
+            // Apply custom query modifier if set
+            if ($this->customQueryModifier) {
+                return ($this->customQueryModifier)($query, $data);
             }
 
             // Handle relationship filtering

@@ -56,9 +56,6 @@ return [
     'database' => [
         // Database driver: 'auto' (detect from connection), 'mysql', 'pgsql', 'sqlite'
         'driver' => 'auto',
-
-        // Global default for case-insensitive search
-        'case_insensitive' => true,
     ],
 
     /*
@@ -134,7 +131,8 @@ return [
     */
     'allowed_models' => [
         // Add model classes that are allowed to be queried via the modal select filter.
-        // If empty, all models are allowed (not recommended for production).
+        // IMPORTANT: When empty, ALL requests are denied for security.
+        // You must explicitly list allowed models.
         // Example:
         // App\Models\User::class,
         // App\Models\Category::class,

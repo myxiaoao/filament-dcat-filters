@@ -125,7 +125,7 @@ class FilterGroup extends Filter
             return;
         }
 
-        $query->where($filter->getName(), $value);
+        $filter->apply($query, ['value' => $value, 'isActive' => true]);
     }
 
     public function getLogic(): string

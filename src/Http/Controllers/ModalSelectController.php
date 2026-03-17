@@ -46,9 +46,19 @@ class ModalSelectController extends Controller
             ], 400);
         }
 
-        // Check if model is in allowed list (if configured)
+        // Check if model is in allowed list
         $allowedModels = config('filament-dcat-filters.allowed_models', []);
-        if (! empty($allowedModels) && ! in_array($modelClass, $allowedModels, true)) {
+        if (empty($allowedModels)) {
+            // When no models are explicitly allowed, deny all requests for security
+            Log::warning('No allowed_models configured for filament-dcat-filters', ['model' => $modelClass]);
+
+            return response()->json([
+                'error' => 'No models configured',
+                'labels' => [],
+            ], 403);
+        }
+
+        if (! in_array($modelClass, $allowedModels, true)) {
             Log::warning('Unauthorized model access attempt', ['model' => $modelClass]);
 
             return response()->json([

@@ -5,6 +5,8 @@ return [
     // Range filter placeholders
     'range.from' => '从',
     'range.to' => '到',
+    'range.indicator_from' => '从 :value',
+    'range.indicator_to' => '至 :value',
 
     // Scope filter labels
     'scope.all' => '全部',

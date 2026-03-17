@@ -24,7 +24,8 @@ class LikeFilter extends Filter
 
     protected bool $caseSensitive = false;
 
-    protected string $wildcardPosition = 'both'; // 'both', 'start', 'end', 'none'
+    // Wildcard position: 'both' = %v%, 'start' = %v (endsWith), 'end' = v% (startsWith), 'none' = v
+    protected string $wildcardPosition = 'both';
 
     protected bool $negate = false;
 

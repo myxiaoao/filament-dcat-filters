@@ -5,6 +5,8 @@ return [
     // Range filter placeholders
     'range.from' => 'From',
     'range.to' => 'To',
+    'range.indicator_from' => 'from :value',
+    'range.indicator_to' => 'to :value',
 
     // Scope filter labels
     'scope.all' => 'All',

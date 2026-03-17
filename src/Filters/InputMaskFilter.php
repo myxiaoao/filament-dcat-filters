@@ -2,6 +2,7 @@
 
 namespace Cooper\FilamentDcatFilters\Filters;
 
+use Cooper\FilamentDcatFilters\Concerns\HasColumnName;
 use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
 use Cooper\FilamentDcatFilters\Concerns\HasLabelResolver;
 use Filament\Forms\Components\TextInput;
@@ -11,6 +12,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class InputMaskFilter extends Filter
 {
+    use HasColumnName;
     use HasInlineLabel;
     use HasLabelResolver;
 
@@ -162,7 +164,7 @@ class InputMaskFilter extends Filter
                 return $query;
             }
 
-            $column = $this->getName();
+            $column = $this->resolveColumnName();
 
             if ($this->stripMaskOnQuery) {
                 $value = $this->stripMaskCharacters($value);

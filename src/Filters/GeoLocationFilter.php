@@ -185,15 +185,18 @@ class GeoLocationFilter extends Filter
             $radius = (float) ($data['radius'] ?? $this->defaultRadius);
             $radiusKm = $radius * (self::UNIT_FACTORS[$this->unit] ?? 1);
 
+            $latCol = $query->getGrammar()->wrap($this->latitudeColumn);
+            $lonCol = $query->getGrammar()->wrap($this->longitudeColumn);
+
             $haversine = sprintf(
                 '(%d * acos(cos(radians(%f)) * cos(radians(%s)) * cos(radians(%s) - radians(%f)) + sin(radians(%f)) * sin(radians(%s))))',
                 self::EARTH_RADIUS_KM,
                 $latitude,
-                $this->latitudeColumn,
-                $this->longitudeColumn,
+                $latCol,
+                $lonCol,
                 $longitude,
                 $latitude,
-                $this->latitudeColumn
+                $latCol
             );
 
             return $query->whereRaw("{$haversine} <= ?", [$radiusKm]);

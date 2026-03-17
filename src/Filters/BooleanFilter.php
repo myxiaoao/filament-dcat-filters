@@ -2,6 +2,7 @@
 
 namespace Cooper\FilamentDcatFilters\Filters;
 
+use Cooper\FilamentDcatFilters\Concerns\HasColumnName;
 use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
 use Cooper\FilamentDcatFilters\Concerns\HasLabelResolver;
 use Filament\Forms\Components\Radio;
@@ -13,6 +14,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class BooleanFilter extends Filter
 {
+    use HasColumnName;
     use HasInlineLabel;
     use HasLabelResolver;
 
@@ -183,7 +185,7 @@ class BooleanFilter extends Filter
                 return $query;
             }
 
-            $column = $this->getName();
+            $column = $this->resolveColumnName();
 
             if ($value === '0' || $value === 0 || $value === false) {
                 return $query->where($column, false);

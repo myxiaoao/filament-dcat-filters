@@ -104,6 +104,15 @@ trait HasFilterExportImport
 
     public function mergeFilters(string $jsonString, bool $overwrite = true): bool
     {
+        // Handle decryption if enabled
+        if (property_exists($this, 'encryptFilters') && $this->encryptFilters) {
+            try {
+                $jsonString = Crypt::decryptString($jsonString);
+            } catch (\Exception) {
+                return false;
+            }
+        }
+
         $data = json_decode($jsonString, true);
 
         if (! is_array($data) || ! isset($data['filters'])) {

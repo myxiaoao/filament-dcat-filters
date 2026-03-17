@@ -14,13 +14,6 @@ trait SyncsFiltersToUrl
 
     protected bool $urlHistory = true;
 
-    public function withoutUrlHistory(): static
-    {
-        $this->urlHistory = false;
-
-        return $this;
-    }
-
     public function queryString(): array
     {
         return [

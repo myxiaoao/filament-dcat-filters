@@ -14,7 +14,7 @@ class JsonFilter extends Filter
     use HasColumnName;
     use HasInlineLabel;
 
-    protected const VALID_OPERATORS = ['=', '!=', '>', '>=', '<', '<=', 'like', 'not like'];
+    protected const ALLOWED_OPERATORS = ['=', '!=', '>', '>=', '<', '<=', 'like', 'not like'];
 
     protected ?string $jsonPath = null;
 
@@ -41,9 +41,9 @@ class JsonFilter extends Filter
     {
         $operator = strtolower($operator);
 
-        if (! in_array($operator, self::VALID_OPERATORS)) {
+        if (! in_array($operator, self::ALLOWED_OPERATORS)) {
             throw new \InvalidArgumentException(
-                "Invalid operator: {$operator}. Valid operators are: ".implode(', ', self::VALID_OPERATORS)
+                "Invalid operator: {$operator}. Allowed operators: ".implode(', ', self::ALLOWED_OPERATORS)
             );
         }
 
