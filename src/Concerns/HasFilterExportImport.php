@@ -27,7 +27,7 @@ trait HasFilterExportImport
             try {
                 $jsonString = Crypt::decryptString($jsonString);
             } catch (\Exception) {
-                // If decryption fails, try without decryption
+                return false;
             }
         }
 
@@ -83,7 +83,7 @@ trait HasFilterExportImport
             return false;
         }
 
-        return $this->importFiltersFromBase64(urldecode($filters));
+        return $this->importFiltersFromBase64($filters);
     }
 
     /** @return array{version: string, timestamp: string, filters: array} */
@@ -105,7 +105,7 @@ trait HasFilterExportImport
     public function mergeFilters(string $jsonString, bool $overwrite = true): bool
     {
         // Handle decryption if enabled
-        if (property_exists($this, 'encryptFilters') && $this->encryptFilters) {
+        if ($this->encryptFilters) {
             try {
                 $jsonString = Crypt::decryptString($jsonString);
             } catch (\Exception) {

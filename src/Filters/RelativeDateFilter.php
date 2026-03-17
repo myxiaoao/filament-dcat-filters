@@ -19,6 +19,9 @@ class RelativeDateFilter extends Filter
 
     protected array $presets = [];
 
+    /** @var array<string, \Closure> */
+    protected array $customRanges = [];
+
     /**
      * Setup default configuration.
      */
@@ -66,10 +69,24 @@ class RelativeDateFilter extends Filter
 
     /**
      * Add presets to existing ones.
+     *
+     * Supports two formats:
+     * - Simple: ['key' => 'Label'] — only works with built-in preset keys
+     * - With range: ['key' => ['label' => 'Label', 'range' => fn () => [Carbon::now()->subDays(90)->startOfDay(), Carbon::now()->endOfDay()]]]
      */
     public function addPresets(array $presets): static
     {
-        $this->presets = array_merge($this->presets, $presets);
+        foreach ($presets as $key => $value) {
+            if (is_array($value)) {
+                $this->presets[$key] = $value['label'] ?? $key;
+                if (isset($value['range']) && is_callable($value['range'])) {
+                    $this->customRanges[$key] = $value['range'];
+                }
+            } else {
+                $this->presets[$key] = $value;
+            }
+        }
+
         $this->configureForm();
 
         return $this;
@@ -164,6 +181,10 @@ class RelativeDateFilter extends Filter
      */
     protected function getDateRange(string $preset): ?array
     {
+        if (isset($this->customRanges[$preset])) {
+            return ($this->customRanges[$preset])();
+        }
+
         $now = Carbon::now();
 
         return match ($preset) {
