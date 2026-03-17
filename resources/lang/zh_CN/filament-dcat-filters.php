@@ -188,5 +188,7 @@ return [
     'accessibility.filter_cleared' => '筛选器已清除',
     'accessibility.loading' => '加载中',
     'accessibility.error_occurred' => '发生错误',
+    'accessibility.select_row' => '选择此行',
+    'accessibility.select_option' => '选择此选项',
 
 ];
