@@ -4,8 +4,11 @@ namespace Cooper\FilamentDcatFilters\Filters;
 
 use Closure;
 use Cooper\FilamentDcatFilters\Concerns\HasColumnName;
+use Cooper\FilamentDcatFilters\Concerns\HasFilterState;
 use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
 use Cooper\FilamentDcatFilters\Concerns\HasLabelResolver;
+use Cooper\FilamentDcatFilters\State\FilterStateDescriptor;
+use Cooper\FilamentDcatFilters\State\StateType;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
@@ -15,6 +18,7 @@ use Illuminate\Database\Eloquent\Model;
 class SelectTableFilter extends Filter
 {
     use HasColumnName;
+    use HasFilterState;
     use HasInlineLabel;
     use HasLabelResolver;
 
@@ -32,6 +36,18 @@ class SelectTableFilter extends Filter
     protected ?Closure $customQueryModifier = null;
 
     protected ?int $optionsLimit = null;
+
+    protected function describeState(): FilterStateDescriptor
+    {
+        return FilterStateDescriptor::make()
+            ->fields($this->multiple ? ['values'] : ['value'])
+            ->type($this->multiple ? StateType::Multiple : StateType::Single)
+            ->emptyWhen(fn (array $data) => $this->multiple
+                ? (! is_array($data['values'] ?? null) || count($data['values'] ?? []) === 0)
+                : ($data['value'] ?? '') === '')
+            ->capabilities(array_filter(['relationship', 'indicator', $this->multiple ? 'multiple' : null]))
+            ->databaseSupport(['mysql', 'pgsql', 'sqlite']);
+    }
 
     /**
      * Setup default configuration.

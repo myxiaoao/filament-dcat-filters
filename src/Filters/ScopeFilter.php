@@ -2,8 +2,11 @@
 
 namespace Cooper\FilamentDcatFilters\Filters;
 
+use Cooper\FilamentDcatFilters\Concerns\HasFilterState;
 use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
 use Cooper\FilamentDcatFilters\Concerns\HasLabelResolver;
+use Cooper\FilamentDcatFilters\State\FilterStateDescriptor;
+use Cooper\FilamentDcatFilters\State\StateType;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Filters\Filter;
@@ -12,6 +15,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class ScopeFilter extends Filter
 {
+    use HasFilterState;
     use HasInlineLabel;
     use HasLabelResolver;
 
@@ -24,6 +28,16 @@ class ScopeFilter extends Filter
     protected array|int|null $columns = 4;
 
     protected bool $showBadge = true;
+
+    protected function describeState(): FilterStateDescriptor
+    {
+        return FilterStateDescriptor::make()
+            ->fields(['scope'])
+            ->type(StateType::Keyed)
+            ->emptyWhen(fn (array $data) => ($data['scope'] ?? '') === '')
+            ->capabilities(['indicator'])
+            ->databaseSupport(['mysql', 'pgsql', 'sqlite']);
+    }
 
     /**
      * Setup default configuration.

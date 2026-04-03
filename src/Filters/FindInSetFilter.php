@@ -4,8 +4,11 @@ namespace Cooper\FilamentDcatFilters\Filters;
 
 use Cooper\FilamentDcatFilters\Concerns\HasColumnName;
 use Cooper\FilamentDcatFilters\Concerns\HasDatabaseDriver;
+use Cooper\FilamentDcatFilters\Concerns\HasFilterState;
 use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
 use Cooper\FilamentDcatFilters\Concerns\HasLabelResolver;
+use Cooper\FilamentDcatFilters\State\FilterStateDescriptor;
+use Cooper\FilamentDcatFilters\State\StateType;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
@@ -16,6 +19,7 @@ class FindInSetFilter extends Filter
 {
     use HasColumnName;
     use HasDatabaseDriver;
+    use HasFilterState;
     use HasInlineLabel;
     use HasLabelResolver;
 
@@ -28,6 +32,16 @@ class FindInSetFilter extends Filter
     protected ?string $placeholder = null;
 
     protected bool $useMatchAny = false;
+
+    protected function describeState(): FilterStateDescriptor
+    {
+        return FilterStateDescriptor::make()
+            ->fields(['value'])
+            ->type(StateType::Single)
+            ->capabilities(['multiple', 'indicator'])
+            ->databaseSupport(['mysql', 'pgsql'])
+            ->limitations(['No native FIND_IN_SET on SQLite']);
+    }
 
     protected function setUp(): void
     {

@@ -41,7 +41,34 @@ trait HasFilterExportImport
             return false;
         }
 
-        $this->tableFilters = $data['filters'];
+        $importFilters = $data['filters'];
+
+        // If table filters are available, validate imported keys against descriptors
+        if (method_exists($this, 'getTable')) {
+            try {
+                $tableFilters = $this->getTable()->getFilters();
+
+                foreach ($importFilters as $name => $filterData) {
+                    if (! isset($tableFilters[$name]) || ! is_array($filterData)) {
+                        continue;
+                    }
+
+                    $filter = $tableFilters[$name];
+
+                    if (method_exists($filter, 'getStateDescriptor')) {
+                        $validFields = $filter->getStateDescriptor()->getFields();
+                        $importFilters[$name] = array_intersect_key(
+                            $filterData,
+                            array_flip($validFields)
+                        );
+                    }
+                }
+            } catch (\Throwable) {
+                // Fallback: use raw imported data if table is not available
+            }
+        }
+
+        $this->tableFilters = $importFilters;
         $this->resetPage();
 
         return true;
@@ -89,10 +116,42 @@ trait HasFilterExportImport
     /** @return array{version: string, timestamp: string, filters: array} */
     public function getFilterExportData(): array
     {
+        $filters = $this->tableFilters ?? [];
+
+        // If table filters are available, use descriptors to skip empty filters
+        if (method_exists($this, 'getTable')) {
+            try {
+                $tableFilters = $this->getTable()->getFilters();
+                $cleanedFilters = [];
+
+                foreach ($filters as $name => $data) {
+                    if (! isset($tableFilters[$name])) {
+                        continue;
+                    }
+
+                    $filter = $tableFilters[$name];
+
+                    if (method_exists($filter, 'getStateDescriptor')) {
+                        $descriptor = $filter->getStateDescriptor();
+
+                        if (! $descriptor->isEmpty(is_array($data) ? $data : [])) {
+                            $cleanedFilters[$name] = $data;
+                        }
+                    } else {
+                        $cleanedFilters[$name] = $data;
+                    }
+                }
+
+                $filters = $cleanedFilters;
+            } catch (\Throwable) {
+                // Fallback: use raw filters if table is not available
+            }
+        }
+
         return [
             'version' => '1.0',
             'timestamp' => now()->toIso8601String(),
-            'filters' => $this->tableFilters ?? [],
+            'filters' => $filters,
         ];
     }
 

@@ -3,7 +3,10 @@
 namespace Cooper\FilamentDcatFilters\Filters;
 
 use Cooper\FilamentDcatFilters\Concerns\HasDatabaseDriver;
+use Cooper\FilamentDcatFilters\Concerns\HasFilterState;
 use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
+use Cooper\FilamentDcatFilters\State\FilterStateDescriptor;
+use Cooper\FilamentDcatFilters\State\StateType;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
@@ -12,6 +15,7 @@ use Illuminate\Database\Eloquent\Builder;
 class FullTextFilter extends Filter
 {
     use HasDatabaseDriver;
+    use HasFilterState;
     use HasInlineLabel;
 
     protected array $searchColumns = [];
@@ -23,6 +27,16 @@ class FullTextFilter extends Filter
     protected bool $useFullText = false;
 
     protected ?string $placeholder = null;
+
+    protected function describeState(): FilterStateDescriptor
+    {
+        return FilterStateDescriptor::make()
+            ->fields(['search'])
+            ->type(StateType::Keyed)
+            ->capabilities(['indicator'])
+            ->databaseSupport(['mysql', 'pgsql'])
+            ->limitations(['SQLite falls back to LIKE-based search']);
+    }
 
     /**
      * Setup default configuration.

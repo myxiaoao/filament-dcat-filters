@@ -2,7 +2,10 @@
 
 namespace Cooper\FilamentDcatFilters\Filters;
 
+use Cooper\FilamentDcatFilters\Concerns\HasFilterState;
 use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
+use Cooper\FilamentDcatFilters\State\FilterStateDescriptor;
+use Cooper\FilamentDcatFilters\State\StateType;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Tables\Filters\Filter;
@@ -11,6 +14,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class GeoLocationFilter extends Filter
 {
+    use HasFilterState;
     use HasInlineLabel;
 
     protected const UNIT_FACTORS = [
@@ -32,6 +36,17 @@ class GeoLocationFilter extends Filter
     protected ?float $centerLatitude = null;
 
     protected ?float $centerLongitude = null;
+
+    protected function describeState(): FilterStateDescriptor
+    {
+        return FilterStateDescriptor::make()
+            ->fields(['latitude', 'longitude', 'radius'])
+            ->type(StateType::Composite)
+            ->emptyWhen(fn (array $data) => ($data['latitude'] ?? '') === '' || ($data['longitude'] ?? '') === '')
+            ->capabilities(['indicator'])
+            ->databaseSupport(['mysql', 'pgsql', 'sqlite'])
+            ->limitations(['Haversine formula requires trigonometric function support']);
+    }
 
     protected function setUp(): void
     {

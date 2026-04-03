@@ -3,9 +3,12 @@
 namespace Cooper\FilamentDcatFilters\Filters;
 
 use Cooper\FilamentDcatFilters\Concerns\HasColumnName;
+use Cooper\FilamentDcatFilters\Concerns\HasFilterState;
 use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
 use Cooper\FilamentDcatFilters\Concerns\HasLabelResolver;
 use Cooper\FilamentDcatFilters\Concerns\HasSelectRadioDisplay;
+use Cooper\FilamentDcatFilters\State\FilterStateDescriptor;
+use Cooper\FilamentDcatFilters\State\StateType;
 use Filament\Forms\Components\Toggle;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
@@ -14,6 +17,7 @@ use Illuminate\Database\Eloquent\Builder;
 class BooleanFilter extends Filter
 {
     use HasColumnName;
+    use HasFilterState;
     use HasInlineLabel;
     use HasLabelResolver;
     use HasSelectRadioDisplay;
@@ -23,6 +27,16 @@ class BooleanFilter extends Filter
     protected string $falseLabel = 'No';
 
     protected string $allLabel = 'All';
+
+    protected function describeState(): FilterStateDescriptor
+    {
+        return FilterStateDescriptor::make()
+            ->fields(['value'])
+            ->type(StateType::Single)
+            ->emptyWhen(fn (array $data) => ($data['value'] ?? '') === '')
+            ->capabilities(['indicator'])
+            ->databaseSupport(['mysql', 'pgsql', 'sqlite']);
+    }
 
     /**
      * Setup default configuration.

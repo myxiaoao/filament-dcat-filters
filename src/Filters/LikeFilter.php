@@ -4,9 +4,12 @@ namespace Cooper\FilamentDcatFilters\Filters;
 
 use Cooper\FilamentDcatFilters\Concerns\HasColumnName;
 use Cooper\FilamentDcatFilters\Concerns\HasDatabaseDriver;
+use Cooper\FilamentDcatFilters\Concerns\HasFilterState;
 use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
 use Cooper\FilamentDcatFilters\Concerns\HasLabelResolver;
 use Cooper\FilamentDcatFilters\Concerns\HasRelationship;
+use Cooper\FilamentDcatFilters\State\FilterStateDescriptor;
+use Cooper\FilamentDcatFilters\State\StateType;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
@@ -16,6 +19,7 @@ class LikeFilter extends Filter
 {
     use HasColumnName;
     use HasDatabaseDriver;
+    use HasFilterState;
     use HasInlineLabel;
     use HasLabelResolver;
     use HasRelationship;
@@ -28,6 +32,15 @@ class LikeFilter extends Filter
     protected string $wildcardPosition = 'both';
 
     protected bool $negate = false;
+
+    protected function describeState(): FilterStateDescriptor
+    {
+        return FilterStateDescriptor::make()
+            ->fields(['value'])
+            ->type(StateType::Single)
+            ->capabilities(['relationship', 'indicator'])
+            ->databaseSupport(['mysql', 'pgsql', 'sqlite']);
+    }
 
     /**
      * Create a new LIKE filter instance.

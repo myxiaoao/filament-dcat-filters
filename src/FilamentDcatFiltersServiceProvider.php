@@ -35,6 +35,7 @@ class FilamentDcatFiltersServiceProvider extends PackageServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 Commands\MakeDcatFilterCommand::class,
+                Commands\FilterMatrixCommand::class,
             ]);
         }
     }

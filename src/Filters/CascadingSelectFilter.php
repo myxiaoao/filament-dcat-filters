@@ -2,7 +2,10 @@
 
 namespace Cooper\FilamentDcatFilters\Filters;
 
+use Cooper\FilamentDcatFilters\Concerns\HasFilterState;
 use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
+use Cooper\FilamentDcatFilters\State\FilterStateDescriptor;
+use Cooper\FilamentDcatFilters\State\StateType;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Get;
 use Filament\Tables\Filters\Filter;
@@ -18,11 +21,30 @@ use Illuminate\Database\Eloquent\Model;
  */
 class CascadingSelectFilter extends Filter
 {
+    use HasFilterState;
     use HasInlineLabel;
 
     protected array $levels = [];
 
     protected array $levelConfigs = [];
+
+    protected function describeState(): FilterStateDescriptor
+    {
+        return FilterStateDescriptor::make()
+            ->fields($this->levels)
+            ->type(StateType::Composite)
+            ->emptyWhen(function (array $data) {
+                foreach ($this->levels as $level) {
+                    if (($data[$level] ?? '') !== '') {
+                        return false;
+                    }
+                }
+
+                return true;
+            })
+            ->capabilities(['indicator'])
+            ->databaseSupport(['mysql', 'pgsql', 'sqlite']);
+    }
 
     /**
      * Setup default configuration.

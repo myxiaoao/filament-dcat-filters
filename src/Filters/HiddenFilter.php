@@ -3,7 +3,10 @@
 namespace Cooper\FilamentDcatFilters\Filters;
 
 use Cooper\FilamentDcatFilters\Concerns\HasColumnName;
+use Cooper\FilamentDcatFilters\Concerns\HasFilterState;
 use Cooper\FilamentDcatFilters\Concerns\HasOperator;
+use Cooper\FilamentDcatFilters\State\FilterStateDescriptor;
+use Cooper\FilamentDcatFilters\State\StateType;
 use Filament\Forms\Components\Hidden;
 use Filament\Tables\Filters\Filter;
 use Illuminate\Database\Eloquent\Builder;
@@ -11,11 +14,20 @@ use Illuminate\Database\Eloquent\Builder;
 class HiddenFilter extends Filter
 {
     use HasColumnName;
+    use HasFilterState;
     use HasOperator;
 
     protected const ALLOWED_OPERATORS = ['=', '!=', '>', '>=', '<', '<=', 'like', 'not like'];
 
     protected mixed $defaultValue = null;
+
+    protected function describeState(): FilterStateDescriptor
+    {
+        return FilterStateDescriptor::make()
+            ->fields(['value'])
+            ->type(StateType::Single)
+            ->databaseSupport(['mysql', 'pgsql', 'sqlite']);
+    }
 
     /**
      * Setup default configuration.

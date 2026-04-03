@@ -4,8 +4,11 @@ namespace Cooper\FilamentDcatFilters\Filters;
 
 use Cooper\FilamentDcatFilters\Concerns\HasColumnName;
 use Cooper\FilamentDcatFilters\Concerns\HasDatabaseDriver;
+use Cooper\FilamentDcatFilters\Concerns\HasFilterState;
 use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
 use Cooper\FilamentDcatFilters\Concerns\HasLabelResolver;
+use Cooper\FilamentDcatFilters\State\FilterStateDescriptor;
+use Cooper\FilamentDcatFilters\State\StateType;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Tables\Filters\Filter;
@@ -16,6 +19,7 @@ class RegexFilter extends Filter
 {
     use HasColumnName;
     use HasDatabaseDriver;
+    use HasFilterState;
     use HasInlineLabel;
     use HasLabelResolver;
 
@@ -26,6 +30,24 @@ class RegexFilter extends Filter
     protected ?string $placeholder = null;
 
     protected bool $patternMode = false;
+
+    protected function describeState(): FilterStateDescriptor
+    {
+        if ($this->patternMode && $this->regexPattern) {
+            return FilterStateDescriptor::make()
+                ->fields(['enabled'])
+                ->type(StateType::Toggle)
+                ->emptyWhen(fn (array $data) => empty($data['enabled']))
+                ->capabilities(['indicator'])
+                ->databaseSupport(['mysql', 'pgsql']);
+        }
+
+        return FilterStateDescriptor::make()
+            ->fields(['pattern'])
+            ->type(StateType::Keyed)
+            ->capabilities(['indicator'])
+            ->databaseSupport(['mysql', 'pgsql']);
+    }
 
     protected function setUp(): void
     {

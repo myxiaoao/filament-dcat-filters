@@ -4,7 +4,10 @@ namespace Cooper\FilamentDcatFilters\Filters;
 
 use Closure;
 use Cooper\FilamentDcatFilters\Concerns\HasColumnName;
+use Cooper\FilamentDcatFilters\Concerns\HasFilterState;
 use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
+use Cooper\FilamentDcatFilters\State\FilterStateDescriptor;
+use Cooper\FilamentDcatFilters\State\StateType;
 use Filament\Forms\Components\ViewField;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
@@ -27,6 +30,7 @@ use Illuminate\Database\Eloquent\Model;
 class ModalSelectFilter extends Filter
 {
     use HasColumnName;
+    use HasFilterState;
     use HasInlineLabel;
 
     protected ?string $modelClass = null;
@@ -49,6 +53,16 @@ class ModalSelectFilter extends Filter
     protected array $searchColumns = [];
 
     protected array $displayColumns = [];
+
+    protected function describeState(): FilterStateDescriptor
+    {
+        return FilterStateDescriptor::make()
+            ->fields(['value'])
+            ->type(StateType::Single)
+            ->emptyWhen(fn (array $data) => $this->isValueEmpty($data['value'] ?? null))
+            ->capabilities(['relationship', 'multiple', 'indicator'])
+            ->databaseSupport(['mysql', 'pgsql', 'sqlite']);
+    }
 
     /**
      * Setup default configuration.

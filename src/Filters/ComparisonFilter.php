@@ -3,9 +3,12 @@
 namespace Cooper\FilamentDcatFilters\Filters;
 
 use Cooper\FilamentDcatFilters\Concerns\HasColumnName;
+use Cooper\FilamentDcatFilters\Concerns\HasFilterState;
 use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
 use Cooper\FilamentDcatFilters\Concerns\HasLabelResolver;
 use Cooper\FilamentDcatFilters\Concerns\HasOperator;
+use Cooper\FilamentDcatFilters\State\FilterStateDescriptor;
+use Cooper\FilamentDcatFilters\State\StateType;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
@@ -14,6 +17,7 @@ use Illuminate\Database\Eloquent\Builder;
 class ComparisonFilter extends Filter
 {
     use HasColumnName;
+    use HasFilterState;
     use HasInlineLabel;
     use HasLabelResolver;
     use HasOperator;
@@ -25,6 +29,16 @@ class ComparisonFilter extends Filter
     protected ?int $moneyDivider = null;
 
     protected ?string $moneySuffix = null;
+
+    protected function describeState(): FilterStateDescriptor
+    {
+        return FilterStateDescriptor::make()
+            ->fields(['value'])
+            ->type(StateType::Single)
+            ->emptyWhen(fn (array $data) => ! is_numeric($data['value'] ?? null))
+            ->capabilities(['indicator'])
+            ->databaseSupport(['mysql', 'pgsql', 'sqlite']);
+    }
 
     /**
      * Create a new comparison filter instance.

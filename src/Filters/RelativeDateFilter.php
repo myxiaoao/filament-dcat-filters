@@ -4,8 +4,11 @@ namespace Cooper\FilamentDcatFilters\Filters;
 
 use Carbon\Carbon;
 use Cooper\FilamentDcatFilters\Concerns\HasColumnName;
+use Cooper\FilamentDcatFilters\Concerns\HasFilterState;
 use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
 use Cooper\FilamentDcatFilters\Concerns\HasLabelResolver;
+use Cooper\FilamentDcatFilters\State\FilterStateDescriptor;
+use Cooper\FilamentDcatFilters\State\StateType;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
@@ -14,6 +17,7 @@ use Illuminate\Database\Eloquent\Builder;
 class RelativeDateFilter extends Filter
 {
     use HasColumnName;
+    use HasFilterState;
     use HasInlineLabel;
     use HasLabelResolver;
 
@@ -21,6 +25,15 @@ class RelativeDateFilter extends Filter
 
     /** @var array<string, \Closure> */
     protected array $customRanges = [];
+
+    protected function describeState(): FilterStateDescriptor
+    {
+        return FilterStateDescriptor::make()
+            ->fields(['preset'])
+            ->type(StateType::Keyed)
+            ->capabilities(['indicator'])
+            ->databaseSupport(['mysql', 'pgsql', 'sqlite']);
+    }
 
     /**
      * Setup default configuration.

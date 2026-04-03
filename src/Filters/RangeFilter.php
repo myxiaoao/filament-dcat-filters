@@ -4,9 +4,12 @@ namespace Cooper\FilamentDcatFilters\Filters;
 
 use Carbon\Carbon;
 use Cooper\FilamentDcatFilters\Concerns\HasColumnName;
+use Cooper\FilamentDcatFilters\Concerns\HasFilterState;
 use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
 use Cooper\FilamentDcatFilters\Concerns\HasLabelResolver;
 use Cooper\FilamentDcatFilters\Concerns\HasRangeQuery;
+use Cooper\FilamentDcatFilters\State\FilterStateDescriptor;
+use Cooper\FilamentDcatFilters\State\StateType;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
@@ -20,6 +23,7 @@ use Illuminate\Support\HtmlString;
 class RangeFilter extends Filter
 {
     use HasColumnName;
+    use HasFilterState;
     use HasInlineLabel;
     use HasLabelResolver;
     use HasRangeQuery;
@@ -29,6 +33,15 @@ class RangeFilter extends Filter
     protected ?string $dateFormat = null;
 
     protected array $placeholders = [];
+
+    protected function describeState(): FilterStateDescriptor
+    {
+        return FilterStateDescriptor::make()
+            ->fields(['from', 'to'])
+            ->type(StateType::Range)
+            ->capabilities(['indicator'])
+            ->databaseSupport(['mysql', 'pgsql', 'sqlite']);
+    }
 
     /**
      * Setup default configuration.
