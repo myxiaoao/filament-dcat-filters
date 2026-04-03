@@ -76,10 +76,17 @@ class ModalSelectController extends Controller
         }
 
         try {
-            $labels = $modelClass::query()
+            $labelsMap = $modelClass::query()
                 ->whereIn($keyColumn, $ids)
                 ->pluck($column, $keyColumn)
                 ->toArray();
+
+            // Return labels as an ordered array matching the input ids order,
+            // so the frontend can use array methods (.length, .splice, x-for index)
+            $labels = [];
+            foreach ($ids as $id) {
+                $labels[] = $labelsMap[$id] ?? null;
+            }
 
             return response()->json([
                 'labels' => $labels,

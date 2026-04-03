@@ -28,9 +28,18 @@ SelectTableFilter::make('author_id')
 
 ### 设置关联关系
 
+使用 `relationship()` 时，建议传入关联模型类以确保下拉选项正常生成：
+
 ```php
+// 推荐：在 relationship() 中直接传入 model class
 SelectTableFilter::make('author')
-    ->relationship('author', 'name') // 关系名称，标题列
+    ->relationship('author', 'name', User::class)
+    ->tableColumns([...]);
+
+// 或先设置 model()
+SelectTableFilter::make('author')
+    ->model(User::class)
+    ->relationship('author', 'name')
     ->tableColumns([...]);
 ```
 
@@ -200,15 +209,16 @@ SelectTableFilter::make('assignee_id')
 通过关联关系筛选时，筛选器会自动处理 `whereHas` 查询：
 
 ```php
-// 单选
+// 单选 — 传入 model class 以生成下拉选项
 SelectTableFilter::make('author')
-    ->relationship('author', 'name')
+    ->relationship('author', 'name', User::class)
     ->tableColumns([...]);
 
 // 生成：$query->whereHas('author', fn($q) => $q->where('id', $selectedId))
 
 // 多选
 SelectTableFilter::make('categories')
+    ->model(Category::class)
     ->relationship('categories', 'name')
     ->multiple()
     ->tableColumns([...]);

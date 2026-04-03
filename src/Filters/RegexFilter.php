@@ -175,7 +175,8 @@ class RegexFilter extends Filter
             }
 
             // Validate regex syntax before sending to database
-            if (@preg_match('/'.$pattern.'/', '') === false) {
+            // Use chr(1) as delimiter to avoid conflicts with / in user patterns
+            if (@preg_match("\x01".$pattern."\x01u", '') === false) {
                 return $query;
             }
 

@@ -78,8 +78,9 @@
                     return response.json();
                 })
                 .then(data => {
-                    if (data.labels && data.labels.length > 0) {
-                        this.selectedLabels = data.labels;
+                    if (data.labels && Array.isArray(data.labels) && data.labels.length > 0) {
+                        // Replace null entries (unresolved ids) with fallback '#id'
+                        this.selectedLabels = data.labels.map((label, i) => label ?? ('#' + this.selected[i]));
                     } else {
                         this.selectedLabels = this.selected.map(id => '#' + id);
                     }

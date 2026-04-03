@@ -208,7 +208,7 @@ describe('POST /filament-dcat-filters/fetch-labels', function () {
                 'column' => 'name',
             ])->assertStatus(200)
                 ->assertJsonStructure(['labels'])
-                ->assertJsonFragment(['labels' => [$insertedId => 'Alice']]);
+                ->assertJsonFragment(['labels' => ['Alice']]);
         });
 
         it('returns 200 with empty labels when no matching ids found', function () {
@@ -230,7 +230,81 @@ describe('POST /filament-dcat-filters/fetch-labels', function () {
                 'ids' => [99999],
                 'column' => 'name',
             ])->assertStatus(200)
-                ->assertJsonFragment(['labels' => []]);
+                ->assertJsonFragment(['labels' => [null]]);
+        });
+
+        it('returns labels as ordered array matching input ids order', function () {
+            $this->app['db']->statement('CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                email TEXT NOT NULL,
+                password TEXT NOT NULL,
+                remember_token TEXT,
+                email_verified_at DATETIME,
+                created_at DATETIME,
+                updated_at DATETIME
+            )');
+
+            $this->app['db']->table('users')->insert([
+                ['name' => 'Zara', 'email' => 'zara@example.com', 'password' => bcrypt('pw')],
+                ['name' => 'Adam', 'email' => 'adam@example.com', 'password' => bcrypt('pw')],
+            ]);
+
+            $zaraId = $this->app['db']->table('users')->where('email', 'zara@example.com')->value('id');
+            $adamId = $this->app['db']->table('users')->where('email', 'adam@example.com')->value('id');
+
+            config(['filament-dcat-filters.allowed_models' => [User::class]]);
+
+            // Request ids in reverse insertion order
+            $response = $this->postJson('/filament-dcat-filters/fetch-labels', [
+                'model' => User::class,
+                'ids' => [$adamId, $zaraId],
+                'column' => 'name',
+            ]);
+
+            $response->assertStatus(200);
+            $labels = $response->json('labels');
+
+            // Labels must follow input ids order, not database order
+            expect($labels)->toBeArray()
+                ->and($labels[0])->toBe('Adam')
+                ->and($labels[1])->toBe('Zara');
+        });
+
+        it('returns null for missing ids in ordered array', function () {
+            $this->app['db']->statement('CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                email TEXT NOT NULL,
+                password TEXT NOT NULL,
+                remember_token TEXT,
+                email_verified_at DATETIME,
+                created_at DATETIME,
+                updated_at DATETIME
+            )');
+
+            $this->app['db']->table('users')->insert([
+                'name' => 'Carol', 'email' => 'carol@example.com', 'password' => bcrypt('pw'),
+            ]);
+
+            $carolId = $this->app['db']->table('users')->where('email', 'carol@example.com')->value('id');
+
+            config(['filament-dcat-filters.allowed_models' => [User::class]]);
+
+            $response = $this->postJson('/filament-dcat-filters/fetch-labels', [
+                'model' => User::class,
+                'ids' => [99999, $carolId, 88888],
+                'column' => 'name',
+            ]);
+
+            $response->assertStatus(200);
+            $labels = $response->json('labels');
+
+            expect($labels)->toBeArray()
+                ->and($labels)->toHaveCount(3)
+                ->and($labels[0])->toBeNull()
+                ->and($labels[1])->toBe('Carol')
+                ->and($labels[2])->toBeNull();
         });
 
         it('uses custom keyColumn when provided', function () {

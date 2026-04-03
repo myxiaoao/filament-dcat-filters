@@ -56,12 +56,32 @@ class SelectTableFilter extends Filter
 
     /**
      * Set the relationship for the filter.
+     *
+     * When using relationship mode, the model class must be set (via model() or the $modelClass parameter)
+     * for the dropdown options to be populated.
+     *
+     * @param  class-string<Model>|null  $modelClass  Related model class (recommended)
+     *
+     * @example
+     * SelectTableFilter::make('user_id')
+     *     ->model(User::class)
+     *     ->relationship('user', 'name')
+     *
+     * // Or in a single call:
+     * SelectTableFilter::make('user_id')
+     *     ->relationship('user', 'name', User::class)
      */
-    public function relationship(string $relationship, ?string $titleColumn = 'name'): static
+    public function relationship(string $relationship, ?string $titleColumn = 'name', ?string $modelClass = null): static
     {
         $this->relationship = $relationship;
         $this->titleColumn = $titleColumn;
-        $this->configureQuery();
+
+        if ($modelClass !== null) {
+            $this->modelClass = $modelClass;
+        }
+
+        // Must call configureForm so dropdown options are populated
+        $this->configureForm();
 
         return $this;
     }

@@ -128,10 +128,10 @@ FilterGroup::make('exact_match')
 
 ## 注意事项
 
-- 子过滤器在单个表单区域中一起显示
+- 每个子过滤器被包裹在独立的 Fieldset 中，状态按过滤器名隔离，因此同类型的多个过滤器（如两个 LikeFilter）不会产生字段名冲突
 - 每个子过滤器激活时生成自己的指示器
 - 逻辑影响过滤器在 SQL WHERE 子句中的组合方式
-- 可以嵌套 FilterGroup 实现更复杂的逻辑 (但不建议，影响用户体验)
+- FilterGroup 嵌套深度最多 5 层，超过会抛出 `InvalidArgumentException`
 
 ### 多字段过滤器支持
 

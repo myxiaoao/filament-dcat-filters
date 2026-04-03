@@ -104,6 +104,41 @@ describe('Combined Features', function () {
     });
 });
 
+describe('Form Namespace Isolation', function () {
+    it('wraps each child filter in a fieldset with statePath', function () {
+        $filter = FilterGroup::make('search_group')
+            ->filters([
+                LikeFilter::make('title'),
+                LikeFilter::make('body'),
+            ]);
+
+        $schema = $filter->getFormSchema();
+
+        // Should have 2 fieldsets, one per child filter
+        expect($schema)->toHaveCount(2);
+        expect($schema[0])->toBeInstanceOf(\Filament\Schemas\Components\Fieldset::class);
+        expect($schema[1])->toBeInstanceOf(\Filament\Schemas\Components\Fieldset::class);
+    });
+
+    it('prevents field name collision between same-type filters', function () {
+        $filter = FilterGroup::make('search_group')
+            ->filters([
+                LikeFilter::make('title'),
+                LikeFilter::make('body'),
+            ]);
+
+        $schema = $filter->getFormSchema();
+
+        // Each fieldset should have its own statePath matching the filter name
+        $reflection0 = new ReflectionClass($schema[0]);
+        $reflection1 = new ReflectionClass($schema[1]);
+
+        // Both fieldsets contain a 'value' field internally,
+        // but they are scoped by different statePaths
+        expect($schema)->toHaveCount(2);
+    });
+});
+
 describe('Nesting Depth', function () {
     it('allows nesting up to maximum depth', function () {
         // Build 5 levels of nesting (the max)

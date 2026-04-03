@@ -28,6 +28,30 @@ describe('Model Configuration', function () {
 
         expect($filter)->toBeInstanceOf(SelectTableFilter::class);
     });
+
+    it('can set relationship with model class', function () {
+        $filter = SelectTableFilter::make('category_id')
+            ->relationship('category', 'name', 'App\\Models\\Category');
+
+        expect($filter->getModelClass())->toBe('App\\Models\\Category');
+    });
+
+    it('relationship with model class triggers form configuration', function () {
+        $filter = SelectTableFilter::make('category_id')
+            ->relationship('category', 'name', 'App\\Models\\Category');
+
+        // Form should be configured (has form schema)
+        $schema = $filter->getFormSchema();
+        expect($schema)->not->toBeEmpty();
+    });
+
+    it('model then relationship preserves model class', function () {
+        $filter = SelectTableFilter::make('category_id')
+            ->model('App\\Models\\Category')
+            ->relationship('category', 'name');
+
+        expect($filter->getModelClass())->toBe('App\\Models\\Category');
+    });
 });
 
 describe('Multiple Selection', function () {

@@ -113,13 +113,36 @@ class ModalSelectFilter extends Filter
     }
 
     /**
-     * Set the relationship.
+     * Set the relationship and the related model class.
+     *
+     * The model class is required for the modal table UI and label fetching.
+     * If only the relationship name is provided without a model class already set,
+     * the modal table will not render — you must call model() first or pass a modelClass.
+     *
+     * @param  class-string<Model>|null  $modelClass  Related model class (recommended)
+     *
+     * @example
+     * ModalSelectFilter::make('user_id')
+     *     ->relationship('user', 'name', 'id', User::class)
+     *
+     * // Or equivalently:
+     * ModalSelectFilter::make('user_id')
+     *     ->model(User::class, 'name', 'id')
+     *     ->relationship('user')
      */
-    public function relationship(string $relationship, string $titleColumn = 'name', string $keyColumn = 'id'): static
+    public function relationship(string $relationship, string $titleColumn = 'name', string $keyColumn = 'id', ?string $modelClass = null): static
     {
         $this->relationship = $relationship;
         $this->titleColumn = $titleColumn;
         $this->keyColumn = $keyColumn;
+
+        if ($modelClass !== null) {
+            $this->modelClass = $modelClass;
+        }
+
+        // Reconfigure form and query so the modal table renders with the model
+        $this->configureForm();
+        $this->configureQuery();
 
         return $this;
     }
@@ -263,8 +286,15 @@ class ModalSelectFilter extends Filter
             $label = $this->evaluate($this->getLabel()) ?? $this->getName();
             $model = $this->modelClass;
 
+            // If no model class, still show the raw value as indicator
             if (! $model || ! class_exists($model) || ! is_subclass_of($model, Model::class)) {
-                return [];
+                $displayValue = is_array($value) ? implode(', ', $value) : (string) $value;
+
+                return [
+                    Indicator::make("{$label}: {$displayValue}")
+                        ->removeField('value')
+                        ->removeField('modal_select'),
+                ];
             }
 
             try {

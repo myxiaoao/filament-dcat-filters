@@ -39,6 +39,21 @@ describe('Model Configuration', function () {
 
         expect($filter)->toBeInstanceOf(ModalSelectFilter::class);
     });
+
+    it('can set relationship with model class', function () {
+        $filter = ModalSelectFilter::make('user_id')
+            ->relationship('user', 'name', 'id', 'App\\Models\\User');
+
+        expect($filter->getModelClass())->toBe('App\\Models\\User');
+    });
+
+    it('relationship does not override existing model class', function () {
+        $filter = ModalSelectFilter::make('user_id')
+            ->model('App\\Models\\User', 'name', 'id')
+            ->relationship('user');
+
+        expect($filter->getModelClass())->toBe('App\\Models\\User');
+    });
 });
 
 describe('Dialog Configuration', function () {
@@ -173,6 +188,23 @@ describe('Column Name', function () {
             ->dialogTitle('Select Authors');
 
         expect($filter)->toBeInstanceOf(ModalSelectFilter::class);
+    });
+});
+
+describe('Indicator Fallback', function () {
+    it('shows raw value when model class is not set', function () {
+        $filter = ModalSelectFilter::make('user_id');
+
+        $reflection = new ReflectionClass($filter);
+        $indicateProp = $reflection->getProperty('indicateUsing');
+        $indicateProp->setAccessible(true);
+        $indicateFn = $indicateProp->getValue($filter);
+
+        $bound = Closure::bind($indicateFn, $filter, get_class($filter));
+        $result = $bound(['value' => '42']);
+
+        expect($result)->not->toBeEmpty();
+        expect($result[0]->getLabel())->toContain('42');
     });
 });
 

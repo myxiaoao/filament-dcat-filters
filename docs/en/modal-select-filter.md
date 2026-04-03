@@ -46,10 +46,20 @@ ModalSelectFilter::make('category_ids')
 
 ### With Relationship
 
+When using `relationship()`, you should pass the related model class so the modal table and label fetching work correctly:
+
 ```php
+// Recommended: pass model class directly in relationship()
 ModalSelectFilter::make('author_id')
     ->label('Author')
-    ->relationship('author', 'name', 'id')
+    ->relationship('author', 'name', 'id', User::class)
+    ->dialogTitle('Select Author')
+
+// Or set model() first, then relationship()
+ModalSelectFilter::make('author_id')
+    ->label('Author')
+    ->model(User::class, 'name', 'id')
+    ->relationship('author')
     ->dialogTitle('Select Author')
 ```
 
@@ -183,7 +193,7 @@ FilamentDcatFilters::modalSelectFilter('user_id')
 | Method | Description | Parameters |
 |--------|-------------|------------|
 | `model()` | Set the model class and columns | `$modelClass, $titleColumn = 'name', $keyColumn = 'id'` |
-| `relationship()` | Set relationship instead of model | `$relationship, $titleColumn = 'name', $keyColumn = 'id'` |
+| `relationship()` | Set relationship with optional model class | `$relationship, $titleColumn = 'name', $keyColumn = 'id', $modelClass = null` |
 | `multiple()` | Enable multiple selection | `$multiple = true` |
 | `dialogTitle()` | Set modal dialog title | `$title` |
 | `dialogWidth()` | Set modal dialog width | `$width` (e.g., '900px', '80%') |

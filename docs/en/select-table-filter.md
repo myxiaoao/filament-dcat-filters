@@ -28,9 +28,18 @@ SelectTableFilter::make('author_id')
 
 ### Set Relationship
 
+When using `relationship()`, pass the related model class so dropdown options are populated:
+
 ```php
+// Recommended: pass model class in relationship()
 SelectTableFilter::make('author')
-    ->relationship('author', 'name') // relationship name, title column
+    ->relationship('author', 'name', User::class)
+    ->tableColumns([...]);
+
+// Or set model() first
+SelectTableFilter::make('author')
+    ->model(User::class)
+    ->relationship('author', 'name')
     ->tableColumns([...]);
 ```
 
@@ -200,15 +209,16 @@ SelectTableFilter::make('assignee_id')
 When filtering by relationships, the filter automatically handles `whereHas` queries:
 
 ```php
-// Single selection
+// Single selection — pass model class to populate dropdown options
 SelectTableFilter::make('author')
-    ->relationship('author', 'name')
+    ->relationship('author', 'name', User::class)
     ->tableColumns([...]);
 
 // Generates: $query->whereHas('author', fn($q) => $q->where('id', $selectedId))
 
 // Multiple selection
 SelectTableFilter::make('categories')
+    ->model(Category::class)
     ->relationship('categories', 'name')
     ->multiple()
     ->tableColumns([...]);

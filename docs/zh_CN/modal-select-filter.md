@@ -46,10 +46,20 @@ ModalSelectFilter::make('category_ids')
 
 ### 使用关联关系
 
+使用 `relationship()` 时，建议同时传入关联模型类，以确保弹窗表格和标签获取功能正常：
+
 ```php
+// 推荐：直接在 relationship() 中传入 model class
 ModalSelectFilter::make('author_id')
     ->label('作者')
-    ->relationship('author', 'name', 'id')
+    ->relationship('author', 'name', 'id', User::class)
+    ->dialogTitle('选择作者')
+
+// 或先设置 model()，再设置 relationship()
+ModalSelectFilter::make('author_id')
+    ->label('作者')
+    ->model(User::class, 'name', 'id')
+    ->relationship('author')
     ->dialogTitle('选择作者')
 ```
 
@@ -183,7 +193,7 @@ FilamentDcatFilters::modalSelectFilter('user_id')
 | 方法 | 描述 | 参数 |
 |------|------|------|
 | `model()` | 设置模型类和列 | `$modelClass, $titleColumn = 'name', $keyColumn = 'id'` |
-| `relationship()` | 使用关联关系代替模型 | `$relationship, $titleColumn = 'name', $keyColumn = 'id'` |
+| `relationship()` | 设置关联关系（可选传入模型类） | `$relationship, $titleColumn = 'name', $keyColumn = 'id', $modelClass = null` |
 | `multiple()` | 启用多选 | `$multiple = true` |
 | `dialogTitle()` | 设置模态对话框标题 | `$title` |
 | `dialogWidth()` | 设置模态对话框宽度 | `$width` (例如 '900px', '80%') |

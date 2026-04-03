@@ -867,6 +867,23 @@ describe('RegexFilter Query', function () {
 
         expect($sql)->toContain('REGEXP');
     });
+
+    it('accepts patterns containing forward slash', function () {
+        $filter = RegexFilter::make('url')->userPattern();
+        $query = applyFilterQuery($filter, freshQuery(), ['pattern' => 'https?://']);
+        $sql = $query->toSql();
+
+        expect($sql)->toContain('REGEXP')
+            ->and($query->getBindings())->toContain('https?://');
+    });
+
+    it('accepts patterns containing multiple forward slashes', function () {
+        $filter = RegexFilter::make('path')->userPattern();
+        $query = applyFilterQuery($filter, freshQuery(), ['pattern' => '^/api/v[0-9]+/']);
+        $sql = $query->toSql();
+
+        expect($sql)->toContain('REGEXP');
+    });
 });
 
 // ─── JsonFilter ───────────────────────────────────────────────────
@@ -1211,9 +1228,11 @@ describe('InputMaskFilter Query', function () {
 });
 
 // ─── FilterGroup ──────────────────────────────────────────────────
+// Note: FilterGroup uses namespaced data structure: data[filterName][fieldName]
+// Each child filter's state lives under its own name key.
 
 describe('FilterGroup Query', function () {
-    it('applies all child filter conditions with AND logic', function () {
+    it('applies all child filter conditions with AND logic using namespaced data', function () {
         $group = FilterGroup::make('search_group')
             ->filters([
                 LikeFilter::make('title')->sensitive(),
@@ -1221,9 +1240,10 @@ describe('FilterGroup Query', function () {
             ])
             ->andLogic();
 
+        // Namespaced: data[title][value], data[body][value]
         $query = applyFilterQuery($group, freshQuery(), [
-            'title' => 'hello',
-            'body' => 'world',
+            'title' => ['value' => 'hello'],
+            'body' => ['value' => 'world'],
         ]);
         $sql = $query->toSql();
 
@@ -1231,7 +1251,7 @@ describe('FilterGroup Query', function () {
             ->and($sql)->toContain('"body"');
     });
 
-    it('wraps conditions in orWhere with OR logic', function () {
+    it('wraps conditions in orWhere with OR logic using namespaced data', function () {
         $group = FilterGroup::make('search_group')
             ->filters([
                 LikeFilter::make('title')->sensitive(),
@@ -1240,8 +1260,8 @@ describe('FilterGroup Query', function () {
             ->orLogic();
 
         $query = applyFilterQuery($group, freshQuery(), [
-            'title' => 'hello',
-            'body' => 'world',
+            'title' => ['value' => 'hello'],
+            'body' => ['value' => 'world'],
         ]);
         $sql = $query->toSql();
 
@@ -1258,7 +1278,7 @@ describe('FilterGroup Query', function () {
             ->andLogic();
 
         $query = applyFilterQuery($group, freshQuery(), [
-            'title' => '',
+            'title' => ['value' => ''],
         ]);
         $sql = $query->toSql();
 
@@ -1276,5 +1296,96 @@ describe('FilterGroup Query', function () {
         $sql = $query->toSql();
 
         expect($sql)->not->toContain('where');
+    });
+
+    it('isolates identically-named fields across child filters', function () {
+        // Two LikeFilters each have a 'value' field, but namespacing prevents collision
+        $group = FilterGroup::make('search_group')
+            ->filters([
+                LikeFilter::make('title')->sensitive(),
+                LikeFilter::make('body')->sensitive(),
+            ])
+            ->andLogic();
+
+        $query = applyFilterQuery($group, freshQuery(), [
+            'title' => ['value' => 'alpha'],
+            'body' => ['value' => 'beta'],
+        ]);
+
+        $bindings = $query->getBindings();
+        expect($bindings)->toContain('%alpha%')
+            ->and($bindings)->toContain('%beta%');
+    });
+
+    it('handles mixed filter types with namespaced data', function () {
+        $group = FilterGroup::make('mixed')
+            ->filters([
+                LikeFilter::make('title')->sensitive(),
+                ComparisonFilter::make('price')->gte(),
+            ])
+            ->andLogic();
+
+        $query = applyFilterQuery($group, freshQuery(), [
+            'title' => ['value' => 'test'],
+            'price' => ['value' => '100'],
+        ]);
+        $sql = $query->toSql();
+
+        expect($sql)->toContain('"title"')
+            ->and($sql)->toContain('"price"')
+            ->and($sql)->toContain('>=');
+    });
+
+    it('handles RangeFilter from/to with namespaced data', function () {
+        $group = FilterGroup::make('date_and_price')
+            ->andLogic()
+            ->filters([
+                RangeFilter::make('created_at')->date(),
+                BetweenFilter::make('price'),
+            ]);
+
+        $query = applyFilterQuery($group, freshQuery(), [
+            'created_at' => ['from' => '2024-01-01', 'to' => '2024-12-31'],
+            'price' => ['from' => '10', 'to' => '100'],
+        ]);
+        $sql = $query->toSql();
+
+        expect($sql)->toContain('"created_at"')
+            ->and($sql)->toContain('"price"')
+            ->and($sql)->toContain('between');
+
+        $bindings = $query->getBindings();
+        expect($bindings)->toContain('2024-01-01')
+            ->and($bindings)->toContain('2024-12-31')
+            ->and($bindings)->toContain('10')
+            ->and($bindings)->toContain('100');
+    });
+
+    it('OR logic with namespaced data only applies filters with data', function () {
+        $group = FilterGroup::make('search')
+            ->orLogic()
+            ->filters([
+                LikeFilter::make('title')->sensitive(),
+                LikeFilter::make('body')->sensitive(),
+                LikeFilter::make('summary')->sensitive(),
+            ]);
+
+        // Only title and summary have data, body is empty
+        $query = applyFilterQuery($group, freshQuery(), [
+            'title' => ['value' => 'hello'],
+            'body' => ['value' => ''],
+            'summary' => ['value' => 'world'],
+        ]);
+        $sql = $query->toSql();
+
+        expect($sql)->toContain('"title"')
+            ->and($sql)->toContain('"summary"')
+            ->and($sql)->toContain('or');
+
+        // body should not appear in the SQL
+        $bindings = $query->getBindings();
+        expect($bindings)->toContain('%hello%')
+            ->and($bindings)->toContain('%world%')
+            ->and($bindings)->toHaveCount(2);
     });
 });

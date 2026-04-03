@@ -82,13 +82,54 @@ class FilterGroup extends Filter
         return $maxDepth;
     }
 
+    /**
+     * Build namespaced form: each child filter's fields are wrapped under a fieldset
+     * keyed by the filter name, preventing field name collisions.
+     */
     protected function configureForm(): void
     {
-        $formComponents = array_merge(
-            ...array_map(fn (Filter $filter) => $filter->getFormSchema(), $this->childFilters)
-        );
+        $formComponents = [];
+
+        foreach ($this->childFilters as $filter) {
+            $filterName = $filter->getName();
+            $schema = $filter->getFormSchema();
+
+            // Wrap each filter's fields in a Fieldset keyed by filter name
+            // This creates a nested state: data[filterName][fieldName]
+            $formComponents[] = \Filament\Schemas\Components\Fieldset::make(
+                $filter->getLabel() ?? ucfirst(str_replace('_', ' ', $filterName))
+            )
+                ->schema($schema)
+                ->statePath($filterName)
+                ->columns(1)
+                ->columnSpan(1);
+        }
 
         $this->form($formComponents);
+    }
+
+    /**
+     * Extract filter data from the namespaced state structure.
+     */
+    protected function getFilterData(array $data, string $filterName): mixed
+    {
+        return $data[$filterName] ?? null;
+    }
+
+    /**
+     * Check if filter data has any non-empty values.
+     */
+    protected function hasFilterValues(mixed $filterData): bool
+    {
+        if ($filterData === null) {
+            return false;
+        }
+
+        if (is_array($filterData)) {
+            return collect($filterData)->contains(fn ($v) => $v !== null && $v !== '');
+        }
+
+        return $filterData !== '' && $filterData !== null;
     }
 
     protected function configureQuery(): void
@@ -98,9 +139,17 @@ class FilterGroup extends Filter
                 return $query;
             }
 
-            $hasData = collect($data)->contains(fn ($value) => $value !== null && $value !== '');
+            // Check if any filter has data in the namespaced structure
+            $hasAnyData = false;
+            foreach ($this->childFilters as $filter) {
+                if ($this->hasFilterValues($this->getFilterData($data, $filter->getName()))) {
+                    $hasAnyData = true;
 
-            if (! $hasData) {
+                    break;
+                }
+            }
+
+            if (! $hasAnyData) {
                 return $query;
             }
 
@@ -108,27 +157,27 @@ class FilterGroup extends Filter
                 return $query->where(function (Builder $q) use ($data) {
                     $isFirst = true;
                     foreach ($this->childFilters as $filter) {
-                        $value = $data[$filter->getName()] ?? null;
+                        $filterData = $this->getFilterData($data, $filter->getName());
 
-                        if ($value === null || $value === '') {
+                        if (! $this->hasFilterValues($filterData)) {
                             continue;
                         }
 
                         if ($isFirst) {
-                            $this->applyFilterQuery($q, $filter, $value);
+                            $this->applyFilterQuery($q, $filter, $filterData);
                             $isFirst = false;
                         } else {
-                            $q->orWhere(fn (Builder $subQ) => $this->applyFilterQuery($subQ, $filter, $value));
+                            $q->orWhere(fn (Builder $subQ) => $this->applyFilterQuery($subQ, $filter, $filterData));
                         }
                     }
                 });
             }
 
             foreach ($this->childFilters as $filter) {
-                $value = $data[$filter->getName()] ?? null;
+                $filterData = $this->getFilterData($data, $filter->getName());
 
-                if ($value !== null && $value !== '') {
-                    $this->applyFilterQuery($query, $filter, $value);
+                if ($this->hasFilterValues($filterData)) {
+                    $this->applyFilterQuery($query, $filter, $filterData);
                 }
             }
 
@@ -140,11 +189,26 @@ class FilterGroup extends Filter
 
             foreach ($this->childFilters as $filter) {
                 $filterName = $filter->getName();
-                $value = $data[$filterName] ?? null;
+                $filterData = $this->getFilterData($data, $filterName);
 
-                if ($value !== null && $value !== '') {
-                    $label = $filter->getLabel() ?? ucfirst(str_replace('_', ' ', $filterName));
-                    $indicators[] = Indicator::make("{$label}: {$value}")
+                if (! $this->hasFilterValues($filterData)) {
+                    continue;
+                }
+
+                $label = $filter->getLabel() ?? ucfirst(str_replace('_', ' ', $filterName));
+
+                // For array data (e.g. RangeFilter from/to), show the non-empty values
+                if (is_array($filterData)) {
+                    $displayValues = collect($filterData)
+                        ->filter(fn ($v) => $v !== null && $v !== '')
+                        ->implode(' ~ ');
+
+                    if ($displayValues !== '') {
+                        $indicators[] = Indicator::make("{$label}: {$displayValues}")
+                            ->removeField($filterName);
+                    }
+                } else {
+                    $indicators[] = Indicator::make("{$label}: {$filterData}")
                         ->removeField($filterName);
                 }
             }
@@ -153,23 +217,29 @@ class FilterGroup extends Filter
         });
     }
 
-    protected function applyFilterQuery(Builder $query, Filter $filter, mixed $value): void
+    /**
+     * Apply a child filter's query using the namespaced data.
+     *
+     * Data is already in the child filter's own format (e.g. ['value' => 'x']
+     * for LikeFilter, ['from' => '1', 'to' => '10'] for RangeFilter).
+     */
+    protected function applyFilterQuery(Builder $query, Filter $filter, mixed $filterData): void
     {
-        if ($value === null || $value === '') {
+        if (! $this->hasFilterValues($filterData)) {
             return;
         }
 
-        // If value is already an array (e.g. from RangeFilter with from/to),
-        // pass it directly as the data array
-        if (is_array($value)) {
-            $filter->apply($query, array_merge($value, ['isActive' => true]));
+        // The namespaced data is already in the child filter's native format
+        if (is_array($filterData)) {
+            $filter->apply($query, array_merge($filterData, ['isActive' => true]));
 
             return;
         }
 
+        // Scalar value: wrap in the child filter's expected field name
         $formSchema = $filter->getFormSchema();
         $fieldName = ! empty($formSchema) ? $formSchema[0]->getName() : 'value';
-        $filter->apply($query, [$fieldName => $value, 'isActive' => true]);
+        $filter->apply($query, [$fieldName => $filterData, 'isActive' => true]);
     }
 
     public function getLogic(): string

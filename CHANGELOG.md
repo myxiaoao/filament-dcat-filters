@@ -2,6 +2,41 @@
 
 All notable changes to `filament-dcat-filters` will be documented in this file.
 
+## v1.4.0 - 2026-04-03
+
+### Breaking Changes
+
+- **FilterGroup state structure** — child filter form data is now namespaced under each filter's name (e.g., `data[title][value]` instead of `data[value]`). This fixes field name collisions when multiple filters of the same type are used together. **If you have custom code that directly reads FilterGroup state, update it to the new nested structure.**
+
+### Fixed (backward-compatible)
+
+- **[Critical] FilterGroup field collision** — two LikeFilters (or any same-type filters) in a group no longer share a single `value` field; each filter's form fields are isolated in a `Fieldset` with its own `statePath`
+- **[High] ModalSelectFilter::relationship() UI broken** — `relationship()` now accepts an optional `$modelClass` parameter and triggers `configureForm()`/`configureQuery()`, so the modal table renders and AJAX label fetching works. Indicator now falls back to raw value display when no model class is set
+- **[High] SelectTableFilter::relationship() empty dropdown** — `relationship()` now accepts an optional `$modelClass` parameter and triggers `configureForm()`, so dropdown options are populated
+- **[Medium] ModalSelectFilter labels protocol mismatch** — Controller now returns labels as an ordered array matching input IDs order (instead of a keyed object), and frontend uses `Array.isArray()` with null fallback for unresolved IDs
+- **[Medium] RegexFilter false rejection of `/` in patterns** — changed `preg_match` delimiter from `/` to `\x01` (SOH) so patterns containing forward slashes (e.g., `https?://`) are no longer rejected
+
+### Backward Compatibility
+
+- `ModalSelectFilter::relationship()` adds an optional 4th parameter `$modelClass` — existing calls without it continue to work
+- `SelectTableFilter::relationship()` adds an optional 3rd parameter `$modelClass` — existing calls without it continue to work
+- All other changes are internal implementation fixes with no API changes
+
+### Documentation
+
+- Updated relationship() examples in EN + CN docs for ModalSelectFilter and SelectTableFilter
+- Updated FilterGroup docs to describe Fieldset isolation and nesting depth limit
+- API reference tables updated with new parameter signatures
+
+### Tests
+
+- Total: **824 tests** with **1210 assertions** (all passing)
+- New: FilterGroup namespaced state structure tests (field isolation, mixed types, RangeFilter, OR logic)
+- New: ModalSelectController ordered array response tests (multi-ID ordering, null for missing IDs)
+- New: ModalSelectFilter indicator fallback test, relationship with modelClass tests
+- New: SelectTableFilter relationship with modelClass tests
+- New: RegexFilter forward-slash pattern acceptance tests
+
 ## v1.3.0 - 2026-03-17
 
 ### Added

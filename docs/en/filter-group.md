@@ -128,10 +128,11 @@ FilterGroup::make('exact_match')
 
 ## Notes
 
-- Child filters are displayed together in a single form section
+- Each child filter is wrapped in its own Fieldset with isolated state (namespaced by filter name), so multiple filters of the same type (e.g., two LikeFilters) will not have field name collisions
 - Each child filter generates its own indicator when active
 - The logic affects how the filters are combined in the SQL WHERE clause
-- You can nest FilterGroups for more complex logic (though not recommended for usability)
+- FilterGroups can be nested up to a maximum depth of 5 levels to prevent stack overflow
+- Nesting beyond 5 levels will throw an `InvalidArgumentException`
 
 ### Multi-Field Filter Support
 
