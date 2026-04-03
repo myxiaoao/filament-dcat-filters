@@ -8,10 +8,14 @@ use Illuminate\Database\Eloquent\Builder;
 
 class FilterGroup extends Filter
 {
+    protected const MAX_NESTING_DEPTH = 5;
+
     protected string $logic = 'and';
 
     /** @var array<Filter> */
     protected array $childFilters = [];
+
+    protected int $nestingDepth = 0;
 
     protected function setUp(): void
     {
@@ -42,10 +46,40 @@ class FilterGroup extends Filter
     public function filters(array $filters): static
     {
         $this->childFilters = $filters;
+
+        // Validate nesting depth recursively
+        foreach ($filters as $filter) {
+            if ($filter instanceof self) {
+                $childMaxDepth = $this->getMaxChildDepth($filter);
+
+                if ($this->nestingDepth + 1 + $childMaxDepth >= self::MAX_NESTING_DEPTH) {
+                    throw new \InvalidArgumentException(
+                        sprintf('FilterGroup nesting depth exceeds maximum of %d.', self::MAX_NESTING_DEPTH)
+                    );
+                }
+            }
+        }
+
         $this->configureForm();
         $this->configureQuery();
 
         return $this;
+    }
+
+    /**
+     * Recursively calculate the maximum depth of nested FilterGroups.
+     */
+    protected function getMaxChildDepth(self $group): int
+    {
+        $maxDepth = 0;
+
+        foreach ($group->getChildFilters() as $child) {
+            if ($child instanceof self) {
+                $maxDepth = max($maxDepth, 1 + $this->getMaxChildDepth($child));
+            }
+        }
+
+        return $maxDepth;
     }
 
     protected function configureForm(): void

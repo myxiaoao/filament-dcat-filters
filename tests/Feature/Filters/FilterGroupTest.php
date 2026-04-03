@@ -103,3 +103,37 @@ describe('Combined Features', function () {
         expect($filter->getChildFilters())->toHaveCount(2);
     });
 });
+
+describe('Nesting Depth', function () {
+    it('allows nesting up to maximum depth', function () {
+        // Build 5 levels of nesting (the max)
+        $innermost = FilterGroup::make('level5')->filters([LikeFilter::make('a')]);
+        $level4 = FilterGroup::make('level4')->filters([$innermost]);
+        $level3 = FilterGroup::make('level3')->filters([$level4]);
+        $level2 = FilterGroup::make('level2')->filters([$level3]);
+        $level1 = FilterGroup::make('level1')->filters([$level2]);
+
+        expect($level1->getChildFilters())->toHaveCount(1);
+    });
+
+    it('throws exception when nesting exceeds maximum depth', function () {
+        $innermost = FilterGroup::make('level6')->filters([LikeFilter::make('a')]);
+        $level5 = FilterGroup::make('level5')->filters([$innermost]);
+        $level4 = FilterGroup::make('level4')->filters([$level5]);
+        $level3 = FilterGroup::make('level3')->filters([$level4]);
+        $level2 = FilterGroup::make('level2')->filters([$level3]);
+
+        expect(fn () => FilterGroup::make('level1')->filters([$level2]))
+            ->toThrow(InvalidArgumentException::class, 'nesting depth exceeds maximum');
+    });
+
+    it('allows non-FilterGroup children at any level', function () {
+        $group = FilterGroup::make('group')->filters([
+            LikeFilter::make('title'),
+            LikeFilter::make('body'),
+            LikeFilter::make('summary'),
+        ]);
+
+        expect($group->getChildFilters())->toHaveCount(3);
+    });
+});

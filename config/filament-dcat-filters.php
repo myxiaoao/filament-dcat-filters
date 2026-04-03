@@ -55,6 +55,9 @@ return [
     */
     'database' => [
         // Database driver: 'auto' (detect from connection), 'mysql', 'pgsql', 'sqlite'
+        // Note: Only MySQL, PostgreSQL, and SQLite are officially supported.
+        // SQL Server and Oracle are not supported — driver-specific filters
+        // (FullTextFilter, RegexFilter, FindInSetFilter) may not work correctly on those drivers.
         'driver' => 'auto',
     ],
 

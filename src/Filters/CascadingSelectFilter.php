@@ -232,24 +232,33 @@ class CascadingSelectFilter extends Filter
                 ];
             }
 
-            // Batch query per model
+            // Batch query per model, grouped by column configuration
             $resolvedLabels = [];
             foreach ($modelGroups as $model => $items) {
-                $ids = array_column($items, 'value');
-                $keyColumn = $items[0]['config']['keyColumn'];
-                $titleColumn = $items[0]['config']['titleColumn'];
-
-                try {
-                    $records = $model::query()
-                        ->whereIn($keyColumn, $ids)
-                        ->pluck($titleColumn, $keyColumn)
-                        ->toArray();
-                } catch (\Exception $e) {
-                    $records = [];
+                // Group items by keyColumn+titleColumn to handle different column configs for same model
+                $columnGroups = [];
+                foreach ($items as $item) {
+                    $groupKey = $item['config']['keyColumn'].'|'.$item['config']['titleColumn'];
+                    $columnGroups[$groupKey][] = $item;
                 }
 
-                foreach ($items as $item) {
-                    $resolvedLabels[$item['levelName']] = $records[$item['value']] ?? $item['value'];
+                foreach ($columnGroups as $groupItems) {
+                    $ids = array_column($groupItems, 'value');
+                    $keyColumn = $groupItems[0]['config']['keyColumn'];
+                    $titleColumn = $groupItems[0]['config']['titleColumn'];
+
+                    try {
+                        $records = $model::query()
+                            ->whereIn($keyColumn, $ids)
+                            ->pluck($titleColumn, $keyColumn)
+                            ->toArray();
+                    } catch (\Exception $e) {
+                        $records = [];
+                    }
+
+                    foreach ($groupItems as $item) {
+                        $resolvedLabels[$item['levelName']] = $records[$item['value']] ?? $item['value'];
+                    }
                 }
             }
 

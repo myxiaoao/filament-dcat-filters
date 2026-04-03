@@ -182,7 +182,19 @@ class GeoLocationFilter extends Filter
 
             $latitude = (float) $latitude;
             $longitude = (float) $longitude;
+
+            // Validate coordinate ranges
+            if ($latitude < -90 || $latitude > 90 || $longitude < -180 || $longitude > 180) {
+                return $query;
+            }
+
             $radius = (float) ($data['radius'] ?? $this->defaultRadius);
+
+            // Validate radius is positive
+            if ($radius <= 0) {
+                return $query;
+            }
+
             $radiusKm = $radius * (self::UNIT_FACTORS[$this->unit] ?? 1);
 
             $latCol = $query->getGrammar()->wrap($this->latitudeColumn);
@@ -207,7 +219,18 @@ class GeoLocationFilter extends Filter
                 return [];
             }
 
+            $lat = (float) $latitude;
+            $lon = (float) $longitude;
+
+            if ($lat < -90 || $lat > 90 || $lon < -180 || $lon > 180) {
+                return [];
+            }
+
             $radius = $data['radius'] ?? $this->defaultRadius;
+
+            if ((float) $radius <= 0) {
+                return [];
+            }
             $label = $this->getLabel() ?? __('filament-dcat-filters::filament-dcat-filters.geo.location');
             $from = __('filament-dcat-filters::filament-dcat-filters.geo.from');
 

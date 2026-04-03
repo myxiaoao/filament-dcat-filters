@@ -201,3 +201,109 @@ describe('Combined Features', function () {
         expect($filter->getUnit())->toBe('mi');
     });
 });
+
+describe('Coordinate Validation', function () {
+    it('accepts valid boundary coordinates (90, 180)', function () {
+        $filter = GeoLocationFilter::make('location');
+
+        $reflection = new ReflectionClass($filter);
+        $indicateProp = $reflection->getProperty('indicateUsing');
+        $indicateProp->setAccessible(true);
+        $indicateFn = $indicateProp->getValue($filter);
+
+        $bound = Closure::bind($indicateFn, $filter, get_class($filter));
+        $result = $bound(['latitude' => '90', 'longitude' => '180', 'radius' => '10']);
+        expect($result)->not->toBeEmpty();
+    });
+
+    it('accepts valid boundary coordinates (-90, -180)', function () {
+        $filter = GeoLocationFilter::make('location');
+
+        $reflection = new ReflectionClass($filter);
+        $indicateProp = $reflection->getProperty('indicateUsing');
+        $indicateProp->setAccessible(true);
+        $indicateFn = $indicateProp->getValue($filter);
+
+        $bound = Closure::bind($indicateFn, $filter, get_class($filter));
+        $result = $bound(['latitude' => '-90', 'longitude' => '-180', 'radius' => '10']);
+        expect($result)->not->toBeEmpty();
+    });
+
+    it('indicator returns empty for latitude > 90', function () {
+        $filter = GeoLocationFilter::make('location');
+
+        $reflection = new ReflectionClass($filter);
+        $indicateProp = $reflection->getProperty('indicateUsing');
+        $indicateProp->setAccessible(true);
+        $indicateFn = $indicateProp->getValue($filter);
+
+        $bound = Closure::bind($indicateFn, $filter, get_class($filter));
+        $result = $bound(['latitude' => '91', 'longitude' => '0', 'radius' => '10']);
+        expect($result)->toBeEmpty();
+    });
+
+    it('indicator returns empty for latitude < -90', function () {
+        $filter = GeoLocationFilter::make('location');
+
+        $reflection = new ReflectionClass($filter);
+        $indicateProp = $reflection->getProperty('indicateUsing');
+        $indicateProp->setAccessible(true);
+        $indicateFn = $indicateProp->getValue($filter);
+
+        $bound = Closure::bind($indicateFn, $filter, get_class($filter));
+        $result = $bound(['latitude' => '-91', 'longitude' => '0', 'radius' => '10']);
+        expect($result)->toBeEmpty();
+    });
+
+    it('indicator returns empty for longitude > 180', function () {
+        $filter = GeoLocationFilter::make('location');
+
+        $reflection = new ReflectionClass($filter);
+        $indicateProp = $reflection->getProperty('indicateUsing');
+        $indicateProp->setAccessible(true);
+        $indicateFn = $indicateProp->getValue($filter);
+
+        $bound = Closure::bind($indicateFn, $filter, get_class($filter));
+        $result = $bound(['latitude' => '45', 'longitude' => '181', 'radius' => '10']);
+        expect($result)->toBeEmpty();
+    });
+
+    it('indicator returns empty for longitude < -180', function () {
+        $filter = GeoLocationFilter::make('location');
+
+        $reflection = new ReflectionClass($filter);
+        $indicateProp = $reflection->getProperty('indicateUsing');
+        $indicateProp->setAccessible(true);
+        $indicateFn = $indicateProp->getValue($filter);
+
+        $bound = Closure::bind($indicateFn, $filter, get_class($filter));
+        $result = $bound(['latitude' => '45', 'longitude' => '-181', 'radius' => '10']);
+        expect($result)->toBeEmpty();
+    });
+
+    it('indicator returns empty for zero radius', function () {
+        $filter = GeoLocationFilter::make('location');
+
+        $reflection = new ReflectionClass($filter);
+        $indicateProp = $reflection->getProperty('indicateUsing');
+        $indicateProp->setAccessible(true);
+        $indicateFn = $indicateProp->getValue($filter);
+
+        $bound = Closure::bind($indicateFn, $filter, get_class($filter));
+        $result = $bound(['latitude' => '45', 'longitude' => '90', 'radius' => '0']);
+        expect($result)->toBeEmpty();
+    });
+
+    it('indicator returns empty for negative radius', function () {
+        $filter = GeoLocationFilter::make('location');
+
+        $reflection = new ReflectionClass($filter);
+        $indicateProp = $reflection->getProperty('indicateUsing');
+        $indicateProp->setAccessible(true);
+        $indicateFn = $indicateProp->getValue($filter);
+
+        $bound = Closure::bind($indicateFn, $filter, get_class($filter));
+        $result = $bound(['latitude' => '45', 'longitude' => '90', 'radius' => '-5']);
+        expect($result)->toBeEmpty();
+    });
+});

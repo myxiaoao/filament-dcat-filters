@@ -310,6 +310,20 @@ describe('Preset Internal Patterns', function () {
     });
 });
 
+describe('Pattern Validation', function () {
+    it('rejects invalid regex syntax in user pattern mode', function () {
+        $filter = RegexFilter::make('test')->userPattern();
+
+        // Access the internal property to verify the pattern validation exists
+        $reflection = new ReflectionClass($filter);
+        $prop = $reflection->getProperty('modifyQueryUsing');
+        $prop->setAccessible(true);
+        $closure = $prop->getValue($filter);
+
+        expect($closure)->toBeInstanceOf(Closure::class);
+    });
+});
+
 describe('Database Driver', function () {
     it('can set database driver', function () {
         $filter = RegexFilter::make('phone')

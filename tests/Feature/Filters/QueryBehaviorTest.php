@@ -851,6 +851,22 @@ describe('RegexFilter Query', function () {
 
         expect($sql)->not->toContain('REGEXP');
     });
+
+    it('does not apply query for invalid regex syntax', function () {
+        $filter = RegexFilter::make('email')->userPattern();
+        $query = applyFilterQuery($filter, freshQuery(), ['pattern' => '[invalid(']);
+        $sql = $query->toSql();
+
+        expect($sql)->not->toContain('REGEXP');
+    });
+
+    it('applies query for valid regex syntax', function () {
+        $filter = RegexFilter::make('email')->userPattern();
+        $query = applyFilterQuery($filter, freshQuery(), ['pattern' => '^[a-z]+$']);
+        $sql = $query->toSql();
+
+        expect($sql)->toContain('REGEXP');
+    });
 });
 
 // ─── JsonFilter ───────────────────────────────────────────────────
@@ -1009,6 +1025,86 @@ describe('GeoLocationFilter Query', function () {
 
         expect($sql)->toContain('"lat"')
             ->and($sql)->toContain('"lng"');
+    });
+
+    it('does not apply query for latitude out of range', function () {
+        $filter = GeoLocationFilter::make('location');
+        $query = applyFilterQuery($filter, freshQuery(), [
+            'latitude' => '91',
+            'longitude' => '100',
+            'radius' => '10',
+        ]);
+        expect($query->toSql())->not->toContain('acos');
+    });
+
+    it('does not apply query for latitude below -90', function () {
+        $filter = GeoLocationFilter::make('location');
+        $query = applyFilterQuery($filter, freshQuery(), [
+            'latitude' => '-91',
+            'longitude' => '0',
+            'radius' => '10',
+        ]);
+        expect($query->toSql())->not->toContain('acos');
+    });
+
+    it('does not apply query for longitude out of range', function () {
+        $filter = GeoLocationFilter::make('location');
+        $query = applyFilterQuery($filter, freshQuery(), [
+            'latitude' => '45',
+            'longitude' => '181',
+            'radius' => '10',
+        ]);
+        expect($query->toSql())->not->toContain('acos');
+    });
+
+    it('does not apply query for longitude below -180', function () {
+        $filter = GeoLocationFilter::make('location');
+        $query = applyFilterQuery($filter, freshQuery(), [
+            'latitude' => '45',
+            'longitude' => '-181',
+            'radius' => '10',
+        ]);
+        expect($query->toSql())->not->toContain('acos');
+    });
+
+    it('does not apply query for zero radius', function () {
+        $filter = GeoLocationFilter::make('location');
+        $query = applyFilterQuery($filter, freshQuery(), [
+            'latitude' => '45',
+            'longitude' => '90',
+            'radius' => '0',
+        ]);
+        expect($query->toSql())->not->toContain('acos');
+    });
+
+    it('does not apply query for negative radius', function () {
+        $filter = GeoLocationFilter::make('location');
+        $query = applyFilterQuery($filter, freshQuery(), [
+            'latitude' => '45',
+            'longitude' => '90',
+            'radius' => '-5',
+        ]);
+        expect($query->toSql())->not->toContain('acos');
+    });
+
+    it('applies query for valid boundary coordinates (90, 180)', function () {
+        $filter = GeoLocationFilter::make('location');
+        $query = applyFilterQuery($filter, freshQuery(), [
+            'latitude' => '90',
+            'longitude' => '180',
+            'radius' => '10',
+        ]);
+        expect($query->toSql())->toContain('acos');
+    });
+
+    it('applies query for valid boundary coordinates (-90, -180)', function () {
+        $filter = GeoLocationFilter::make('location');
+        $query = applyFilterQuery($filter, freshQuery(), [
+            'latitude' => '-90',
+            'longitude' => '-180',
+            'radius' => '10',
+        ]);
+        expect($query->toSql())->toContain('acos');
     });
 });
 

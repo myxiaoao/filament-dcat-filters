@@ -174,6 +174,11 @@ class RegexFilter extends Filter
                 return $query;
             }
 
+            // Validate regex syntax before sending to database
+            if (@preg_match('/'.$pattern.'/', '') === false) {
+                return $query;
+            }
+
             return $this->applyRegexWhere($query, $column, $pattern);
         });
 

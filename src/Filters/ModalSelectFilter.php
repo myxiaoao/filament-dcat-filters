@@ -271,6 +271,7 @@ class ModalSelectFilter extends Filter
                 if ($this->multiple) {
                     $values = is_array($value) ? $value : array_filter(array_map('trim', explode(',', (string) $value)), fn ($v) => $v !== '');
                     $names = $model::query()
+                        ->select([$this->keyColumn, $this->titleColumn])
                         ->whereIn($this->keyColumn, $values)
                         ->pluck($this->titleColumn)
                         ->implode(', ');
@@ -282,7 +283,7 @@ class ModalSelectFilter extends Filter
                     ];
                 }
 
-                $record = $model::query()->where($this->keyColumn, $value)->first();
+                $record = $model::query()->select([$this->keyColumn, $this->titleColumn])->where($this->keyColumn, $value)->first();
                 $name = $record ? $record->{$this->titleColumn} : $value;
 
                 return [
