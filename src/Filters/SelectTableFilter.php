@@ -114,7 +114,11 @@ class SelectTableFilter extends Filter
     }
 
     /**
-     * Modify the query used to fetch records.
+     * Set a custom query modifier for this filter.
+     *
+     * This stores the callback separately from Filament's internal query registration.
+     * The custom modifier is checked first in configureQuery() — if set, it receives
+     * the full query and data array for complete control.
      */
     public function modifyQueryUsing(?Closure $callback): static
     {
@@ -208,10 +212,14 @@ class SelectTableFilter extends Filter
 
     /**
      * Configure the query logic for this filter.
+     *
+     * Uses parent::modifyQueryUsing() directly to avoid the overridden
+     * modifyQueryUsing() which stores to $customQueryModifier instead of
+     * Filament's internal $modifyQueryUsing property.
      */
     protected function configureQuery(): void
     {
-        $this->query(function (Builder $query, array $data): Builder {
+        parent::modifyQueryUsing(function (Builder $query, array $data): Builder {
             $column = $this->resolveColumnName();
 
             if ($this->multiple) {

@@ -2,7 +2,9 @@
 
 namespace Cooper\FilamentDcatFilters\Concerns;
 
+use Cooper\FilamentDcatFilters\Exceptions\UnsupportedDatabaseDriverException;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Log;
 
 trait HasDatabaseDriver
 {
@@ -45,5 +47,45 @@ trait HasDatabaseDriver
     protected function isPostgres(Builder $query): bool
     {
         return $this->resolveDriver($query) === 'pgsql';
+    }
+
+    /**
+     * Assert the current database driver is supported by this filter.
+     *
+     * Uses the filter's state descriptor to check driver compatibility.
+     * - Supported drivers: pass silently
+     * - Degraded drivers: log warning, continue
+     * - Unsupported drivers: throw exception (fail-fast)
+     */
+    protected function assertDriverSupported(Builder $query): void
+    {
+        if (! method_exists($this, 'getStateDescriptor')) {
+            return;
+        }
+
+        $driver = $this->resolveDriver($query);
+        $descriptor = $this->getStateDescriptor();
+        $supported = $descriptor->getDatabaseSupport();
+        $degraded = $descriptor->getDegradedSupport();
+
+        if (in_array($driver, $supported)) {
+            return;
+        }
+
+        if (in_array($driver, $degraded)) {
+            Log::warning(sprintf(
+                '%s is running in degraded mode on "%s" driver. Some features may not work as expected.',
+                class_basename(static::class),
+                $driver
+            ));
+
+            return;
+        }
+
+        throw new UnsupportedDatabaseDriverException(
+            static::class,
+            $driver,
+            array_merge($supported, $degraded)
+        );
     }
 }

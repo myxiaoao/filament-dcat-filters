@@ -168,6 +168,8 @@ class FindInSetFilter extends Filter
                 return $query;
             }
 
+            $this->assertDriverSupported($query);
+
             $column = $this->resolveColumnName();
             $values = Arr::wrap($value);
 

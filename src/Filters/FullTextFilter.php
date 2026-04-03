@@ -35,6 +35,7 @@ class FullTextFilter extends Filter
             ->type(StateType::Keyed)
             ->capabilities(['indicator'])
             ->databaseSupport(['mysql', 'pgsql'])
+            ->degradedSupport(['sqlite'])
             ->limitations(['SQLite falls back to LIKE-based search']);
     }
 
@@ -141,6 +142,8 @@ class FullTextFilter extends Filter
             if (empty($this->searchColumns)) {
                 return $query;
             }
+
+            $this->assertDriverSupported($query);
 
             if ($this->useFullText) {
                 if ($this->isPostgres($query)) {

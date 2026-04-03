@@ -16,6 +16,8 @@ class FilterStateDescriptor
 
     protected array $databaseSupport = ['mysql', 'pgsql', 'sqlite'];
 
+    protected array $degradedDrivers = [];
+
     protected array $limitations = [];
 
     public static function make(): static
@@ -54,6 +56,13 @@ class FilterStateDescriptor
     public function databaseSupport(array $drivers): static
     {
         $this->databaseSupport = $drivers;
+
+        return $this;
+    }
+
+    public function degradedSupport(array $drivers): static
+    {
+        $this->degradedDrivers = $drivers;
 
         return $this;
     }
@@ -108,6 +117,11 @@ class FilterStateDescriptor
     public function getDatabaseSupport(): array
     {
         return $this->databaseSupport;
+    }
+
+    public function getDegradedSupport(): array
+    {
+        return $this->degradedDrivers;
     }
 
     public function getLimitations(): array

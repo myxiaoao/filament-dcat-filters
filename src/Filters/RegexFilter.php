@@ -182,6 +182,8 @@ class RegexFilter extends Filter
                     return $query;
                 }
 
+                $this->assertDriverSupported($query);
+
                 return $this->applyRegexWhere($query, $column, $this->regexPattern);
             }
 
@@ -201,6 +203,8 @@ class RegexFilter extends Filter
             if (@preg_match("\x01".$pattern."\x01u", '') === false) {
                 return $query;
             }
+
+            $this->assertDriverSupported($query);
 
             return $this->applyRegexWhere($query, $column, $pattern);
         });

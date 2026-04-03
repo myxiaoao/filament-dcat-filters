@@ -810,7 +810,7 @@ describe('DateComponentFilter Query', function () {
 
 describe('RegexFilter Query', function () {
     it('applies REGEXP clause in user pattern mode', function () {
-        $filter = RegexFilter::make('email')->userPattern();
+        $filter = RegexFilter::make('email')->userPattern()->driver('mysql');
         $query = applyFilterQuery($filter, freshQuery(), ['pattern' => '^test']);
         $sql = $query->toSql();
 
@@ -819,7 +819,7 @@ describe('RegexFilter Query', function () {
     });
 
     it('applies REGEXP clause when pattern mode is enabled', function () {
-        $filter = RegexFilter::make('phone')->pattern('^1[3-9][0-9]{9}$');
+        $filter = RegexFilter::make('phone')->pattern('^1[3-9][0-9]{9}$')->driver('mysql');
         $query = applyFilterQuery($filter, freshQuery(), ['enabled' => true]);
         $sql = $query->toSql();
 
@@ -861,7 +861,7 @@ describe('RegexFilter Query', function () {
     });
 
     it('applies query for valid regex syntax', function () {
-        $filter = RegexFilter::make('email')->userPattern();
+        $filter = RegexFilter::make('email')->userPattern()->driver('mysql');
         $query = applyFilterQuery($filter, freshQuery(), ['pattern' => '^[a-z]+$']);
         $sql = $query->toSql();
 
@@ -869,7 +869,7 @@ describe('RegexFilter Query', function () {
     });
 
     it('accepts patterns containing forward slash', function () {
-        $filter = RegexFilter::make('url')->userPattern();
+        $filter = RegexFilter::make('url')->userPattern()->driver('mysql');
         $query = applyFilterQuery($filter, freshQuery(), ['pattern' => 'https?://']);
         $sql = $query->toSql();
 
@@ -878,7 +878,7 @@ describe('RegexFilter Query', function () {
     });
 
     it('accepts patterns containing multiple forward slashes', function () {
-        $filter = RegexFilter::make('path')->userPattern();
+        $filter = RegexFilter::make('path')->userPattern()->driver('mysql');
         $query = applyFilterQuery($filter, freshQuery(), ['pattern' => '^/api/v[0-9]+/']);
         $sql = $query->toSql();
 
@@ -936,7 +936,7 @@ describe('JsonFilter Query', function () {
 
 describe('FindInSetFilter Query', function () {
     it('applies FIND_IN_SET for a single value', function () {
-        $filter = FindInSetFilter::make('tags')->options(['php' => 'PHP', 'js' => 'JavaScript']);
+        $filter = FindInSetFilter::make('tags')->options(['php' => 'PHP', 'js' => 'JavaScript'])->driver('mysql');
         $query = applyFilterQuery($filter, freshQuery(), ['value' => 'php']);
         $sql = $query->toSql();
 
@@ -948,7 +948,8 @@ describe('FindInSetFilter Query', function () {
         $filter = FindInSetFilter::make('tags')
             ->options(['php' => 'PHP', 'js' => 'JavaScript', 'css' => 'CSS'])
             ->multiple()
-            ->matchAny();
+            ->matchAny()
+            ->driver('mysql');
         $query = applyFilterQuery($filter, freshQuery(), ['value' => ['php', 'js']]);
         $sql = $query->toSql();
 
@@ -962,7 +963,8 @@ describe('FindInSetFilter Query', function () {
         $filter = FindInSetFilter::make('tags')
             ->options(['php' => 'PHP', 'js' => 'JavaScript', 'css' => 'CSS'])
             ->multiple()
-            ->matchAll();
+            ->matchAll()
+            ->driver('mysql');
         $query = applyFilterQuery($filter, freshQuery(), ['value' => ['php', 'js']]);
         $sql = $query->toSql();
 
