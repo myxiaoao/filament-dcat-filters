@@ -126,6 +126,56 @@ describe('Column Name', function () {
     });
 });
 
+describe('Remote Search', function () {
+    it('enables remote search mode', function () {
+        $filter = SelectTableFilter::make('user_id')
+            ->model('App\\Models\\User')
+            ->remoteSearch();
+
+        expect($filter->isRemoteSearchEnabled())->toBeTrue();
+    });
+
+    it('defaults to non-remote search', function () {
+        $filter = SelectTableFilter::make('user_id')
+            ->model('App\\Models\\User');
+
+        expect($filter->isRemoteSearchEnabled())->toBeFalse();
+    });
+
+    it('can set search debounce', function () {
+        $filter = SelectTableFilter::make('user_id')
+            ->model('App\\Models\\User')
+            ->remoteSearch()
+            ->searchDebounce(500);
+
+        expect($filter->getSearchDebounce())->toBe(500);
+    });
+
+    it('can set search columns', function () {
+        $filter = SelectTableFilter::make('user_id')
+            ->model('App\\Models\\User')
+            ->remoteSearch()
+            ->searchColumns(['name', 'email']);
+
+        expect($filter->getSearchColumns())->toBe(['name', 'email']);
+    });
+
+    it('can set minimum search length', function () {
+        $filter = SelectTableFilter::make('user_id')
+            ->model('App\\Models\\User')
+            ->remoteSearch()
+            ->minSearchLength(3);
+
+        expect($filter->getMinSearchLength())->toBe(3);
+    });
+
+    it('defaults debounce to 300ms', function () {
+        $filter = SelectTableFilter::make('user_id');
+
+        expect($filter->getSearchDebounce())->toBe(300);
+    });
+});
+
 describe('Chained Configuration', function () {
     it('can chain all configuration methods', function () {
         $filter = SelectTableFilter::make('category_id')

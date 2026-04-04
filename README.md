@@ -53,6 +53,21 @@ A modern collection of enhanced filters inspired by [Dcat Admin](https://github.
 - 📍 **GeoLocation Filter** - Geographic proximity filtering with Haversine formula
 - 🔗 **Filter Group** - Combine filters with AND/OR logic
 
+### New in v2.0
+- 🗑️ **SoftDelete Filter** - Built-in soft delete visibility control (withTrashed/onlyTrashed)
+- 🔍 **Exists Filter** - Filter by relationship existence (whereHas/whereDoesntHave)
+- 📊 **Aggregate Filter** - Filter by relationship aggregates (count, sum, avg, max, min + having)
+- ⚖️ **Column Compare Filter** - Compare two database columns (whereColumn)
+- 🧩 **Advanced JSON Filter** - Array contains, path exists, key exists for JSON columns
+- 🕐 **Timezone Aware Date Filter** - Auto timezone conversion between user and database
+- 🔀 **Morph Relation Filter** - MorphTo and MorphToMany polymorphic relationship filtering
+- 📐 **Filter State Protocol** - Declarative `FilterStateDescriptor` for all 29 filters
+- 🚦 **Database Driver Fail-Fast** - Runtime driver compatibility checks with clear errors
+- 🔄 **Sort Presets** - Quick sort shortcuts with export/import support
+- 🔗 **Nested Relationships** - Deep path filtering (`author.company.country`)
+- 🔎 **Remote Search** - Server-side search for SelectTableFilter (large datasets)
+- 📊 **Capability Matrix** - Auto-generated via `php artisan dcat-filters:matrix`
+
 ### Advanced Features
 - 🔄 **Reset All Filters** - One-click reset button for all active filters
 - 💾 **Filter State Persistence** - Remember filter states across sessions
@@ -62,19 +77,20 @@ A modern collection of enhanced filters inspired by [Dcat Admin](https://github.
 - 📋 **Filter Presets** - Save and load filter combinations
 - 🔢 **Scope Badge Counts** - Display record counts on scope tabs
 - 📤 **Filter Export/Import** - Share filter configurations via URL or JSON
+- 🔄 **Sort Presets** - Quick sort shortcuts with shareable state
 
 ### Additional Features
 - 🎨 **Highly Customizable** - Extensive customization options for each filter
 - 📱 **Mobile Friendly** - Responsive design for all screen sizes
 - 🌐 **Bilingual Docs** - Complete English and Chinese documentation
-- ✅ **Fully Tested** - Comprehensive test coverage with 786 tests
+- ✅ **Fully Tested** - Comprehensive test coverage with 1073 tests
 
 ## Version Compatibility
 
 | Filament | Filament Dcat Filters | PHP    | Laravel |
 |----------|----------------------|--------|---------|
-| 5.x      | 1.x                  | ^8.3   | ^12.0   |
-| 4.x      | 1.x                  | ^8.3   | ^12.0   |
+| 5.x      | 2.x                  | ^8.3   | ^12.0   |
+| 4.x      | 2.x                  | ^8.3   | ^12.0   |
 
 ## Installation
 
@@ -290,6 +306,125 @@ HiddenFilter::make('tenant_id')
 
 **[View detailed documentation →](docs/en/advanced-features.md#hiddenfilter-usage-guide)**
 
+### SoftDelete Filter
+
+Control soft-deleted record visibility:
+
+```php
+use Cooper\FilamentDcatFilters\Filters\SoftDeleteFilter;
+
+SoftDeleteFilter::make('trashed')
+// Or toggle mode:
+SoftDeleteFilter::make('trashed')->toggle()
+```
+
+**[View detailed documentation →](docs/en/soft-delete-filter.md)**
+
+### Exists Filter
+
+Filter by relationship existence:
+
+```php
+use Cooper\FilamentDcatFilters\Filters\ExistsFilter;
+
+ExistsFilter::make('has_comments')->relationship('comments')
+ExistsFilter::make('no_orders')->relationship('orders')->notExists()
+```
+
+**[View detailed documentation →](docs/en/exists-filter.md)**
+
+### Aggregate Filter
+
+Filter by relationship aggregate values:
+
+```php
+use Cooper\FilamentDcatFilters\Filters\AggregateFilter;
+
+AggregateFilter::make('order_count')
+    ->relationship('orders')
+    ->count()
+    ->gte()
+```
+
+**[View detailed documentation →](docs/en/aggregate-filter.md)**
+
+### Column Compare Filter
+
+Compare two database columns:
+
+```php
+use Cooper\FilamentDcatFilters\Filters\ColumnCompareFilter;
+
+ColumnCompareFilter::make('profitable')
+    ->leftColumn('price')
+    ->rightColumn('cost')
+    ->gt()
+```
+
+**[View detailed documentation →](docs/en/column-compare-filter.md)**
+
+### Advanced JSON Filter
+
+Structural JSON queries:
+
+```php
+use Cooper\FilamentDcatFilters\Filters\AdvancedJsonFilter;
+
+AdvancedJsonFilter::make('tags')->arrayContains()
+AdvancedJsonFilter::make('metadata')->pathExists('settings.theme')
+AdvancedJsonFilter::make('config')->hasKey('notifications')
+```
+
+**[View detailed documentation →](docs/en/advanced-json-filter.md)**
+
+### Timezone Aware Date Filter
+
+Date range with automatic timezone conversion:
+
+```php
+use Cooper\FilamentDcatFilters\Filters\TimezoneAwareDateFilter;
+
+TimezoneAwareDateFilter::make('created_at')
+    ->userTimezone('Asia/Shanghai')
+```
+
+**[View detailed documentation →](docs/en/timezone-aware-date-filter.md)**
+
+### Morph Relation Filter
+
+Polymorphic relationship filtering:
+
+```php
+use Cooper\FilamentDcatFilters\Filters\MorphRelationFilter;
+
+// MorphTo mode
+MorphRelationFilter::make('commentable')
+    ->morphTo()
+    ->types(['post' => Post::class, 'video' => Video::class])
+
+// MorphToMany mode
+MorphRelationFilter::make('tags')
+    ->morphToMany()
+    ->model(Tag::class)
+    ->titleColumn('name')
+```
+
+**[View detailed documentation →](docs/en/morph-relation-filter.md)**
+
+### Remote Search (Server-Side)
+
+For large datasets, use server-side search:
+
+```php
+SelectTableFilter::make('user_id')
+    ->model(User::class)
+    ->remoteSearch()
+    ->searchColumns(['name', 'email'])
+    ->searchDebounce(300)
+```
+
+**[View detailed documentation →](docs/en/select-table-filter.md#remote-search-server-side)**
+
 ### Reset All Filters
 
 Add a one-click reset button:
@@ -390,6 +525,16 @@ CascadingSelectFilter::make('location')
 - 📖 [GeoLocation Filter](docs/en/geo-location-filter.md) - Geographic proximity filtering
 - 📖 [Filter Group](docs/en/filter-group.md) - Combine filters with AND/OR logic
 
+### New Filter Types
+- 📖 [SoftDelete Filter](docs/en/soft-delete-filter.md) - Soft delete visibility control
+- 📖 [Exists Filter](docs/en/exists-filter.md) - Relationship existence filtering
+- 📖 [Aggregate Filter](docs/en/aggregate-filter.md) - Relationship aggregate filtering
+- 📖 [Column Compare Filter](docs/en/column-compare-filter.md) - Column comparison
+- 📖 [Advanced JSON Filter](docs/en/advanced-json-filter.md) - Structural JSON queries
+- 📖 [Timezone Aware Date Filter](docs/en/timezone-aware-date-filter.md) - Timezone conversion
+- 📖 [Morph Relation Filter](docs/en/morph-relation-filter.md) - Polymorphic relationships
+- 📖 [Capability Matrix](docs/en/capability-matrix.md) - Auto-generated filter capabilities
+
 ### Advanced Features
 - 📖 [Reset All Filters](docs/en/reset-filters.md) - One-click reset functionality
 - 📖 [Filter State Persistence](docs/en/filter-persistence.md) - Session-based filter memory
@@ -424,6 +569,13 @@ FilamentDcatFilters::enumFilter('status');
 FilamentDcatFilters::fullTextFilter('search');
 FilamentDcatFilters::hiddenFilter('tenant_id');
 FilamentDcatFilters::filterGroup('combined');
+FilamentDcatFilters::softDeleteFilter('trashed');
+FilamentDcatFilters::existsFilter('has_comments');
+FilamentDcatFilters::aggregateFilter('order_count');
+FilamentDcatFilters::columnCompareFilter('profitable');
+FilamentDcatFilters::advancedJsonFilter('tags');
+FilamentDcatFilters::timezoneAwareDateFilter('created_at');
+FilamentDcatFilters::morphRelationFilter('commentable');
 ```
 
 ## Artisan Command
@@ -470,6 +622,13 @@ This creates `app/Filament/Filters/MyCustomFilter.php`.
 | `input-mask` | `InputMaskFilter` |
 | `geo-location` | `GeoLocationFilter` |
 | `filter-group` | `FilterGroup` |
+| `soft-delete` | `SoftDeleteFilter` |
+| `exists` | `ExistsFilter` |
+| `aggregate` | `AggregateFilter` |
+| `column-compare` | `ColumnCompareFilter` |
+| `advanced-json` | `AdvancedJsonFilter` |
+| `timezone-date` | `TimezoneAwareDateFilter` |
+| `morph-relation` | `MorphRelationFilter` |
 
 ### Examples
 
@@ -486,6 +645,18 @@ php artisan make:dcat-filter MinPrice --type=comparison
 # Overwrite existing
 php artisan make:dcat-filter ProductStatus --force
 ```
+
+## Capability Matrix
+
+Generate a capability matrix of all filters:
+
+```bash
+php artisan dcat-filters:matrix
+php artisan dcat-filters:matrix --format=json
+php artisan dcat-filters:matrix --output=docs/matrix.md
+```
+
+See the [full capability matrix](docs/en/capability-matrix.md).
 
 ## Testing
 

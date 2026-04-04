@@ -30,6 +30,14 @@ class SelectTableFilter extends Filter
 
     protected ?int $optionsLimit = null;
 
+    protected bool $remoteSearchEnabled = false;
+
+    protected int $searchDebounce = 300;
+
+    protected int $minSearchLength = 1;
+
+    protected array $searchColumns = [];
+
     protected function describeState(): FilterStateDescriptor
     {
         return FilterStateDescriptor::make()
@@ -154,6 +162,70 @@ class SelectTableFilter extends Filter
     }
 
     /**
+     * Enable server-side search instead of preloading all options.
+     * Recommended for large datasets (10k+ rows).
+     */
+    public function remoteSearch(bool $enabled = true): static
+    {
+        $this->remoteSearchEnabled = $enabled;
+        $this->configureForm();
+
+        return $this;
+    }
+
+    /**
+     * Set the debounce delay for search input (in milliseconds).
+     */
+    public function searchDebounce(int $ms): static
+    {
+        $this->searchDebounce = $ms;
+        $this->configureForm();
+
+        return $this;
+    }
+
+    /**
+     * Set the minimum number of characters before search fires.
+     */
+    public function minSearchLength(int $length): static
+    {
+        $this->minSearchLength = $length;
+
+        return $this;
+    }
+
+    /**
+     * Set the columns to search against for remote search.
+     * Defaults to [$titleColumn] if not set.
+     */
+    public function searchColumns(array $columns): static
+    {
+        $this->searchColumns = $columns;
+
+        return $this;
+    }
+
+    public function isRemoteSearchEnabled(): bool
+    {
+        return $this->remoteSearchEnabled;
+    }
+
+    public function getSearchDebounce(): int
+    {
+        return $this->searchDebounce;
+    }
+
+    public function getMinSearchLength(): int
+    {
+        return $this->minSearchLength;
+    }
+
+    public function getSearchColumns(): array
+    {
+        return $this->searchColumns;
+    }
+
+    /**
      * Get the options limit from config or property.
      */
     protected function getOptionsLimit(): int
@@ -173,28 +245,65 @@ class SelectTableFilter extends Filter
         $labelResolver = $this->labelResolver();
         $modelClass = $this->modelClass;
         $titleColumn = $this->titleColumn;
-
-        // Use Select component with relationship as a simpler alternative
         $limit = $this->getOptionsLimit();
+        $placeholder = $this->multiple
+            ? __('filament-dcat-filters::filament-dcat-filters.select_table.placeholder_multiple')
+            : __('filament-dcat-filters::filament-dcat-filters.select_table.placeholder_single');
 
         $select = Select::make($this->multiple ? 'values' : 'value')
             ->label($labelResolver)
-            ->options(function () use ($modelClass, $titleColumn, $limit) {
-                if (! $modelClass) {
-                    return [];
-                }
-
-                return $modelClass::query()
-                    ->limit($limit)
-                    ->pluck($titleColumn ?? 'name', $this->keyColumn)
-                    ->toArray();
-            })
-            ->searchable()
             ->multiple($this->multiple)
             ->native(false)
-            ->preload()
-            ->placeholder($this->multiple ? __('filament-dcat-filters::filament-dcat-filters.select_table.placeholder_multiple') : __('filament-dcat-filters::filament-dcat-filters.select_table.placeholder_single'))
+            ->placeholder($placeholder)
             ->columnSpanFull();
+
+        if ($this->remoteSearchEnabled && $modelClass) {
+            $searchCols = ! empty($this->searchColumns) ? $this->searchColumns : [$titleColumn ?? 'name'];
+            $keyCol = $this->keyColumn;
+            $minLen = $this->minSearchLength;
+
+            $select
+                ->getSearchResultsUsing(function (string $search) use ($modelClass, $titleColumn, $keyCol, $searchCols, $limit, $minLen): array {
+                    if (strlen($search) < $minLen) {
+                        return [];
+                    }
+
+                    return $modelClass::query()
+                        ->where(function (Builder $q) use ($search, $searchCols) {
+                            foreach ($searchCols as $col) {
+                                $q->orWhere($col, 'like', "%{$search}%");
+                            }
+                        })
+                        ->limit($limit)
+                        ->pluck($titleColumn ?? 'name', $keyCol)
+                        ->toArray();
+                })
+                ->getOptionLabelUsing(function ($value) use ($modelClass, $titleColumn, $keyCol): ?string {
+                    if ($value === null || $value === '') {
+                        return null;
+                    }
+
+                    return $modelClass::query()
+                        ->where($keyCol, $value)
+                        ->value($titleColumn ?? 'name');
+                })
+                ->searchable()
+                ->searchDebounce($this->searchDebounce);
+        } else {
+            $select
+                ->options(function () use ($modelClass, $titleColumn, $limit) {
+                    if (! $modelClass) {
+                        return [];
+                    }
+
+                    return $modelClass::query()
+                        ->limit($limit)
+                        ->pluck($titleColumn ?? 'name', $this->keyColumn)
+                        ->toArray();
+                })
+                ->searchable()
+                ->preload();
+        }
 
         $this->applyInlineLabel($select, $labelResolver);
 

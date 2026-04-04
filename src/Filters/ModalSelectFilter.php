@@ -47,6 +47,10 @@ class ModalSelectFilter extends Filter
 
     protected array $displayColumns = [];
 
+    protected int $searchDebounce = 300;
+
+    protected int $minSearchLength = 1;
+
     protected function describeState(): FilterStateDescriptor
     {
         return FilterStateDescriptor::make()
@@ -92,6 +96,8 @@ class ModalSelectFilter extends Filter
                 'dialogWidth' => $this->dialogWidth,
                 'searchColumns' => $this->searchColumns,
                 'displayColumns' => $this->displayColumns,
+                'searchDebounce' => $this->searchDebounce,
+                'minSearchLength' => $this->minSearchLength,
                 'inlineLabel' => $shouldInline,
             ])
             ->columnSpanFull();
@@ -224,6 +230,36 @@ class ModalSelectFilter extends Filter
         $this->displayColumns = $columns;
 
         return $this;
+    }
+
+    /**
+     * Set the debounce delay for search input (in milliseconds).
+     */
+    public function searchDebounce(int $ms): static
+    {
+        $this->searchDebounce = $ms;
+
+        return $this;
+    }
+
+    /**
+     * Set the minimum number of characters before search fires.
+     */
+    public function minSearchLength(int $length): static
+    {
+        $this->minSearchLength = $length;
+
+        return $this;
+    }
+
+    public function getSearchDebounce(): int
+    {
+        return $this->searchDebounce;
+    }
+
+    public function getMinSearchLength(): int
+    {
+        return $this->minSearchLength;
     }
 
     /**

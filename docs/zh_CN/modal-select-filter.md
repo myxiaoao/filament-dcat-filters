@@ -228,6 +228,18 @@ ModalSelectFilter 使用现代 JavaScript 功能，兼容：
 - Safari 14+
 - 移动浏览器（iOS Safari 14+、Chrome Mobile）
 
+## 搜索配置
+
+配置弹窗表格的搜索行为：
+
+```php
+ModalSelectFilter::make('user_id')
+    ->model(User::class, 'name', 'id')
+    ->searchable(['name', 'email'])
+    ->searchDebounce(300)    // 防抖延迟毫秒（默认：300）
+    ->minSearchLength(2)     // 最少输入字符数（默认：1）
+```
+
 ## 故障排除
 
 ### 模态框无法打开

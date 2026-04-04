@@ -204,6 +204,27 @@ SelectTableFilter::make('assignee_id')
     ->searchable(['name', 'email']);
 ```
 
+## Remote Search (Server-Side)
+
+For large datasets (10k+ rows), switch from preloading options to server-side search:
+
+```php
+SelectTableFilter::make('user_id')
+    ->model(User::class)
+    ->remoteSearch()                    // enable server-side search
+    ->searchColumns(['name', 'email'])  // columns to search (default: titleColumn)
+    ->searchDebounce(300)               // debounce in ms (default: 300)
+    ->minSearchLength(2)                // min chars before search fires (default: 1)
+    ->optionsLimit(50)                  // max results per search
+```
+
+When `remoteSearch()` is enabled:
+- Options are **not** preloaded — the dropdown is empty until the user types
+- Each keystroke (after debounce) triggers a server-side `LIKE` query
+- Selected values are resolved via `getOptionLabelUsing` for display
+
+Without `remoteSearch()`, behavior is unchanged (preload all options up to `optionsLimit`).
+
 ## Using with Relationships
 
 When filtering by relationships, the filter automatically handles `whereHas` queries:

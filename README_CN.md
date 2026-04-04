@@ -53,6 +53,21 @@
 - 📍 **地理位置过滤器** - 使用 Haversine 公式进行地理距离筛选
 - 🔗 **过滤器组** - 使用 AND/OR 逻辑组合过滤器
 
+### v2.0 新增
+- 🗑️ **软删除过滤器** - 内置软删除记录可见性控制
+- 🔍 **存在性过滤器** - 按关联记录是否存在过滤
+- 📊 **聚合过滤器** - 按关联聚合值过滤（计数、求和、平均等）
+- ⚖️ **列对比过滤器** - 比较两个数据库列
+- 🧩 **高级 JSON 过滤器** - 数组包含、路径存在、键存在
+- 🕐 **时区感知日期过滤器** - 用户与数据库时区自动转换
+- 🔀 **多态关联过滤器** - MorphTo 和 MorphToMany 多态关联
+- 📐 **状态协议** - 所有 29 个过滤器的声明式 FilterStateDescriptor
+- 🚦 **数据库驱动 Fail-Fast** - 运行时驱动兼容性检查
+- 🔄 **排序预设** - 快捷排序定义，支持导出/导入
+- 🔗 **嵌套关系** - 深层路径过滤（`author.company.country`）
+- 🔎 **远程搜索** - SelectTableFilter 服务端搜索（大数据集）
+- 📊 **能力矩阵** - `php artisan dcat-filters:matrix` 自动生成
+
 ### 高级功能
 - 🔄 **重置所有过滤器** - 一键重置所有活动过滤器
 - 💾 **过滤器状态持久化** - 跨会话记住过滤器状态
@@ -62,19 +77,20 @@
 - 📋 **过滤器预设** - 保存和加载过滤器组合
 - 🔢 **范围徽章计数** - 在范围标签上显示记录数
 - 📤 **过滤器导出/导入** - 通过 URL 或 JSON 分享过滤器配置
+- 🔄 **排序预设** - 快捷排序定义，支持可分享状态
 
 ### 其他特性
 - 🎨 **高度可定制** - 每个过滤器都有丰富的自定义选项
 - 📱 **移动端友好** - 响应式设计，适配所有屏幕尺寸
 - 🌐 **双语文档** - 完整的中英文文档
-- ✅ **全面测试** - 786 测试用例的全面覆盖
+- ✅ **全面测试** - 1073 测试用例的全面覆盖
 
 ## 版本兼容性
 
 | Filament | Filament Dcat Filters | PHP    | Laravel |
 |----------|----------------------|--------|---------|
-| 5.x      | 1.x                  | ^8.3   | ^12.0   |
-| 4.x      | 1.x                  | ^8.3   | ^12.0   |
+| 5.x      | 2.x                  | ^8.3   | ^12.0   |
+| 4.x      | 2.x                  | ^8.3   | ^12.0   |
 
 ## 安装
 
@@ -290,6 +306,125 @@ HiddenFilter::make('tenant_id')
 
 **[查看详细文档 →](docs/zh_CN/advanced-features.md#hiddenfilter-使用说明)**
 
+### 软删除过滤器
+
+控制软删除记录可见性：
+
+```php
+use Cooper\FilamentDcatFilters\Filters\SoftDeleteFilter;
+
+SoftDeleteFilter::make('trashed')
+// 或开关模式：
+SoftDeleteFilter::make('trashed')->toggle()
+```
+
+**[查看详细文档 →](docs/zh_CN/soft-delete-filter.md)**
+
+### 存在性过滤器
+
+按关联记录是否存在过滤：
+
+```php
+use Cooper\FilamentDcatFilters\Filters\ExistsFilter;
+
+ExistsFilter::make('has_comments')->relationship('comments')
+ExistsFilter::make('no_orders')->relationship('orders')->notExists()
+```
+
+**[查看详细文档 →](docs/zh_CN/exists-filter.md)**
+
+### 聚合过滤器
+
+按关联聚合值过滤：
+
+```php
+use Cooper\FilamentDcatFilters\Filters\AggregateFilter;
+
+AggregateFilter::make('order_count')
+    ->relationship('orders')
+    ->count()
+    ->gte()
+```
+
+**[查看详细文档 →](docs/zh_CN/aggregate-filter.md)**
+
+### 列对比过滤器
+
+比较两个数据库列：
+
+```php
+use Cooper\FilamentDcatFilters\Filters\ColumnCompareFilter;
+
+ColumnCompareFilter::make('profitable')
+    ->leftColumn('price')
+    ->rightColumn('cost')
+    ->gt()
+```
+
+**[查看详细文档 →](docs/zh_CN/column-compare-filter.md)**
+
+### 高级 JSON 过滤器
+
+结构化 JSON 查询：
+
+```php
+use Cooper\FilamentDcatFilters\Filters\AdvancedJsonFilter;
+
+AdvancedJsonFilter::make('tags')->arrayContains()
+AdvancedJsonFilter::make('metadata')->pathExists('settings.theme')
+AdvancedJsonFilter::make('config')->hasKey('notifications')
+```
+
+**[查看详细文档 →](docs/zh_CN/advanced-json-filter.md)**
+
+### 时区感知日期过滤器
+
+带自动时区转换的日期范围过滤：
+
+```php
+use Cooper\FilamentDcatFilters\Filters\TimezoneAwareDateFilter;
+
+TimezoneAwareDateFilter::make('created_at')
+    ->userTimezone('Asia/Shanghai')
+```
+
+**[查看详细文档 →](docs/zh_CN/timezone-aware-date-filter.md)**
+
+### 多态关联过滤器
+
+多态关联过滤：
+
+```php
+use Cooper\FilamentDcatFilters\Filters\MorphRelationFilter;
+
+// MorphTo 模式
+MorphRelationFilter::make('commentable')
+    ->morphTo()
+    ->types(['post' => Post::class, 'video' => Video::class])
+
+// MorphToMany 模式
+MorphRelationFilter::make('tags')
+    ->morphToMany()
+    ->model(Tag::class)
+    ->titleColumn('name')
+```
+
+**[查看详细文档 →](docs/zh_CN/morph-relation-filter.md)**
+
+### 远程搜索（服务端）
+
+大数据集使用服务端搜索：
+
+```php
+SelectTableFilter::make('user_id')
+    ->model(User::class)
+    ->remoteSearch()
+    ->searchColumns(['name', 'email'])
+    ->searchDebounce(300)
+```
+
+**[查看详细文档 →](docs/zh_CN/select-table-filter.md#远程搜索服务端)**
+
 ### 重置所有过滤器
 
 添加一键重置按钮：
@@ -390,6 +525,16 @@ CascadingSelectFilter::make('location')
 - 📖 [地理位置过滤器](docs/zh_CN/geo-location-filter.md) - 地理距离筛选
 - 📖 [过滤器组](docs/zh_CN/filter-group.md) - 使用 AND/OR 逻辑组合过滤器
 
+### 新增过滤器
+- 📖 [软删除过滤器](docs/zh_CN/soft-delete-filter.md) - 软删除可见性控制
+- 📖 [存在性过滤器](docs/zh_CN/exists-filter.md) - 关联存在性过滤
+- 📖 [聚合过滤器](docs/zh_CN/aggregate-filter.md) - 关联聚合过滤
+- 📖 [列对比过滤器](docs/zh_CN/column-compare-filter.md) - 列比较
+- 📖 [高级 JSON 过滤器](docs/zh_CN/advanced-json-filter.md) - 结构化 JSON 查询
+- 📖 [时区感知日期过滤器](docs/zh_CN/timezone-aware-date-filter.md) - 时区转换
+- 📖 [多态关联过滤器](docs/zh_CN/morph-relation-filter.md) - 多态关联
+- 📖 [能力矩阵](docs/zh_CN/capability-matrix.md) - 自动生成的过滤器能力表
+
 ### 高级功能
 - 📖 [重置所有过滤器](docs/zh_CN/reset-filters.md) - 一键重置功能
 - 📖 [过滤器状态持久化](docs/zh_CN/filter-persistence.md) - 基于会话的过滤器记忆
@@ -424,6 +569,13 @@ FilamentDcatFilters::enumFilter('status');
 FilamentDcatFilters::fullTextFilter('search');
 FilamentDcatFilters::hiddenFilter('tenant_id');
 FilamentDcatFilters::filterGroup('combined');
+FilamentDcatFilters::softDeleteFilter('trashed');
+FilamentDcatFilters::existsFilter('has_comments');
+FilamentDcatFilters::aggregateFilter('order_count');
+FilamentDcatFilters::columnCompareFilter('profitable');
+FilamentDcatFilters::advancedJsonFilter('tags');
+FilamentDcatFilters::timezoneAwareDateFilter('created_at');
+FilamentDcatFilters::morphRelationFilter('commentable');
 ```
 
 ## Artisan 命令
@@ -470,6 +622,13 @@ php artisan make:dcat-filter MyCustom
 | `input-mask` | `InputMaskFilter` |
 | `geo-location` | `GeoLocationFilter` |
 | `filter-group` | `FilterGroup` |
+| `soft-delete` | `SoftDeleteFilter` |
+| `exists` | `ExistsFilter` |
+| `aggregate` | `AggregateFilter` |
+| `column-compare` | `ColumnCompareFilter` |
+| `advanced-json` | `AdvancedJsonFilter` |
+| `timezone-date` | `TimezoneAwareDateFilter` |
+| `morph-relation` | `MorphRelationFilter` |
 
 ### 示例
 
@@ -486,6 +645,18 @@ php artisan make:dcat-filter MinPrice --type=comparison
 # 覆盖已存在的文件
 php artisan make:dcat-filter ProductStatus --force
 ```
+
+## 能力矩阵
+
+生成所有过滤器的能力矩阵：
+
+```bash
+php artisan dcat-filters:matrix
+php artisan dcat-filters:matrix --format=json
+php artisan dcat-filters:matrix --output=docs/matrix.md
+```
+
+查看[完整能力矩阵](docs/zh_CN/capability-matrix.md)。
 
 ## 测试
 

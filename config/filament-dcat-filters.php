@@ -121,6 +121,26 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Remote Search Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Default settings for server-side search in SelectTableFilter and
+    | ModalSelectFilter. These can be overridden per-filter instance.
+    |
+    */
+    'remote_search' => [
+        // Debounce delay in milliseconds before search fires
+        'debounce' => 300,
+
+        // Minimum characters before search fires
+        'min_length' => 1,
+
+        // Maximum results per search query
+        'results_limit' => 50,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Modal Select Table Configuration
     |--------------------------------------------------------------------------
     |

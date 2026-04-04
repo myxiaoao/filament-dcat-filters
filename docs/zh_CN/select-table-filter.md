@@ -204,6 +204,27 @@ SelectTableFilter::make('assignee_id')
     ->searchable(['name', 'email']);
 ```
 
+## 远程搜索（服务端）
+
+对于大数据集（10k+ 行），从预加载切换为服务端搜索：
+
+```php
+SelectTableFilter::make('user_id')
+    ->model(User::class)
+    ->remoteSearch()                    // 启用服务端搜索
+    ->searchColumns(['name', 'email'])  // 搜索列（默认：titleColumn）
+    ->searchDebounce(300)               // 防抖延迟毫秒（默认：300）
+    ->minSearchLength(2)                // 最少输入字符数（默认：1）
+    ->optionsLimit(50)                  // 每次搜索最大结果数
+```
+
+启用 `remoteSearch()` 后：
+- 选项**不会**预加载 — 下拉框为空，用户输入后才触发搜索
+- 每次按键（防抖后）触发服务端 `LIKE` 查询
+- 已选中的值通过 `getOptionLabelUsing` 解析显示标签
+
+不启用 `remoteSearch()` 时行为不变（预加载所有选项到 `optionsLimit`）。
+
 ## 使用关联关系
 
 通过关联关系筛选时，筛选器会自动处理 `whereHas` 查询：

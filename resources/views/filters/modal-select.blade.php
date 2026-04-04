@@ -260,6 +260,8 @@
                     :searchColumns="$searchColumns"
                     :selected="[]"
                     :filterKey="$filterName"
+                    :searchDebounce="$searchDebounce ?? 300"
+                    :minSearchLength="$minSearchLength ?? 1"
                     :key="$filterName"
                 />
             @endif

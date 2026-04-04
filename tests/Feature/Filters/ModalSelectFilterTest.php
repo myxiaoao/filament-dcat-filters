@@ -208,6 +208,28 @@ describe('Indicator Fallback', function () {
     });
 });
 
+describe('Search Configuration', function () {
+    it('can set search debounce', function () {
+        $filter = ModalSelectFilter::make('user_id')
+            ->searchDebounce(500);
+
+        expect($filter->getSearchDebounce())->toBe(500);
+    });
+
+    it('can set minimum search length', function () {
+        $filter = ModalSelectFilter::make('user_id')
+            ->minSearchLength(3);
+
+        expect($filter->getMinSearchLength())->toBe(3);
+    });
+
+    it('defaults debounce to 300ms', function () {
+        $filter = ModalSelectFilter::make('user_id');
+
+        expect($filter->getSearchDebounce())->toBe(300);
+    });
+});
+
 describe('Chained Configuration', function () {
     it('can chain all configuration methods', function () {
         $filter = ModalSelectFilter::make('user_id')

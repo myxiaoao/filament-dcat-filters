@@ -48,6 +48,10 @@ class ModalSelectTable extends Component implements HasActions, HasForms, HasTab
 
     public int $renderKey = 0;
 
+    public int $searchDebounce = 300;
+
+    public int $minSearchLength = 1;
+
     /**
      * Mount the component.
      */
@@ -59,7 +63,9 @@ class ModalSelectTable extends Component implements HasActions, HasForms, HasTab
         array $displayColumns = [],
         array $searchColumns = [],
         array $selected = [],
-        string $filterKey = ''
+        string $filterKey = '',
+        int $searchDebounce = 300,
+        int $minSearchLength = 1
     ): void {
         $this->modelClass = $modelClass;
         $this->titleColumn = $titleColumn;
@@ -70,6 +76,8 @@ class ModalSelectTable extends Component implements HasActions, HasForms, HasTab
         $this->selected = $selected;
         $this->filterKey = $filterKey;
         $this->selectedSet = array_flip($this->selected);
+        $this->searchDebounce = $searchDebounce;
+        $this->minSearchLength = $minSearchLength;
     }
 
     /**
@@ -85,6 +93,7 @@ class ModalSelectTable extends Component implements HasActions, HasForms, HasTab
             ->paginated(config('filament-dcat-filters.modal_select.pagination_options', [10, 25, 50]))
             ->defaultPaginationPageOption(config('filament-dcat-filters.modal_select.default_pagination', 10))
             ->searchable($this->searchColumns ? true : false)
+            ->searchDebounce($this->searchDebounce)
             ->searchPlaceholder(__('filament-dcat-filters::filament-dcat-filters.like.placeholder'))
             ->striped()
             ->extremePaginationLinks()

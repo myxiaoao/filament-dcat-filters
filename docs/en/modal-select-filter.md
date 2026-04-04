@@ -228,6 +228,18 @@ The ModalSelectFilter uses modern JavaScript features and is compatible with:
 - Safari 14+
 - Mobile browsers (iOS Safari 14+, Chrome Mobile)
 
+## Search Configuration
+
+Configure search behavior for the modal table:
+
+```php
+ModalSelectFilter::make('user_id')
+    ->model(User::class, 'name', 'id')
+    ->searchable(['name', 'email'])
+    ->searchDebounce(300)    // debounce in ms (default: 300)
+    ->minSearchLength(2)     // min chars before search fires (default: 1)
+```
+
 ## Troubleshooting
 
 ### Modal doesn't open
