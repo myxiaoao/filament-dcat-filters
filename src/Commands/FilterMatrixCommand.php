@@ -2,6 +2,7 @@
 
 namespace Cooper\FilamentDcatFilters\Commands;
 
+use Filament\Tables\Filters\Filter;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 
@@ -50,7 +51,7 @@ class FilterMatrixCommand extends Command
 
             $reflection = new \ReflectionClass($className);
 
-            if ($reflection->isAbstract() || ! $reflection->isSubclassOf(\Filament\Tables\Filters\Filter::class)) {
+            if ($reflection->isAbstract() || ! $reflection->isSubclassOf(Filter::class)) {
                 continue;
             }
 

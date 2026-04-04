@@ -5,6 +5,7 @@ namespace Cooper\FilamentDcatFilters\Filters;
 use Cooper\FilamentDcatFilters\Concerns\HasFilterState;
 use Cooper\FilamentDcatFilters\State\FilterStateDescriptor;
 use Cooper\FilamentDcatFilters\State\StateType;
+use Filament\Schemas\Components\Fieldset;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
 use Illuminate\Database\Eloquent\Builder;
@@ -129,7 +130,7 @@ class FilterGroup extends Filter
 
             // Wrap each filter's fields in a Fieldset keyed by filter name
             // This creates a nested state: data[filterName][fieldName]
-            $formComponents[] = \Filament\Schemas\Components\Fieldset::make(
+            $formComponents[] = Fieldset::make(
                 $filter->getLabel() ?? ucfirst(str_replace('_', ' ', $filterName))
             )
                 ->schema($schema)

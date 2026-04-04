@@ -1,6 +1,7 @@
 <?php
 
 use Cooper\FilamentDcatFilters\Filters\SoftDeleteFilter;
+use Cooper\FilamentDcatFilters\State\StateType;
 use Filament\Forms\Components\Toggle;
 
 it('can be instantiated', function () {
@@ -43,13 +44,13 @@ describe('State Descriptor', function () {
     it('returns keyed type by default', function () {
         $filter = SoftDeleteFilter::make('trashed');
         $d = $filter->getStateDescriptor();
-        expect($d->getType())->toBe(\Cooper\FilamentDcatFilters\State\StateType::Keyed);
+        expect($d->getType())->toBe(StateType::Keyed);
         expect($d->getFields())->toBe(['trashed']);
     });
 
     it('returns toggle type in toggle mode', function () {
         $filter = SoftDeleteFilter::make('trashed')->toggle();
         $d = $filter->getStateDescriptor();
-        expect($d->getType())->toBe(\Cooper\FilamentDcatFilters\State\StateType::Toggle);
+        expect($d->getType())->toBe(StateType::Toggle);
     });
 });

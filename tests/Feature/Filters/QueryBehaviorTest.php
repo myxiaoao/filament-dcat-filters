@@ -25,6 +25,8 @@ use Cooper\FilamentDcatFilters\Filters\ScopeFilter;
 use Cooper\FilamentDcatFilters\Filters\SoftDeleteFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Helper: extract the query closure from a filter via reflection and invoke it.
@@ -76,7 +78,7 @@ function freshQueryWithCategory(): Builder
     {
         protected $table = 'test_items';
 
-        public function category(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+        public function category(): BelongsTo
         {
             return $this->belongsTo(
                 (new class extends Model
@@ -1429,7 +1431,7 @@ function freshSoftDeleteQuery(): Builder
 {
     $model = new class extends Model
     {
-        use \Illuminate\Database\Eloquent\SoftDeletes;
+        use SoftDeletes;
 
         protected $table = 'test_items';
     };
@@ -1442,7 +1444,7 @@ describe('SoftDeleteFilter Query', function () {
         $filter = SoftDeleteFilter::make('trashed');
         $query = applyFilterQuery($filter, freshSoftDeleteQuery(), ['trashed' => 'with']);
 
-        expect($query)->toBeInstanceOf(\Illuminate\Database\Eloquent\Builder::class);
+        expect($query)->toBeInstanceOf(Builder::class);
     });
 
     it('does not modify query when value is empty', function () {
@@ -1451,7 +1453,7 @@ describe('SoftDeleteFilter Query', function () {
         $sql = $query->toSql();
 
         // Default SoftDeletes scope adds "deleted_at" is null, but empty value doesn't change anything
-        expect($query)->toBeInstanceOf(\Illuminate\Database\Eloquent\Builder::class);
+        expect($query)->toBeInstanceOf(Builder::class);
     });
 });
 

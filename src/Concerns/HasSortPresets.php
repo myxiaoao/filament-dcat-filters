@@ -2,6 +2,8 @@
 
 namespace Cooper\FilamentDcatFilters\Concerns;
 
+use Filament\Actions\Action;
+
 /**
  * Provides sort preset functionality for Filament ListRecords pages.
  *
@@ -121,7 +123,7 @@ trait HasSortPresets
     /**
      * Get Filament Actions for sort presets (for use in header/toolbar).
      *
-     * @return array<\Filament\Actions\Action>
+     * @return array<Action>
      */
     public function getSortPresetActions(): array
     {
@@ -130,7 +132,7 @@ trait HasSortPresets
         foreach ($this->getSortPresets() as $key => $preset) {
             $label = $preset['label'] ?? ucfirst(str_replace('_', ' ', $key));
 
-            $actions[] = \Filament\Actions\Action::make("sort_preset_{$key}")
+            $actions[] = Action::make("sort_preset_{$key}")
                 ->label($label)
                 ->action(fn () => $this->applySortPreset($key))
                 ->color($this->isSortPresetActive($key) ? 'primary' : 'gray')

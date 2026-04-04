@@ -8,13 +8,14 @@ use Cooper\FilamentDcatFilters\Filters\LikeFilter;
 use Cooper\FilamentDcatFilters\Filters\RangeFilter;
 use Cooper\FilamentDcatFilters\Tests\Fixtures\Models\TestCategory;
 use Cooper\FilamentDcatFilters\Tests\Fixtures\Models\TestItem;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
  * Helper: extract and apply a filter query.
  */
-function applyPerfQuery(object $filter, \Illuminate\Database\Eloquent\Builder $query, array $data): \Illuminate\Database\Eloquent\Builder
+function applyPerfQuery(object $filter, Builder $query, array $data): Builder
 {
     $ref = new ReflectionProperty($filter, 'modifyQueryUsing');
     $closure = $ref->getValue($filter);

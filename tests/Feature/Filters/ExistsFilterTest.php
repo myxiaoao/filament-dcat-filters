@@ -1,6 +1,7 @@
 <?php
 
 use Cooper\FilamentDcatFilters\Filters\ExistsFilter;
+use Cooper\FilamentDcatFilters\State\StateType;
 use Filament\Forms\Components\Toggle;
 
 it('can be instantiated', function () {
@@ -60,12 +61,12 @@ describe('State Descriptor', function () {
     it('returns toggle type by default', function () {
         $filter = ExistsFilter::make('has_comments')->relationship('comments');
         $d = $filter->getStateDescriptor();
-        expect($d->getType())->toBe(\Cooper\FilamentDcatFilters\State\StateType::Toggle);
+        expect($d->getType())->toBe(StateType::Toggle);
     });
 
     it('returns single type in select mode', function () {
         $filter = ExistsFilter::make('has_comments')->relationship('comments')->select();
         $d = $filter->getStateDescriptor();
-        expect($d->getType())->toBe(\Cooper\FilamentDcatFilters\State\StateType::Single);
+        expect($d->getType())->toBe(StateType::Single);
     });
 });

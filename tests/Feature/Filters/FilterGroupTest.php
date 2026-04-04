@@ -2,6 +2,7 @@
 
 use Cooper\FilamentDcatFilters\Filters\FilterGroup;
 use Cooper\FilamentDcatFilters\Filters\LikeFilter;
+use Filament\Schemas\Components\Fieldset;
 
 it('can be instantiated', function () {
     $filter = FilterGroup::make('search_group');
@@ -116,8 +117,8 @@ describe('Form Namespace Isolation', function () {
 
         // Should have 2 fieldsets, one per child filter
         expect($schema)->toHaveCount(2);
-        expect($schema[0])->toBeInstanceOf(\Filament\Schemas\Components\Fieldset::class);
-        expect($schema[1])->toBeInstanceOf(\Filament\Schemas\Components\Fieldset::class);
+        expect($schema[0])->toBeInstanceOf(Fieldset::class);
+        expect($schema[1])->toBeInstanceOf(Fieldset::class);
     });
 
     it('prevents field name collision between same-type filters', function () {

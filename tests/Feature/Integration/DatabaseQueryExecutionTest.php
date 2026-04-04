@@ -1,23 +1,28 @@
 <?php
 
+use Cooper\FilamentDcatFilters\Exceptions\UnsupportedDatabaseDriverException;
 use Cooper\FilamentDcatFilters\Filters\BetweenFilter;
 use Cooper\FilamentDcatFilters\Filters\BooleanFilter;
 use Cooper\FilamentDcatFilters\Filters\ComparisonFilter;
 use Cooper\FilamentDcatFilters\Filters\FilterGroup;
+use Cooper\FilamentDcatFilters\Filters\FindInSetFilter;
+use Cooper\FilamentDcatFilters\Filters\FullTextFilter;
 use Cooper\FilamentDcatFilters\Filters\HiddenFilter;
 use Cooper\FilamentDcatFilters\Filters\InFilter;
 use Cooper\FilamentDcatFilters\Filters\LikeFilter;
 use Cooper\FilamentDcatFilters\Filters\NullFilter;
 use Cooper\FilamentDcatFilters\Filters\RangeFilter;
+use Cooper\FilamentDcatFilters\Filters\RegexFilter;
 use Cooper\FilamentDcatFilters\Filters\SelectTableFilter;
 use Cooper\FilamentDcatFilters\Tests\Fixtures\Models\TestCategory;
 use Cooper\FilamentDcatFilters\Tests\Fixtures\Models\TestItem;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Schema;
 
 /**
  * Helper: extract the query closure and invoke it on a real Eloquent Builder.
  */
-function applyRealQuery(object $filter, \Illuminate\Database\Eloquent\Builder $query, array $data): \Illuminate\Database\Eloquent\Builder
+function applyRealQuery(object $filter, Builder $query, array $data): Builder
 {
     $ref = new ReflectionProperty($filter, 'modifyQueryUsing');
     $closure = $ref->getValue($filter);
@@ -329,22 +334,22 @@ describe('Nested Relationship', function () {
 
 describe('Database Driver Fail-Fast', function () {
     it('FindInSetFilter throws on SQLite', function () {
-        $filter = \Cooper\FilamentDcatFilters\Filters\FindInSetFilter::make('tags')
+        $filter = FindInSetFilter::make('tags')
             ->options(['php' => 'PHP']);
 
         expect(fn () => applyRealQuery($filter, TestItem::query(), ['value' => 'php']))
-            ->toThrow(\Cooper\FilamentDcatFilters\Exceptions\UnsupportedDatabaseDriverException::class);
+            ->toThrow(UnsupportedDatabaseDriverException::class);
     });
 
     it('RegexFilter throws on SQLite in user pattern mode', function () {
-        $filter = \Cooper\FilamentDcatFilters\Filters\RegexFilter::make('title');
+        $filter = RegexFilter::make('title');
 
         expect(fn () => applyRealQuery($filter, TestItem::query(), ['pattern' => '^test']))
-            ->toThrow(\Cooper\FilamentDcatFilters\Exceptions\UnsupportedDatabaseDriverException::class);
+            ->toThrow(UnsupportedDatabaseDriverException::class);
     });
 
     it('FullTextFilter does not throw on SQLite (degraded mode)', function () {
-        $filter = \Cooper\FilamentDcatFilters\Filters\FullTextFilter::make('search')
+        $filter = FullTextFilter::make('search')
             ->searchIn(['title', 'description'])
             ->minLength(1);
 
