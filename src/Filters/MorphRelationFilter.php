@@ -6,6 +6,7 @@ use Closure;
 use Cooper\FilamentDcatFilters\Concerns\HasFilterState;
 use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
 use Cooper\FilamentDcatFilters\Concerns\HasLabelResolver;
+use Cooper\FilamentDcatFilters\Concerns\HasModelOptions;
 use Cooper\FilamentDcatFilters\State\FilterStateDescriptor;
 use Cooper\FilamentDcatFilters\State\StateType;
 use Filament\Forms\Components\Select;
@@ -18,20 +19,13 @@ class MorphRelationFilter extends Filter
     use HasFilterState;
     use HasInlineLabel;
     use HasLabelResolver;
+    use HasModelOptions;
 
     protected string $morphMode = 'morphTo'; // morphTo | morphToMany
 
     protected array $types = [];
 
-    protected ?string $modelClass = null;
-
-    protected string $titleColumn = 'name';
-
-    protected string $keyColumn = 'id';
-
     protected ?Closure $constraint = null;
-
-    protected bool $multiple = false;
 
     protected function describeState(): FilterStateDescriptor
     {
@@ -123,11 +117,6 @@ class MorphRelationFilter extends Filter
     public function getMorphMode(): string
     {
         return $this->morphMode;
-    }
-
-    public function getModelClass(): ?string
-    {
-        return $this->modelClass;
     }
 
     protected function configureForm(): void

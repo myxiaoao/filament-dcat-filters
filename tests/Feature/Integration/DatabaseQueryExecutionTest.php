@@ -35,6 +35,7 @@ beforeEach(function () {
     Schema::create('test_categories', function ($table) {
         $table->id();
         $table->string('name');
+        $table->foreignId('parent_id')->nullable();
         $table->timestamps();
     });
 
@@ -54,8 +55,9 @@ beforeEach(function () {
     });
 
     // Seed test data
-    $electronics = TestCategory::create(['name' => 'Electronics']);
-    $books = TestCategory::create(['name' => 'Books']);
+    $media = TestCategory::create(['name' => 'Media']);
+    $electronics = TestCategory::create(['name' => 'Electronics', 'parent_id' => $media->id]);
+    $books = TestCategory::create(['name' => 'Books', 'parent_id' => $media->id]);
 
     TestItem::create([
         'title' => 'Laravel Guide',
@@ -298,6 +300,28 @@ describe('Relationship Scenarios', function () {
         expect($results)->toHaveCount(2)
             ->and($results->pluck('title')->sort()->values()->all())
             ->toBe(['Mechanical Keyboard', 'Wireless Mouse']);
+    });
+});
+
+// ─── Nested Relationship (Deep Path) ───────────────────────────────
+
+describe('Nested Relationship', function () {
+    it('LikeFilter with nested relationship filters by category.parent name', function () {
+        // category.parent = Media for both Electronics and Books
+        $filter = LikeFilter::make('parent_category')
+            ->relationship('category.parent', 'name');
+        $results = applyRealQuery($filter, TestItem::query(), ['value' => 'Media'])->get();
+
+        // All 4 items have categories whose parent is "Media"
+        expect($results)->toHaveCount(4);
+    });
+
+    it('LikeFilter with nested relationship returns empty for non-matching parent', function () {
+        $filter = LikeFilter::make('parent_category')
+            ->relationship('category.parent', 'name');
+        $results = applyRealQuery($filter, TestItem::query(), ['value' => 'NonExistent'])->get();
+
+        expect($results)->toHaveCount(0);
     });
 });
 

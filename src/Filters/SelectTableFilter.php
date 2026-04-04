@@ -7,6 +7,7 @@ use Cooper\FilamentDcatFilters\Concerns\HasColumnName;
 use Cooper\FilamentDcatFilters\Concerns\HasFilterState;
 use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
 use Cooper\FilamentDcatFilters\Concerns\HasLabelResolver;
+use Cooper\FilamentDcatFilters\Concerns\HasModelOptions;
 use Cooper\FilamentDcatFilters\State\FilterStateDescriptor;
 use Cooper\FilamentDcatFilters\State\StateType;
 use Filament\Forms\Components\Select;
@@ -21,17 +22,9 @@ class SelectTableFilter extends Filter
     use HasFilterState;
     use HasInlineLabel;
     use HasLabelResolver;
-
-    protected string $keyColumn = 'id';
-
-    protected ?string $modelClass = null;
+    use HasModelOptions;
 
     protected ?string $relationship = null;
-
-    protected bool $multiple = false;
-
-    /** @var string|null Column name on the model used as display label (distinct from HasRelationship::$relationshipTitleColumn) */
-    protected ?string $titleColumn = 'name';
 
     protected ?Closure $customQueryModifier = null;
 
@@ -318,37 +311,5 @@ class SelectTableFilter extends Filter
                 ];
             }
         });
-    }
-
-    /**
-     * Get the model class.
-     */
-    public function getModelClass(): ?string
-    {
-        return $this->modelClass;
-    }
-
-    /**
-     * Get the title column.
-     */
-    public function getTitleColumn(): ?string
-    {
-        return $this->titleColumn;
-    }
-
-    /**
-     * Get the key column.
-     */
-    public function getKeyColumn(): string
-    {
-        return $this->keyColumn;
-    }
-
-    /**
-     * Check if multiple selection is enabled.
-     */
-    public function isMultiple(): bool
-    {
-        return $this->multiple;
     }
 }

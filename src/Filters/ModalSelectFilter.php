@@ -6,6 +6,7 @@ use Closure;
 use Cooper\FilamentDcatFilters\Concerns\HasColumnName;
 use Cooper\FilamentDcatFilters\Concerns\HasFilterState;
 use Cooper\FilamentDcatFilters\Concerns\HasInlineLabel;
+use Cooper\FilamentDcatFilters\Concerns\HasModelOptions;
 use Cooper\FilamentDcatFilters\State\FilterStateDescriptor;
 use Cooper\FilamentDcatFilters\State\StateType;
 use Filament\Forms\Components\ViewField;
@@ -32,17 +33,9 @@ class ModalSelectFilter extends Filter
     use HasColumnName;
     use HasFilterState;
     use HasInlineLabel;
-
-    protected ?string $modelClass = null;
+    use HasModelOptions;
 
     protected ?string $relationship = null;
-
-    /** @var string|null Column name on the model used as display label (distinct from HasRelationship::$relationshipTitleColumn) */
-    protected ?string $titleColumn = 'name';
-
-    protected ?string $keyColumn = 'id';
-
-    protected bool $multiple = false;
 
     protected ?string $dialogTitle = null;
 
@@ -345,38 +338,6 @@ class ModalSelectFilter extends Filter
                 ];
             }
         });
-    }
-
-    /**
-     * Get the model class.
-     */
-    public function getModelClass(): ?string
-    {
-        return $this->modelClass;
-    }
-
-    /**
-     * Get the title column.
-     */
-    public function getTitleColumn(): string
-    {
-        return $this->titleColumn;
-    }
-
-    /**
-     * Get the key column.
-     */
-    public function getKeyColumn(): string
-    {
-        return $this->keyColumn;
-    }
-
-    /**
-     * Check if multiple selection is enabled.
-     */
-    public function isMultiple(): bool
-    {
-        return $this->multiple;
     }
 
     /**

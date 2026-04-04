@@ -392,8 +392,13 @@ RangeFilter、BetweenFilter、DateComponentFilter
 ### 用法示例
 
 ```php
+// 单层关联
 LikeFilter::make('tag_name')
     ->relationship('tags', 'name');
+
+// 嵌套关联（深层路径）— 自动使用 Laravel 嵌套 whereHas
+LikeFilter::make('country_name')
+    ->relationship('author.company.country', 'name');
 ```
 
 ### 方法

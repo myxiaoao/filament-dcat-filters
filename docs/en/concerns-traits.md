@@ -391,8 +391,13 @@ Adds Eloquent relationship support to filters, allowing them to query through `w
 ### Usage
 
 ```php
+// Single-level relationship
 LikeFilter::make('tag_name')
     ->relationship('tags', 'name');
+
+// Nested relationship (deep path) — automatically uses Laravel's nested whereHas
+LikeFilter::make('country_name')
+    ->relationship('author.company.country', 'name');
 ```
 
 ### Available Methods
