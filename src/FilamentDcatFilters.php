@@ -233,4 +233,28 @@ class FilamentDcatFilters
     {
         return Filters\ColumnCompareFilter::make($name);
     }
+
+    /**
+     * Quick access to create an Advanced JSON Filter.
+     */
+    public function advancedJsonFilter(string $name): Filters\AdvancedJsonFilter
+    {
+        return Filters\AdvancedJsonFilter::make($name);
+    }
+
+    /**
+     * Quick access to create a Timezone Aware Date Filter.
+     */
+    public function timezoneAwareDateFilter(string $name): Filters\TimezoneAwareDateFilter
+    {
+        return Filters\TimezoneAwareDateFilter::make($name);
+    }
+
+    /**
+     * Quick access to create a Morph Relation Filter.
+     */
+    public function morphRelationFilter(string $name): Filters\MorphRelationFilter
+    {
+        return Filters\MorphRelationFilter::make($name);
+    }
 }

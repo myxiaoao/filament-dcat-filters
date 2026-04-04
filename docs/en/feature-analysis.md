@@ -690,6 +690,18 @@ Filter by aggregate values of related records (`withCount` + `having`). See [agg
 
 Filter by comparing two database columns (`whereColumn`). See [column-compare-filter.md](column-compare-filter.md).
 
+### AdvancedJsonFilter
+
+Structural JSON queries: array contains, path exists, key exists. See [advanced-json-filter.md](advanced-json-filter.md).
+
+### TimezoneAwareDateFilter
+
+Date range filtering with automatic user/database timezone conversion. See [timezone-aware-date-filter.md](timezone-aware-date-filter.md).
+
+### MorphRelationFilter
+
+Filter by polymorphic relationships (MorphTo and MorphToMany). See [morph-relation-filter.md](morph-relation-filter.md).
+
 ---
 
 ## Infrastructure (v1.5.0)

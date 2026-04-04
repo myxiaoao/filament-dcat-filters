@@ -19,7 +19,7 @@ composer analyse           # vendor/bin/phpstan analyse
 
 ```
 src/
-├── Filters/          # 26 个 Filter 类（*Filter.php）
+├── Filters/          # 29 个 Filter 类（*Filter.php）
 ├── Concerns/         # 17 个 Trait（Has*.php / Persists* / Syncs*）
 ├── State/            # FilterStateDescriptor + StateType（状态协议）
 ├── Exceptions/       # UnsupportedDatabaseDriverException

@@ -4,6 +4,7 @@
 
 | 过滤器 | 状态类型 | 字段 | 关联关系 | 多选 | 指示器 | 数据库支持 | 限制 |
 |--------|---------|------|:-------:|:----:|:------:|-----------|------|
+| AdvancedJsonFilter | single/multiple/toggle | value/values/enabled | — | ✓（可选） | ✓ | mysql, pgsql | SQLite 仅 arrayContains 降级 |
 | AggregateFilter | single | value | — | — | ✓ | mysql, pgsql, sqlite | — |
 | BetweenFilter | range | from, to | — | — | ✓ | mysql, pgsql, sqlite | — |
 | BooleanFilter | single | value | — | — | ✓ | mysql, pgsql, sqlite | — |
@@ -30,6 +31,8 @@
 | ScopeFilter | keyed | scope | — | — | ✓ | mysql, pgsql, sqlite | — |
 | SelectTableFilter | single/multiple | value/values | ✓ | ✓（可选） | ✓ | mysql, pgsql, sqlite | — |
 | SoftDeleteFilter | keyed/toggle | trashed | — | — | ✓ | mysql, pgsql, sqlite | — |
+| TimezoneAwareDateFilter | range | from, to | — | — | ✓ | mysql, pgsql, sqlite | — |
+| MorphRelationFilter | single/multiple | value/values | — | ✓（可选） | ✓ | mysql, pgsql, sqlite | — |
 
 ## 状态类型说明
 

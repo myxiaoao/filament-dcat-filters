@@ -4,6 +4,7 @@
 
 | Filter | State Type | Fields | Relationship | Multiple | Indicator | Database Support | Limitations |
 |--------|-----------|--------|:------------:|:--------:|:---------:|----------------|-------------|
+| AdvancedJsonFilter | single | value | — | — | ✓ | mysql, pgsql | — |
 | AggregateFilter | single | value | — | — | ✓ | mysql, pgsql, sqlite | — |
 | BetweenFilter | range | from, to | — | — | ✓ | mysql, pgsql, sqlite | — |
 | BooleanFilter | single | value | — | — | ✓ | mysql, pgsql, sqlite | — |
@@ -23,6 +24,7 @@
 | JsonFilter | single | value | — | — | ✓ | mysql, pgsql, sqlite | — |
 | LikeFilter | single | value | ✓ | — | ✓ | mysql, pgsql, sqlite | — |
 | ModalSelectFilter | single | value | ✓ | ✓ | ✓ | mysql, pgsql, sqlite | — |
+| MorphRelationFilter | single | value | — | — | ✓ | mysql, pgsql, sqlite | — |
 | NullFilter | single | value | — | — | ✓ | mysql, pgsql, sqlite | — |
 | RangeFilter | range | from, to | — | — | ✓ | mysql, pgsql, sqlite | — |
 | RegexFilter | keyed | pattern | — | — | ✓ | mysql, pgsql | — |
@@ -30,3 +32,4 @@
 | ScopeFilter | keyed | scope | — | — | ✓ | mysql, pgsql, sqlite | — |
 | SelectTableFilter | single | value | ✓ | — | ✓ | mysql, pgsql, sqlite | — |
 | SoftDeleteFilter | keyed | trashed | — | — | ✓ | mysql, pgsql, sqlite | — |
+| TimezoneAwareDateFilter | range | from, to | — | — | ✓ | mysql, pgsql, sqlite | — |

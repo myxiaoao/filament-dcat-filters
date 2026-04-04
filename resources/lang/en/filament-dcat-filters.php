@@ -208,4 +208,20 @@ return [
     // ColumnCompareFilter
     'column_compare.placeholder' => 'Select operator...',
 
+    // AdvancedJsonFilter
+    'advanced_json.text_placeholder' => 'Enter value...',
+    'advanced_json.select_placeholder' => 'Select value...',
+    'advanced_json.path_exists' => 'Path exists: :path',
+    'advanced_json.has_key' => 'Has key: :key',
+
+    // TimezoneAwareDateFilter
+    'timezone_date.from' => 'From',
+    'timezone_date.to' => 'To',
+    'timezone_date.indicator_from' => 'from :value (:tz)',
+    'timezone_date.indicator_to' => 'to :value (:tz)',
+
+    // MorphRelationFilter
+    'morph_relation.select_type' => 'Select type...',
+    'morph_relation.select_record' => 'Select record...',
+
 ];

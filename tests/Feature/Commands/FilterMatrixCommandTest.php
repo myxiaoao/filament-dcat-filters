@@ -45,14 +45,14 @@ it('writes to file with --output option', function () {
     @unlink($outputPath);
 });
 
-it('lists all 22 filters in the matrix', function () {
+it('lists all filters in the matrix', function () {
     $outputPath = sys_get_temp_dir().'/test-matrix-count-'.uniqid().'.json';
 
     $this->artisan('dcat-filters:matrix', ['--format' => 'json', '--output' => $outputPath])
         ->assertExitCode(0);
 
     $data = json_decode(file_get_contents($outputPath), true);
-    expect($data)->toHaveCount(26);
+    expect($data)->toHaveCount(29);
 
     @unlink($outputPath);
 });

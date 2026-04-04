@@ -35,6 +35,9 @@ use Illuminate\Support\Facades\Facade;
  * @method static \Cooper\FilamentDcatFilters\Filters\ExistsFilter existsFilter(string $name)
  * @method static \Cooper\FilamentDcatFilters\Filters\AggregateFilter aggregateFilter(string $name)
  * @method static \Cooper\FilamentDcatFilters\Filters\ColumnCompareFilter columnCompareFilter(string $name)
+ * @method static \Cooper\FilamentDcatFilters\Filters\AdvancedJsonFilter advancedJsonFilter(string $name)
+ * @method static \Cooper\FilamentDcatFilters\Filters\TimezoneAwareDateFilter timezoneAwareDateFilter(string $name)
+ * @method static \Cooper\FilamentDcatFilters\Filters\MorphRelationFilter morphRelationFilter(string $name)
  */
 class FilamentDcatFilters extends Facade
 {

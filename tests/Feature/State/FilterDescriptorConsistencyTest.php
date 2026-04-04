@@ -1,12 +1,16 @@
 <?php
 
 use Cooper\FilamentDcatFilters\Concerns\HasFilterState;
+use Cooper\FilamentDcatFilters\Filters\AdvancedJsonFilter;
+use Cooper\FilamentDcatFilters\Filters\AggregateFilter;
 use Cooper\FilamentDcatFilters\Filters\BetweenFilter;
 use Cooper\FilamentDcatFilters\Filters\BooleanFilter;
 use Cooper\FilamentDcatFilters\Filters\CascadingSelectFilter;
+use Cooper\FilamentDcatFilters\Filters\ColumnCompareFilter;
 use Cooper\FilamentDcatFilters\Filters\ComparisonFilter;
 use Cooper\FilamentDcatFilters\Filters\DateComponentFilter;
 use Cooper\FilamentDcatFilters\Filters\EnumFilter;
+use Cooper\FilamentDcatFilters\Filters\ExistsFilter;
 use Cooper\FilamentDcatFilters\Filters\FilterGroup;
 use Cooper\FilamentDcatFilters\Filters\FindInSetFilter;
 use Cooper\FilamentDcatFilters\Filters\FullTextFilter;
@@ -17,12 +21,15 @@ use Cooper\FilamentDcatFilters\Filters\InputMaskFilter;
 use Cooper\FilamentDcatFilters\Filters\JsonFilter;
 use Cooper\FilamentDcatFilters\Filters\LikeFilter;
 use Cooper\FilamentDcatFilters\Filters\ModalSelectFilter;
+use Cooper\FilamentDcatFilters\Filters\MorphRelationFilter;
 use Cooper\FilamentDcatFilters\Filters\NullFilter;
 use Cooper\FilamentDcatFilters\Filters\RangeFilter;
 use Cooper\FilamentDcatFilters\Filters\RegexFilter;
 use Cooper\FilamentDcatFilters\Filters\RelativeDateFilter;
 use Cooper\FilamentDcatFilters\Filters\ScopeFilter;
 use Cooper\FilamentDcatFilters\Filters\SelectTableFilter;
+use Cooper\FilamentDcatFilters\Filters\SoftDeleteFilter;
+use Cooper\FilamentDcatFilters\Filters\TimezoneAwareDateFilter;
 use Cooper\FilamentDcatFilters\State\StateType;
 
 describe('All filters have HasFilterState', function () {
@@ -52,6 +59,13 @@ describe('All filters have HasFilterState', function () {
         'RelativeDateFilter' => [RelativeDateFilter::class],
         'ScopeFilter' => [ScopeFilter::class],
         'SelectTableFilter' => [SelectTableFilter::class],
+        'SoftDeleteFilter' => [SoftDeleteFilter::class],
+        'ExistsFilter' => [ExistsFilter::class],
+        'AggregateFilter' => [AggregateFilter::class],
+        'ColumnCompareFilter' => [ColumnCompareFilter::class],
+        'AdvancedJsonFilter' => [AdvancedJsonFilter::class],
+        'TimezoneAwareDateFilter' => [TimezoneAwareDateFilter::class],
+        'MorphRelationFilter' => [MorphRelationFilter::class],
     ]);
 });
 
@@ -83,6 +97,13 @@ describe('Descriptor returns valid types', function () {
         'GeoLocationFilter' => [GeoLocationFilter::class, StateType::Composite],
         'CascadingSelectFilter' => [CascadingSelectFilter::class, StateType::Composite],
         'FilterGroup' => [FilterGroup::class, StateType::Composite],
+        'SoftDeleteFilter' => [SoftDeleteFilter::class, StateType::Keyed],
+        'ExistsFilter' => [ExistsFilter::class, StateType::Toggle],
+        'AggregateFilter' => [AggregateFilter::class, StateType::Single],
+        'ColumnCompareFilter' => [ColumnCompareFilter::class, StateType::Toggle],
+        'AdvancedJsonFilter' => [AdvancedJsonFilter::class, StateType::Single],
+        'TimezoneAwareDateFilter' => [TimezoneAwareDateFilter::class, StateType::Range],
+        'MorphRelationFilter' => [MorphRelationFilter::class, StateType::Single],
     ]);
 });
 
@@ -111,6 +132,13 @@ describe('Descriptor declares non-empty fields', function () {
         'GeoLocationFilter' => [GeoLocationFilter::class],
         'ModalSelectFilter' => [ModalSelectFilter::class],
         'SelectTableFilter' => [SelectTableFilter::class],
+        'SoftDeleteFilter' => [SoftDeleteFilter::class],
+        'ExistsFilter' => [ExistsFilter::class],
+        'AggregateFilter' => [AggregateFilter::class],
+        'ColumnCompareFilter' => [ColumnCompareFilter::class],
+        'AdvancedJsonFilter' => [AdvancedJsonFilter::class],
+        'TimezoneAwareDateFilter' => [TimezoneAwareDateFilter::class],
+        'MorphRelationFilter' => [MorphRelationFilter::class],
     ]);
 
     it('declares empty fields for unconfigured dynamic filters', function (string $filterClass) {

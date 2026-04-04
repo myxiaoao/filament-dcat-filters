@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 class MakeDcatFilterCommand extends Command
 {
     protected $signature = 'make:dcat-filter {name : The name of the filter class}
-                            {--type=basic : The filter type (basic, like, in, comparison, boolean, null, enum, range, regex, fulltext, json, between, scope, date-component, select-table, modal-select, hidden, relative-date, cascading-select, find-in-set, input-mask, geo-location, filter-group, soft-delete, exists, aggregate, column-compare)}
+                            {--type=basic : The filter type (basic, like, in, comparison, boolean, null, enum, range, regex, fulltext, json, between, scope, date-component, select-table, modal-select, hidden, relative-date, cascading-select, find-in-set, input-mask, geo-location, filter-group, soft-delete, exists, aggregate, column-compare, advanced-json, timezone-date, morph-relation)}
                             {--force : Overwrite existing file}';
 
     protected $description = 'Create a new Dcat-style Filament filter class';
@@ -42,6 +42,9 @@ class MakeDcatFilterCommand extends Command
         'exists' => 'Cooper\FilamentDcatFilters\Filters\ExistsFilter',
         'aggregate' => 'Cooper\FilamentDcatFilters\Filters\AggregateFilter',
         'column-compare' => 'Cooper\FilamentDcatFilters\Filters\ColumnCompareFilter',
+        'advanced-json' => 'Cooper\FilamentDcatFilters\Filters\AdvancedJsonFilter',
+        'timezone-date' => 'Cooper\FilamentDcatFilters\Filters\TimezoneAwareDateFilter',
+        'morph-relation' => 'Cooper\FilamentDcatFilters\Filters\MorphRelationFilter',
     ];
 
     public function handle(Filesystem $filesystem): int

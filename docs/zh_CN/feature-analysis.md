@@ -690,6 +690,18 @@ filament-dcat-filters 包已实现**所有计划功能的 100%**：
 
 按两个数据库列的关系过滤（`whereColumn`）。详见 [column-compare-filter.md](column-compare-filter.md)。
 
+### AdvancedJsonFilter
+
+结构化 JSON 查询：数组包含、路径存在、键存在。详见 [advanced-json-filter.md](advanced-json-filter.md)。
+
+### TimezoneAwareDateFilter
+
+带用户/数据库时区自动转换的日期范围过滤。详见 [timezone-aware-date-filter.md](timezone-aware-date-filter.md)。
+
+### MorphRelationFilter
+
+按多态关联过滤（MorphTo 和 MorphToMany）。详见 [morph-relation-filter.md](morph-relation-filter.md)。
+
 ---
 
 ## 基础设施 (v1.5.0)

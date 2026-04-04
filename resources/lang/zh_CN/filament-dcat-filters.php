@@ -208,4 +208,20 @@ return [
     // ColumnCompareFilter
     'column_compare.placeholder' => '选择操作符...',
 
+    // AdvancedJsonFilter
+    'advanced_json.text_placeholder' => '请输入值...',
+    'advanced_json.select_placeholder' => '选择值...',
+    'advanced_json.path_exists' => '路径存在: :path',
+    'advanced_json.has_key' => '包含键: :key',
+
+    // TimezoneAwareDateFilter
+    'timezone_date.from' => '从',
+    'timezone_date.to' => '到',
+    'timezone_date.indicator_from' => '从 :value (:tz)',
+    'timezone_date.indicator_to' => '到 :value (:tz)',
+
+    // MorphRelationFilter
+    'morph_relation.select_type' => '选择类型...',
+    'morph_relation.select_record' => '选择记录...',
+
 ];

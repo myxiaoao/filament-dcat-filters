@@ -208,4 +208,20 @@ return [
     // ColumnCompareFilter
     'column_compare.placeholder' => '選擇操作符...',
 
+    // AdvancedJsonFilter
+    'advanced_json.text_placeholder' => '請輸入值...',
+    'advanced_json.select_placeholder' => '選擇值...',
+    'advanced_json.path_exists' => '路徑存在: :path',
+    'advanced_json.has_key' => '包含鍵: :key',
+
+    // TimezoneAwareDateFilter
+    'timezone_date.from' => '從',
+    'timezone_date.to' => '到',
+    'timezone_date.indicator_from' => '從 :value (:tz)',
+    'timezone_date.indicator_to' => '到 :value (:tz)',
+
+    // MorphRelationFilter
+    'morph_relation.select_type' => '選擇類型...',
+    'morph_relation.select_record' => '選擇記錄...',
+
 ];
