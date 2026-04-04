@@ -2,40 +2,74 @@
 
 All notable changes to `filament-dcat-filters` will be documented in this file.
 
-## v1.4.0 - 2026-04-03
+## v2.0.0 - 2026-04-04
 
 ### Breaking Changes
 
 - **FilterGroup state structure** — child filter form data is now namespaced under each filter's name (e.g., `data[title][value]` instead of `data[value]`). This fixes field name collisions when multiple filters of the same type are used together. **If you have custom code that directly reads FilterGroup state, update it to the new nested structure.**
+- **Database driver fail-fast** — FindInSetFilter and RegexFilter now throw `UnsupportedDatabaseDriverException` on unsupported drivers (e.g., SQLite) instead of generating invalid SQL silently. FullTextFilter runs in degraded mode on SQLite with a warning log.
 
-### Fixed (backward-compatible)
+### Added — 7 New Filter Types
 
-- **[Critical] FilterGroup field collision** — two LikeFilters (or any same-type filters) in a group no longer share a single `value` field; each filter's form fields are isolated in a `Fieldset` with its own `statePath`
-- **[High] ModalSelectFilter::relationship() UI broken** — `relationship()` now accepts an optional `$modelClass` parameter and triggers `configureForm()`/`configureQuery()`, so the modal table renders and AJAX label fetching works. Indicator now falls back to raw value display when no model class is set
-- **[High] SelectTableFilter::relationship() empty dropdown** — `relationship()` now accepts an optional `$modelClass` parameter and triggers `configureForm()`, so dropdown options are populated
-- **[Medium] ModalSelectFilter labels protocol mismatch** — Controller now returns labels as an ordered array matching input IDs order (instead of a keyed object), and frontend uses `Array.isArray()` with null fallback for unresolved IDs
-- **[Medium] RegexFilter false rejection of `/` in patterns** — changed `preg_match` delimiter from `/` to `\x01` (SOH) so patterns containing forward slashes (e.g., `https?://`) are no longer rejected
+- **SoftDeleteFilter** — built-in soft delete visibility control (select/radio/toggle modes)
+- **ExistsFilter** — filter by relationship existence (`whereHas`/`whereDoesntHave`), with `constrainedBy()` and static factories `forExists()`/`forNotExists()`
+- **AggregateFilter** — filter by relationship aggregate values (`withCount`/`withSum`/`withAvg`/`withMax`/`withMin` + `having`), with `countOf()`/`sumOf()` factories
+- **ColumnCompareFilter** — compare two database columns (`whereColumn`), toggle or operator-select mode
+- **AdvancedJsonFilter** — structural JSON queries: `arrayContains()`, `pathExists()`, `hasKey()` with per-driver SQL (MySQL `JSON_CONTAINS`, PostgreSQL `@>`, SQLite `json_each` degraded)
+- **TimezoneAwareDateFilter** — date range filtering with automatic user↔database timezone conversion via Carbon, supports `string|Closure` for dynamic user timezone
+- **MorphRelationFilter** — polymorphic relationship filtering: `morphTo()` mode for type selection, `morphToMany()` mode for record selection with multiple support
 
-### Backward Compatibility
+### Added — Infrastructure
 
-- `ModalSelectFilter::relationship()` adds an optional 4th parameter `$modelClass` — existing calls without it continue to work
-- `SelectTableFilter::relationship()` adds an optional 3rd parameter `$modelClass` — existing calls without it continue to work
-- All other changes are internal implementation fixes with no API changes
+- **FilterStateDescriptor** — declarative state protocol for all 29 filters. Each filter implements `describeState()` returning fields, state type (`Single`/`Multiple`/`Range`/`Toggle`/`Keyed`/`Composite`), capabilities, and database support
+- **StateType enum** — `Single`, `Multiple`, `Range`, `Toggle`, `Keyed`, `Composite`
+- **HasFilterState trait** — `getStateDescriptor()`/`isStateEmpty()` on all filters
+- **`php artisan dcat-filters:matrix`** — auto-generates capability matrix (markdown/json) from filter descriptors
+- **HasModelOptions trait** — extracted shared `modelClass`/`titleColumn`/`keyColumn`/`multiple` properties + `resolveModelDisplayName()` from SelectTableFilter, ModalSelectFilter, MorphRelationFilter
+- **HasSortPresets trait** — sort preset definitions (single/multi-field), `applySortPreset()`/`resetSortPreset()`/`getSortPresetActions()`/`exportSortState()`/`importSortState()`
+- **Nested relationship support** — `->relationship('author.company.country', 'name')` uses Laravel's native nested `whereHas`
+
+### Fixed
+
+- **[Critical] FilterGroup field collision** — child filter form fields isolated in Fieldset with `statePath` namespacing
+- **[High] ModalSelectFilter::relationship() UI broken** — `relationship()` now accepts optional `$modelClass`, triggers `configureForm()`/`configureQuery()`
+- **[High] SelectTableFilter::relationship() empty dropdown** — `relationship()` now accepts optional `$modelClass`, triggers `configureForm()`
+- **[High] SelectTableFilter query not applied** — `configureQuery()` now uses `parent::modifyQueryUsing()` to avoid method override conflict with Filament's internal `$modifyQueryUsing` property
+- **[Medium] ModalSelectFilter labels protocol** — Controller returns ordered array matching input IDs, frontend uses `Array.isArray()` with null fallback
+- **[Medium] RegexFilter false rejection of `/`** — delimiter changed from `/` to `\x01`
+- **GeoLocationFilter** — coordinate range validation (lat -90~90, lon -180~180) and positive radius check
+- **RegexFilter** — `@preg_match` pre-validation rejects invalid patterns before DB execution
+- **CascadingSelectFilter** — batch query grouped by `keyColumn|titleColumn` for same-model different-column configs
+- **ModalSelectFilter indicator** — `select()` limits columns in indicator queries
+- **FilterGroup nesting depth** — recursive validation, max 5 levels, throws `InvalidArgumentException`
+- **HasFilterExportImport** — descriptor-driven export skips empty filters, import validates field names
+
+### Changed
+
+- **FilterGroup** — `applyFilterQuery()`/`configureQuery()` driven by child filter's `getStateDescriptor()` instead of field-name guessing
+- **HasDatabaseDriver** — new `assertDriverSupported()` method with three-tier check (supported → degraded → unsupported)
+- **FilterStateDescriptor** — added `degradedSupport()`/`getDegradedSupport()` for drivers with reduced functionality
+- **Config** — database driver comment clarifies MySQL/PostgreSQL/SQLite only; SQL Server/Oracle not supported
+- **Facade + FilamentDcatFilters** — 31 factory methods (29 filter types + `version()` + `config()`)
+- **MakeDcatFilterCommand** — supports all 29 filter types
 
 ### Documentation
 
-- Updated relationship() examples in EN + CN docs for ModalSelectFilter and SelectTableFilter
-- Updated FilterGroup docs to describe Fieldset isolation and nesting depth limit
-- API reference tables updated with new parameter signatures
+- 29 filter capability matrix (EN + CN), auto-generated by `dcat-filters:matrix`
+- 7 new filter usage docs (EN + CN): soft-delete, exists, aggregate, column-compare, advanced-json, timezone-date, morph-relation
+- HasRelationship docs updated with nested path examples
+- feature-analysis, package-structure, CLAUDE.md updated to 29 filters / 18 traits
+- i18n: en, zh_CN, zh_TW — all new filter translation keys
 
 ### Tests
 
-- Total: **824 tests** with **1210 assertions** (all passing)
-- New: FilterGroup namespaced state structure tests (field isolation, mixed types, RangeFilter, OR logic)
-- New: ModalSelectController ordered array response tests (multi-ID ordering, null for missing IDs)
-- New: ModalSelectFilter indicator fallback test, relationship with modelClass tests
-- New: SelectTableFilter relationship with modelClass tests
-- New: RegexFilter forward-slash pattern acceptance tests
+- Total: **1064 tests** with **1559 assertions** (all passing)
+- New: FilterStateDescriptor unit tests + 29-filter descriptor consistency tests
+- New: Real SQLite query execution tests (21 tests: basic/combination/relationship/fail-fast)
+- New: Nested relationship integration tests
+- New: Performance baseline tests (500 rows: query count, memory < 10MB)
+- New: HasSortPresets tests (10 tests)
+- New: 7 filter unit tests + query behavior tests
 
 ## v1.3.0 - 2026-03-17
 
