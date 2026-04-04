@@ -60,16 +60,21 @@ document.addEventListener('livewire:init', () => {
     });
 
     // Listen for filter reset to also clear LocalStorage
-    Livewire.on('filament-dcat-filters::filters-reset', () => {
-        // Find all filter storage keys and clear them
-        const keysToRemove = [];
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            if (key && key.startsWith('filament-dcat-filters:')) {
-                keysToRemove.push(key);
+    Livewire.on('filament-dcat-filters::filters-reset', ({ key }) => {
+        if (key) {
+            // Clear only the specific component's key
+            localStorage.removeItem(key);
+        } else {
+            // Fallback: clear all filter keys (for backward compatibility)
+            const keysToRemove = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const k = localStorage.key(i);
+                if (k && k.startsWith('filament-dcat-filters:')) {
+                    keysToRemove.push(k);
+                }
             }
+            keysToRemove.forEach(k => localStorage.removeItem(k));
         }
-        keysToRemove.forEach(key => localStorage.removeItem(key));
     });
 });
 

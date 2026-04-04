@@ -77,3 +77,34 @@ it('has non-empty values handles nested arrays', function () {
     // Nested non-empty arrays
     expect($method->invoke($action, ['level1' => ['level2' => 'value']]))->toBeTrue();
 });
+
+it('resolves LocalStorage key from livewire component', function () {
+    $action = ResetFiltersAction::make();
+
+    $reflection = new ReflectionClass($action);
+    $method = $reflection->getMethod('resolveLocalStorageKey');
+    $method->setAccessible(true);
+
+    // Component with getLocalStorageKey method
+    $livewire = new class
+    {
+        public function getLocalStorageKey(): string
+        {
+            return 'filament-dcat-filters:TestComponent';
+        }
+    };
+
+    expect($method->invoke($action, $livewire))->toBe('filament-dcat-filters:TestComponent');
+});
+
+it('returns null when livewire component has no LocalStorage key method', function () {
+    $action = ResetFiltersAction::make();
+
+    $reflection = new ReflectionClass($action);
+    $method = $reflection->getMethod('resolveLocalStorageKey');
+    $method->setAccessible(true);
+
+    $livewire = new class {};
+
+    expect($method->invoke($action, $livewire))->toBeNull();
+});

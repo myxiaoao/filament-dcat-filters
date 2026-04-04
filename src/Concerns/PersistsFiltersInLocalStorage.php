@@ -2,6 +2,8 @@
 
 namespace Cooper\FilamentDcatFilters\Concerns;
 
+use Livewire\Attributes\On;
+
 /**
  * Trait for enabling client-side filter persistence via LocalStorage.
  *
@@ -13,7 +15,7 @@ trait PersistsFiltersInLocalStorage
     /**
      * Get the LocalStorage key for storing filters.
      */
-    protected function getLocalStorageKey(): string
+    public function getLocalStorageKey(): string
     {
         return 'filament-dcat-filters:'.str_replace('\\', '_', static::class);
     }
@@ -46,6 +48,7 @@ trait PersistsFiltersInLocalStorage
     /**
      * Receive filters restored from LocalStorage.
      */
+    #[On('restoreFiltersFromLocalStorage')]
     public function restoreFiltersFromLocalStorage(array $filters): void
     {
         if (! property_exists($this, 'tableFilters')) {

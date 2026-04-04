@@ -731,6 +731,71 @@ describe('FullTextFilter Query', function () {
     });
 });
 
+describe('FullTextFilter fullText() with relation columns', function () {
+    it('separates relation columns from local columns in fulltext mode', function () {
+        $filter = FullTextFilter::make('search')
+            ->searchIn(['title', 'body', 'department.name'])
+            ->fullText()
+            ->minLength(1);
+
+        // Use a model with a department() relationship
+        $model = new class extends Model
+        {
+            protected $table = 'test_items';
+
+            public function department(): BelongsTo
+            {
+                return $this->belongsTo(
+                    (new class extends Model
+                    {
+                        protected $table = 'departments';
+                    })::class,
+                    'department_id'
+                );
+            }
+        };
+
+        $query = applyFilterQuery($filter, $model->newQuery(), ['search' => 'hello']);
+        $sql = $query->toSql();
+
+        // Local columns should use MATCH (MySQL default driver in SQLite test context may differ)
+        // Relation column should use whereHas with LIKE
+        expect($sql)->toContain('"departments"')
+            ->and($sql)->toContain('LIKE');
+    });
+
+    it('falls back entirely to LIKE for relation-only columns in fulltext mode', function () {
+        $filter = FullTextFilter::make('search')
+            ->searchIn(['department.name'])
+            ->fullText()
+            ->minLength(1);
+
+        $model = new class extends Model
+        {
+            protected $table = 'test_items';
+
+            public function department(): BelongsTo
+            {
+                return $this->belongsTo(
+                    (new class extends Model
+                    {
+                        protected $table = 'departments';
+                    })::class,
+                    'department_id'
+                );
+            }
+        };
+
+        $query = applyFilterQuery($filter, $model->newQuery(), ['search' => 'hello']);
+        $sql = $query->toSql();
+
+        // Should NOT contain MATCH since there are no local columns
+        expect($sql)->not->toContain('MATCH')
+            ->and($sql)->toContain('LIKE')
+            ->and($sql)->toContain('"departments"');
+    });
+});
+
 // ─── EnumFilter ───────────────────────────────────────────────────
 
 enum QueryTestStatus: string

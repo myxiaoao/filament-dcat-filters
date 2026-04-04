@@ -99,7 +99,22 @@ class ResetFiltersAction extends Action
             ($this->afterResetCallback)($livewire);
         }
 
-        $livewire->dispatch('filament-dcat-filters::filters-reset');
+        // Pass the component-specific key so only this component's LocalStorage is cleared
+        $key = $this->resolveLocalStorageKey($livewire);
+
+        $livewire->dispatch('filament-dcat-filters::filters-reset', key: $key);
+    }
+
+    /**
+     * Resolve the LocalStorage key for the current component.
+     */
+    protected function resolveLocalStorageKey(mixed $livewire): ?string
+    {
+        if (method_exists($livewire, 'getLocalStorageKey')) {
+            return $livewire->getLocalStorageKey();
+        }
+
+        return null;
     }
 
     /**

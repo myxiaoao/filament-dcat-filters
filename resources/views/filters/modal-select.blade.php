@@ -29,6 +29,22 @@
                     }
                 };
                 window.addEventListener('modal-select-confirmed', this._handleConfirmed);
+
+                // Restore initial state from Livewire-bound hidden input
+                this.$nextTick(() => {
+                    const input = this.$refs.hiddenInput;
+                    if (input && input.value) {
+                        const raw = input.value;
+                        this.selected = raw.split(',').filter(v => v !== '');
+                        if (this.selected.length > 0) {
+                            this.fetchLabels(
+                                @json($modelClass ?? ''),
+                                @json($titleColumn ?? 'name'),
+                                @json($keyColumn ?? 'id')
+                            );
+                        }
+                    }
+                });
             },
 
             destroy() {
@@ -251,6 +267,12 @@
             </x-slot>
 
             @if($modelClass)
+                @php
+                    $currentValue = $getState() ?? '';
+                    $initialSelected = is_array($currentValue)
+                        ? $currentValue
+                        : array_filter(array_map('trim', explode(',', (string) $currentValue)), fn ($v) => $v !== '');
+                @endphp
                 <livewire:cooper.filament-dcat-filters.modal-select-table
                     :modelClass="$modelClass"
                     :titleColumn="$titleColumn"
@@ -258,7 +280,7 @@
                     :multiple="$multiple"
                     :displayColumns="$displayColumns"
                     :searchColumns="$searchColumns"
-                    :selected="[]"
+                    :selected="$initialSelected"
                     :filterKey="$filterName"
                     :searchDebounce="$searchDebounce"
                     :minSearchLength="$minSearchLength"

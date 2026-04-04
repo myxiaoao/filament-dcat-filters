@@ -146,11 +146,7 @@ class FullTextFilter extends Filter
             $this->assertDriverSupported($query);
 
             if ($this->useFullText) {
-                if ($this->isPostgres($query)) {
-                    return $this->applyPostgresFullTextSearch($query, $search);
-                }
-
-                return $this->applyFullTextSearch($query, $search);
+                return $this->applyFullTextWithRelations($query, $search);
             }
 
             return $this->applyLikeSearch($query, $search);
@@ -207,38 +203,85 @@ class FullTextFilter extends Filter
     }
 
     /**
-     * Apply MySQL FULLTEXT search.
+     * Apply full-text search, separating local columns from relation columns.
+     *
+     * Local columns use MATCH/tsvector; relation columns fall back to LIKE via whereHas.
      */
-    protected function applyFullTextSearch(Builder $query, string $search): Builder
+    protected function applyFullTextWithRelations(Builder $query, string $search): Builder
+    {
+        $localColumns = [];
+        $relationColumns = [];
+
+        foreach ($this->searchColumns as $column) {
+            if (str_contains($column, '.')) {
+                $relationColumns[] = $column;
+            } else {
+                $localColumns[] = $column;
+            }
+        }
+
+        $likeOp = $this->isPostgres($query) ? 'ILIKE' : 'LIKE';
+
+        return $query->where(function (Builder $q) use ($localColumns, $relationColumns, $search, $likeOp) {
+            // Apply full-text search on local columns
+            if (! empty($localColumns)) {
+                if ($this->isPostgres($q)) {
+                    $this->applyPostgresFullTextSearch($q, $search, $localColumns, useOr: true);
+                } else {
+                    $this->applyFullTextSearch($q, $search, $localColumns, useOr: true);
+                }
+            }
+
+            // Fall back to LIKE for relation columns
+            foreach ($relationColumns as $column) {
+                $this->applyRelationSearch($q, $column, $search, $likeOp);
+            }
+        });
+    }
+
+    /**
+     * Apply MySQL FULLTEXT search.
+     *
+     * @param  array<string>  $columns  Local (non-relation) column names
+     */
+    protected function applyFullTextSearch(Builder $query, string $search, array $columns, bool $useOr = false): Builder
     {
         $grammar = $query->getGrammar();
-        $columns = implode(', ', array_map(fn (string $col) => $grammar->wrap($col), $this->searchColumns));
+        $columnsSql = implode(', ', array_map(fn (string $col) => $grammar->wrap($col), $columns));
 
-        return $query->whereRaw(
-            "MATCH ({$columns}) AGAINST (? IN BOOLEAN MODE)",
+        $method = $useOr ? 'orWhereRaw' : 'whereRaw';
+        $query->{$method}(
+            "MATCH ({$columnsSql}) AGAINST (? IN BOOLEAN MODE)",
             [$search.'*']
         );
+
+        return $query;
     }
 
     /**
      * Apply PostgreSQL full-text search using tsvector/tsquery.
+     *
+     * @param  array<string>  $columns  Local (non-relation) column names
      */
-    protected function applyPostgresFullTextSearch(Builder $query, string $search): Builder
+    protected function applyPostgresFullTextSearch(Builder $query, string $search, array $columns, bool $useOr = false): Builder
     {
         $grammar = $query->getGrammar();
-        $columns = array_map(
+        $colsSql = array_map(
             fn (string $col) => 'coalesce('.$grammar->wrap($col).", '')",
-            $this->searchColumns,
+            $columns,
         );
 
-        $tsvector = "to_tsvector('simple', ".implode(" || ' ' || ", $columns).')';
+        $tsvector = "to_tsvector('simple', ".implode(" || ' ' || ", $colsSql).')';
         $tsquery = "to_tsquery('simple', ?)";
 
         // Convert search terms: "hello world" → "hello:* & world:*"
         $terms = preg_split('/\s+/', trim($search));
         $tsValue = implode(' & ', array_map(fn (string $t) => $t.':*', $terms));
 
-        return $query->whereRaw("{$tsvector} @@ {$tsquery}", [$tsValue]);
+        $method = $useOr ? 'orWhereRaw' : 'whereRaw';
+        $query->{$method}("{$tsvector} @@ {$tsquery}", [$tsValue]);
+
+        return $query;
     }
 
     /**

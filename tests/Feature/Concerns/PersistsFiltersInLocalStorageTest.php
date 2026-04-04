@@ -1,6 +1,7 @@
 <?php
 
 use Cooper\FilamentDcatFilters\Concerns\PersistsFiltersInLocalStorage;
+use Livewire\Attributes\On;
 
 // Create a mock class that uses the trait
 class MockLocalStorageComponent
@@ -76,4 +77,12 @@ it('does not restore empty filters', function () {
     $component->restoreFiltersFromLocalStorage([]);
 
     expect($component->tableFilters)->toBe(['existing' => ['value' => 'data']]);
+});
+
+it('has #[On] attribute registered for restoreFiltersFromLocalStorage', function () {
+    $reflection = new ReflectionMethod(MockLocalStorageComponent::class, 'restoreFiltersFromLocalStorage');
+    $attributes = $reflection->getAttributes(On::class);
+
+    expect($attributes)->toHaveCount(1);
+    expect($attributes[0]->newInstance()->event)->toBe('restoreFiltersFromLocalStorage');
 });
