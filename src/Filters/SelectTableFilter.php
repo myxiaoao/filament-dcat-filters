@@ -32,9 +32,9 @@ class SelectTableFilter extends Filter
 
     protected bool $remoteSearchEnabled = false;
 
-    protected int $searchDebounce = 300;
+    protected ?int $searchDebounce = null;
 
-    protected int $minSearchLength = 1;
+    protected ?int $minSearchLength = null;
 
     protected array $searchColumns = [];
 
@@ -190,6 +190,7 @@ class SelectTableFilter extends Filter
     public function minSearchLength(int $length): static
     {
         $this->minSearchLength = $length;
+        $this->configureForm();
 
         return $this;
     }
@@ -201,6 +202,7 @@ class SelectTableFilter extends Filter
     public function searchColumns(array $columns): static
     {
         $this->searchColumns = $columns;
+        $this->configureForm();
 
         return $this;
     }
@@ -212,12 +214,17 @@ class SelectTableFilter extends Filter
 
     public function getSearchDebounce(): int
     {
-        return $this->searchDebounce;
+        return $this->searchDebounce ?? config('filament-dcat-filters.remote_search.debounce', 300);
     }
 
     public function getMinSearchLength(): int
     {
-        return $this->minSearchLength;
+        return $this->minSearchLength ?? config('filament-dcat-filters.remote_search.min_length', 1);
+    }
+
+    protected function getRemoteResultsLimit(): int
+    {
+        return $this->optionsLimit ?? config('filament-dcat-filters.remote_search.results_limit', 50);
     }
 
     public function getSearchColumns(): array
@@ -260,10 +267,12 @@ class SelectTableFilter extends Filter
         if ($this->remoteSearchEnabled && $modelClass) {
             $searchCols = ! empty($this->searchColumns) ? $this->searchColumns : [$titleColumn ?? 'name'];
             $keyCol = $this->keyColumn;
-            $minLen = $this->minSearchLength;
+            $minLen = $this->getMinSearchLength();
+            $remoteLimit = $this->getRemoteResultsLimit();
+            $debounce = $this->getSearchDebounce();
 
             $select
-                ->getSearchResultsUsing(function (string $search) use ($modelClass, $titleColumn, $keyCol, $searchCols, $limit, $minLen): array {
+                ->getSearchResultsUsing(function (string $search) use ($modelClass, $titleColumn, $keyCol, $searchCols, $remoteLimit, $minLen): array {
                     if (strlen($search) < $minLen) {
                         return [];
                     }
@@ -274,11 +283,27 @@ class SelectTableFilter extends Filter
                                 $q->orWhere($col, 'like', "%{$search}%");
                             }
                         })
-                        ->limit($limit)
+                        ->limit($remoteLimit)
                         ->pluck($titleColumn ?? 'name', $keyCol)
                         ->toArray();
                 })
-                ->getOptionLabelUsing(function ($value) use ($modelClass, $titleColumn, $keyCol): ?string {
+                ->searchable()
+                ->searchDebounce($debounce);
+
+            // Register label resolver for already-selected values (single and multiple)
+            if ($this->multiple) {
+                $select->getOptionLabelsUsing(function (array $values) use ($modelClass, $titleColumn, $keyCol): array {
+                    if (empty($values)) {
+                        return [];
+                    }
+
+                    return $modelClass::query()
+                        ->whereIn($keyCol, $values)
+                        ->pluck($titleColumn ?? 'name', $keyCol)
+                        ->toArray();
+                });
+            } else {
+                $select->getOptionLabelUsing(function ($value) use ($modelClass, $titleColumn, $keyCol): ?string {
                     if ($value === null || $value === '') {
                         return null;
                     }
@@ -286,9 +311,8 @@ class SelectTableFilter extends Filter
                     return $modelClass::query()
                         ->where($keyCol, $value)
                         ->value($titleColumn ?? 'name');
-                })
-                ->searchable()
-                ->searchDebounce($this->searchDebounce);
+                });
+            }
         } else {
             $select
                 ->options(function () use ($modelClass, $titleColumn, $limit) {

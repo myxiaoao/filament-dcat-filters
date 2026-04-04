@@ -221,9 +221,20 @@ SelectTableFilter::make('user_id')
 启用 `remoteSearch()` 后：
 - 选项**不会**预加载 — 下拉框为空，用户输入后才触发搜索
 - 每次按键（防抖后）触发服务端 `LIKE` 查询
-- 已选中的值通过 `getOptionLabelUsing` 解析显示标签
+- 已选中的值通过 `getOptionLabelUsing`（单选）或 `getOptionLabelsUsing`（多选）解析显示标签
+- 支持 `->multiple()` — 批量解析所有已选值的标签
 
-不启用 `remoteSearch()` 时行为不变（预加载所有选项到 `optionsLimit`）。
+默认值可在 `config/filament-dcat-filters.php` 中全局配置：
+
+```php
+'remote_search' => [
+    'debounce' => 300,        // 毫秒
+    'min_length' => 1,        // 字符数
+    'results_limit' => 50,    // 每次搜索最大结果数
+],
+```
+
+每个 filter 的设置会覆盖配置默认值。不启用 `remoteSearch()` 时行为不变（预加载所有选项到 `optionsLimit`）。
 
 ## 使用关联关系
 

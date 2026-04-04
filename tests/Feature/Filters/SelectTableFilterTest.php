@@ -169,10 +169,53 @@ describe('Remote Search', function () {
         expect($filter->getMinSearchLength())->toBe(3);
     });
 
-    it('defaults debounce to 300ms', function () {
+    it('defaults debounce to 300ms from config', function () {
         $filter = SelectTableFilter::make('user_id');
 
         expect($filter->getSearchDebounce())->toBe(300);
+    });
+
+    it('reads defaults from remote_search config', function () {
+        config([
+            'filament-dcat-filters.remote_search.debounce' => 500,
+            'filament-dcat-filters.remote_search.min_length' => 3,
+        ]);
+
+        $filter = SelectTableFilter::make('user_id');
+
+        expect($filter->getSearchDebounce())->toBe(500)
+            ->and($filter->getMinSearchLength())->toBe(3);
+    });
+
+    it('explicit setter overrides config default', function () {
+        config(['filament-dcat-filters.remote_search.debounce' => 500]);
+
+        $filter = SelectTableFilter::make('user_id')
+            ->searchDebounce(200);
+
+        expect($filter->getSearchDebounce())->toBe(200);
+    });
+
+    it('searchColumns triggers form rebuild', function () {
+        $filter = SelectTableFilter::make('user_id')
+            ->model('App\\Models\\User')
+            ->remoteSearch()
+            ->searchColumns(['name', 'email']);
+
+        // After searchColumns(), getSearchColumns returns updated value
+        // AND the form has been reconfigured (has form schema)
+        expect($filter->getSearchColumns())->toBe(['name', 'email'])
+            ->and($filter->getFormSchema())->not->toBeEmpty();
+    });
+
+    it('minSearchLength triggers form rebuild', function () {
+        $filter = SelectTableFilter::make('user_id')
+            ->model('App\\Models\\User')
+            ->remoteSearch()
+            ->minSearchLength(3);
+
+        expect($filter->getMinSearchLength())->toBe(3)
+            ->and($filter->getFormSchema())->not->toBeEmpty();
     });
 });
 

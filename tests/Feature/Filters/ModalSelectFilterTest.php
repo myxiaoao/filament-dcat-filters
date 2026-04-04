@@ -223,10 +223,54 @@ describe('Search Configuration', function () {
         expect($filter->getMinSearchLength())->toBe(3);
     });
 
-    it('defaults debounce to 300ms', function () {
+    it('defaults debounce to 300ms from config', function () {
         $filter = ModalSelectFilter::make('user_id');
 
         expect($filter->getSearchDebounce())->toBe(300);
+    });
+
+    it('reads defaults from remote_search config', function () {
+        config([
+            'filament-dcat-filters.remote_search.debounce' => 600,
+            'filament-dcat-filters.remote_search.min_length' => 2,
+        ]);
+
+        $filter = ModalSelectFilter::make('user_id');
+
+        expect($filter->getSearchDebounce())->toBe(600)
+            ->and($filter->getMinSearchLength())->toBe(2);
+    });
+
+    it('passes searchDebounce and minSearchLength to viewData', function () {
+        $filter = ModalSelectFilter::make('user_id')
+            ->model('App\\Models\\User', 'name', 'id')
+            ->searchDebounce(400)
+            ->minSearchLength(2);
+
+        $schema = $filter->getFormSchema();
+        expect($schema)->not->toBeEmpty();
+
+        // Extract the ViewField's viewData array (contains closures pushed by viewData())
+        $viewField = $schema[0];
+        $ref = new ReflectionProperty($viewField, 'viewData');
+        $ref->setAccessible(true);
+        $viewDataEntries = $ref->getValue($viewField);
+
+        // Find the closure entry and invoke it bound to the filter
+        $resolved = [];
+        foreach ($viewDataEntries as $entry) {
+            if ($entry instanceof Closure) {
+                $bound = Closure::bind($entry, $filter, get_class($filter));
+                $resolved = array_merge($resolved, $bound() ?? []);
+            } elseif (is_array($entry)) {
+                $resolved = array_merge($resolved, $entry);
+            }
+        }
+
+        expect($resolved)->toHaveKey('searchDebounce')
+            ->and($resolved['searchDebounce'])->toBe(400)
+            ->and($resolved)->toHaveKey('minSearchLength')
+            ->and($resolved['minSearchLength'])->toBe(2);
     });
 });
 

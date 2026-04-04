@@ -87,6 +87,8 @@ class ModalSelectTable extends Component implements HasActions, HasForms, HasTab
     {
         $columns = $this->buildColumns();
 
+        $minSearchLength = $this->minSearchLength;
+
         return $table
             ->query($this->getQuery())
             ->columns($columns)
@@ -94,6 +96,15 @@ class ModalSelectTable extends Component implements HasActions, HasForms, HasTab
             ->defaultPaginationPageOption(config('filament-dcat-filters.modal_select.default_pagination', 10))
             ->searchable($this->searchColumns ? true : false)
             ->searchDebounce($this->searchDebounce)
+            ->modifyQueryUsing(function (Builder $query) use ($minSearchLength) {
+                // Enforce minimum search length: if search term is too short, exclude all results
+                $search = $this->getTableSearch();
+                if ($search !== null && $search !== '' && strlen($search) < $minSearchLength) {
+                    $query->whereRaw('0 = 1');
+                }
+
+                return $query;
+            })
             ->searchPlaceholder(__('filament-dcat-filters::filament-dcat-filters.like.placeholder'))
             ->striped()
             ->extremePaginationLinks()

@@ -221,9 +221,20 @@ SelectTableFilter::make('user_id')
 When `remoteSearch()` is enabled:
 - Options are **not** preloaded — the dropdown is empty until the user types
 - Each keystroke (after debounce) triggers a server-side `LIKE` query
-- Selected values are resolved via `getOptionLabelUsing` for display
+- Selected values are resolved via `getOptionLabelUsing` (single) or `getOptionLabelsUsing` (multiple) for display
+- Works with `->multiple()` — labels for all selected values are batch-resolved
 
-Without `remoteSearch()`, behavior is unchanged (preload all options up to `optionsLimit`).
+Defaults can be configured globally in `config/filament-dcat-filters.php`:
+
+```php
+'remote_search' => [
+    'debounce' => 300,        // ms
+    'min_length' => 1,        // characters
+    'results_limit' => 50,    // max results per search
+],
+```
+
+Per-filter settings override config defaults. Without `remoteSearch()`, behavior is unchanged (preload all options up to `optionsLimit`).
 
 ## Using with Relationships
 

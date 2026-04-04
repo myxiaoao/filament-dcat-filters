@@ -240,6 +240,11 @@ ModalSelectFilter::make('user_id')
     ->minSearchLength(2)     // min chars before search fires (default: 1)
 ```
 
+- `searchDebounce` — delays search requests to reduce server load during rapid typing
+- `minSearchLength` — search terms shorter than this return empty results, preventing broad queries on large tables
+
+Defaults can be configured globally in `config/filament-dcat-filters.php` under `remote_search.debounce` and `remote_search.min_length`. Per-filter settings override config defaults.
+
 ## Troubleshooting
 
 ### Modal doesn't open

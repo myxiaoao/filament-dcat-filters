@@ -240,6 +240,11 @@ ModalSelectFilter::make('user_id')
     ->minSearchLength(2)     // 最少输入字符数（默认：1）
 ```
 
+- `searchDebounce` — 延迟搜索请求，减少快速输入时的服务端压力
+- `minSearchLength` — 搜索词短于此长度时返回空结果，避免大表上的宽泛查询
+
+默认值可在 `config/filament-dcat-filters.php` 的 `remote_search.debounce` 和 `remote_search.min_length` 中全局配置。每个 filter 的设置会覆盖配置默认值。
+
 ## 故障排除
 
 ### 模态框无法打开

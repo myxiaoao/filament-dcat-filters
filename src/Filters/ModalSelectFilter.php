@@ -47,9 +47,9 @@ class ModalSelectFilter extends Filter
 
     protected array $displayColumns = [];
 
-    protected int $searchDebounce = 300;
+    protected ?int $searchDebounce = null;
 
-    protected int $minSearchLength = 1;
+    protected ?int $minSearchLength = null;
 
     protected function describeState(): FilterStateDescriptor
     {
@@ -96,8 +96,8 @@ class ModalSelectFilter extends Filter
                 'dialogWidth' => $this->dialogWidth,
                 'searchColumns' => $this->searchColumns,
                 'displayColumns' => $this->displayColumns,
-                'searchDebounce' => $this->searchDebounce,
-                'minSearchLength' => $this->minSearchLength,
+                'searchDebounce' => $this->getSearchDebounce(),
+                'minSearchLength' => $this->getMinSearchLength(),
                 'inlineLabel' => $shouldInline,
             ])
             ->columnSpanFull();
@@ -254,12 +254,12 @@ class ModalSelectFilter extends Filter
 
     public function getSearchDebounce(): int
     {
-        return $this->searchDebounce;
+        return $this->searchDebounce ?? config('filament-dcat-filters.remote_search.debounce', 300);
     }
 
     public function getMinSearchLength(): int
     {
-        return $this->minSearchLength;
+        return $this->minSearchLength ?? config('filament-dcat-filters.remote_search.min_length', 1);
     }
 
     /**
