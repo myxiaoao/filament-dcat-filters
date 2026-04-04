@@ -219,6 +219,41 @@ FilamentDcatFilters::modalSelectFilter('user_id')
 4. **Consider mobile** - The filter is responsive but works best on larger screens
 5. **Use relationships** - When filtering by related models, use the `relationship()` method
 
+## UI Behavior
+
+### Selection Summary (Trigger)
+
+- **Single selection**: displays the selected label in the trigger button
+- **Multiple selection**: shows the first 2 selected labels as badges, with a `+N` overflow badge when more than 2 items are selected
+- Clicking the trigger opens the modal; clicking a badge's `×` removes that item
+
+### Auto-Focus Search
+
+When the modal opens, the search input is automatically focused so users can start typing immediately — especially useful for remote search scenarios with large datasets.
+
+### Error Handling
+
+If label fetching fails (network error, server error), the trigger displays an inline error message with a **Retry** button. The retry button is disabled while a request is in flight, preventing duplicate requests. The selected IDs are preserved — only the display labels fall back to `#id` format.
+
+### Loading Stability
+
+The trigger area uses a fixed minimum height to prevent layout shifts when transitioning between placeholder, loading, and selected states.
+
+### Accessibility
+
+- Trigger button: `aria-haspopup="dialog"`, dynamic `aria-expanded`, `aria-label` with current display text
+- Remove badge buttons: `aria-label="Remove {label}"`
+- Clear button: `aria-label="Clear selected value"`
+- Error alert: `role="alert"` with retry action
+
+### Modal Footer (Responsive)
+
+On narrow screens (< `sm` breakpoint), the modal footer buttons stack vertically (confirm/cancel on top, clear below). On wider screens they display in a single row.
+
+### Selection Preview in Modal
+
+When items are selected, the modal footer shows the count badge plus a preview of the first 1–2 selected names.
+
 ## Browser Compatibility
 
 The ModalSelectFilter uses modern JavaScript features and is compatible with:
@@ -241,7 +276,7 @@ ModalSelectFilter::make('user_id')
 ```
 
 - `searchDebounce` — delays search requests to reduce server load during rapid typing
-- `minSearchLength` — search terms shorter than this return empty results, preventing broad queries on large tables
+- `minSearchLength` — search terms shorter than this show a "please enter at least N characters" hint instead of empty results, preventing broad queries on large tables. The search placeholder also reflects the minimum length requirement.
 
 Defaults can be configured globally in `config/filament-dcat-filters.php` under `remote_search.debounce` and `remote_search.min_length`. Per-filter settings override config defaults.
 

@@ -71,6 +71,9 @@ return [
     'modal_select.fetch_error' => '加载选项失败',
     'modal_select.empty_state' => '未找到记录',
     'modal_select.empty_state_description' => '请尝试调整搜索条件',
+    'modal_select.search_too_short_heading' => '继续输入...',
+    'modal_select.search_too_short' => '请至少输入 :min 个字符进行搜索',
+    'modal_select.search_min_hint' => '请输入至少 :min 个字符...',
 
     // Reset filters action
     'reset_filters.label' => '重置筛选器',
@@ -201,6 +204,12 @@ return [
     'accessibility.error_occurred' => '发生错误',
     'accessibility.select_row' => '选择此行',
     'accessibility.select_option' => '选择此选项',
+    'accessibility.remove_item' => '移除 :label',
+    'accessibility.clear_value' => '清除已选值',
+    'accessibility.open_modal' => '打开 :label 选择对话框',
+    'accessibility.retry_fetch' => '重试加载标签',
+    'accessibility.fetch_error' => '加载标签失败，点击重试。',
+    'accessibility.selected_summary' => '已选 :count 项',
 
     // AggregateFilter
     'aggregate.placeholder' => '请输入数值...',

@@ -71,6 +71,9 @@ return [
     'modal_select.fetch_error' => '載入選項失敗',
     'modal_select.empty_state' => '未找到記錄',
     'modal_select.empty_state_description' => '請嘗試調整搜尋條件',
+    'modal_select.search_too_short_heading' => '繼續輸入...',
+    'modal_select.search_too_short' => '請至少輸入 :min 個字元進行搜尋',
+    'modal_select.search_min_hint' => '請輸入至少 :min 個字元...',
 
     // Reset filters action
     'reset_filters.label' => '重設篩選',
@@ -190,6 +193,12 @@ return [
     'accessibility.error_occurred' => '發生錯誤',
     'accessibility.select_row' => '選擇此列',
     'accessibility.select_option' => '選擇此選項',
+    'accessibility.remove_item' => '移除 :label',
+    'accessibility.clear_value' => '清除已選值',
+    'accessibility.open_modal' => '開啟 :label 選擇對話框',
+    'accessibility.retry_fetch' => '重試載入標籤',
+    'accessibility.fetch_error' => '載入標籤失敗，點擊重試。',
+    'accessibility.selected_summary' => '已選 :count 項',
 
     // SoftDeleteFilter
     'soft_delete.without_trashed' => '不含已刪除',

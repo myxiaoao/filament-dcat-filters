@@ -105,6 +105,7 @@
                 .catch(error => {
                     if (error.name === 'AbortError') return;
                     console.error('Fetch labels error:', error);
+                    this.error = error.message || 'Failed to load labels';
                     this.selectedLabels = this.selected.map(id => '#' + id);
                     this.updateInput();
                 })
@@ -139,6 +140,21 @@
                 if (this.loading) return @json(__('filament-dcat-filters::filament-dcat-filters.modal_select.loading'));
                 if (this.selectedLabels.length === 0) return '';
                 return this.selectedLabels.join(', ');
+            },
+
+            getSummaryText() {
+                if (this.selectedLabels.length === 0) return '';
+                if (this.selectedLabels.length <= 2) return this.selectedLabels.join(', ');
+                return this.selectedLabels.slice(0, 2).join(', ') + ' +' + (this.selectedLabels.length - 2);
+            },
+
+            retryFetch() {
+                this.error = null;
+                this.fetchLabels(
+                    @json($modelClass ?? ''),
+                    @json($titleColumn ?? 'name'),
+                    @json($keyColumn ?? 'id')
+                );
             }
         }"
         class="fi-fo-select"
@@ -155,13 +171,14 @@
                     aria-haspopup="dialog"
                     :aria-expanded="open"
                     :aria-label="getDisplayText() || @json($placeholder)"
+                    title="{{ __('filament-dcat-filters::filament-dcat-filters.accessibility.open_modal', ['label' => $label ?? $filterName]) }}"
                 >
                     @if($multiple)
-                        {{-- Multiple selection: show badges --}}
-                        <div class="fi-select-input-value-ctn">
+                        {{-- Multiple selection: show summary badges --}}
+                        <div class="fi-select-input-value-ctn min-h-[2rem]">
                             {{-- Placeholder when nothing selected --}}
                             <span
-                                x-show="selectedLabels.length === 0 && !loading"
+                                x-show="selectedLabels.length === 0 && !loading && !error"
                                 class="fi-select-input-placeholder"
                             >{{ $placeholder }}</span>
 
@@ -171,19 +188,21 @@
                                 x-cloak
                             >{{ __('filament-dcat-filters::filament-dcat-filters.modal_select.loading') }}</span>
 
-                            {{-- Badges container --}}
+                            {{-- Summary badges: first 2 items + overflow count --}}
                             <div
                                 x-show="selectedLabels.length > 0 && !loading"
                                 x-cloak
                                 class="fi-select-input-value-badges-ctn"
                             >
-                                <template x-for="(label, index) in selectedLabels" :key="index">
+                                <template x-for="(label, index) in selectedLabels.slice(0, 2)" :key="index">
                                     <span class="fi-badge fi-color fi-color-warning fi-size-sm" style="--text: var(--color-600); --dark-text: var(--color-400);">
                                         <span class="fi-badge-label" x-text="label"></span>
                                         <button
                                             type="button"
                                             class="fi-badge-delete-btn"
                                             x-on:click.stop="removeItem(index)"
+                                            :aria-label="'{{ __('filament-dcat-filters::filament-dcat-filters.accessibility.remove_item', ['label' => '']) }}' + label"
+                                            :title="'{{ __('filament-dcat-filters::filament-dcat-filters.accessibility.remove_item', ['label' => '']) }}' + label"
                                         >
                                             <x-filament::icon
                                                 icon="heroicon-m-x-mark"
@@ -192,26 +211,36 @@
                                         </button>
                                     </span>
                                 </template>
+                                {{-- Overflow count badge --}}
+                                <span
+                                    x-show="selectedLabels.length > 2"
+                                    x-cloak
+                                    class="fi-badge fi-color fi-color-gray fi-size-sm"
+                                    x-text="'+' + (selectedLabels.length - 2)"
+                                    :aria-label="selectedLabels.length + ' {{ __('filament-dcat-filters::filament-dcat-filters.accessibility.selected_summary', ['count' => '']) }}'"
+                                ></span>
                             </div>
                         </div>
                     @else
                         {{-- Single selection: show text with clear button inline --}}
-                        <span
-                            x-show="selectedLabels.length === 0 && !loading"
-                            class="fi-select-input-placeholder"
-                        >{{ $placeholder }}</span>
+                        <div class="min-h-[2rem] flex items-center">
+                            <span
+                                x-show="selectedLabels.length === 0 && !loading && !error"
+                                class="fi-select-input-placeholder"
+                            >{{ $placeholder }}</span>
 
-                        <span
-                            x-show="loading"
-                            x-cloak
-                        >{{ __('filament-dcat-filters::filament-dcat-filters.modal_select.loading') }}</span>
+                            <span
+                                x-show="loading"
+                                x-cloak
+                            >{{ __('filament-dcat-filters::filament-dcat-filters.modal_select.loading') }}</span>
 
-                        <span
-                            x-show="selectedLabels.length > 0 && !loading"
-                            x-cloak
-                            class="fi-select-input-value-label truncate"
-                            x-text="selectedLabels.join(', ')"
-                        ></span>
+                            <span
+                                x-show="selectedLabels.length > 0 && !loading"
+                                x-cloak
+                                class="fi-select-input-value-label truncate"
+                                x-text="selectedLabels.join(', ')"
+                            ></span>
+                        </div>
                     @endif
                 </button>
             </div>
@@ -232,6 +261,8 @@
                         x-show="selected.length > 0 && !loading"
                         x-cloak
                         x-on:click.stop="clear()"
+                        aria-label="{{ __('filament-dcat-filters::filament-dcat-filters.accessibility.clear_value') }}"
+                        title="{{ __('filament-dcat-filters::filament-dcat-filters.accessibility.clear_value') }}"
                     >
                         <x-filament::icon
                             icon="heroicon-m-x-mark"
@@ -248,6 +279,30 @@
                 </x-slot>
             @endif
         </x-filament::input.wrapper>
+
+        {{-- Error state with retry --}}
+        <div
+            x-show="error"
+            x-cloak
+            class="mt-1 flex items-center gap-1.5 text-xs text-danger-600 dark:text-danger-400"
+            role="alert"
+        >
+            <x-filament::icon
+                icon="heroicon-m-exclamation-triangle"
+                class="h-3.5 w-3.5 shrink-0"
+            />
+            <span>{{ __('filament-dcat-filters::filament-dcat-filters.accessibility.fetch_error') }}</span>
+            <button
+                type="button"
+                x-on:click.stop="retryFetch()"
+                class="font-medium underline hover:no-underline disabled:opacity-50 disabled:no-underline disabled:cursor-not-allowed"
+                :disabled="loading"
+                aria-label="{{ __('filament-dcat-filters::filament-dcat-filters.accessibility.retry_fetch') }}"
+            >
+                <span x-show="!loading">{{ __('filament-dcat-filters::filament-dcat-filters.accessibility.retry_fetch') }}</span>
+                <span x-show="loading" x-cloak>{{ __('filament-dcat-filters::filament-dcat-filters.modal_select.loading') }}</span>
+            </button>
+        </div>
 
         {{-- Hidden input with Livewire binding --}}
         <input

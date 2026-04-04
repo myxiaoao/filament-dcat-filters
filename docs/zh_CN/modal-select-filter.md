@@ -219,6 +219,41 @@ FilamentDcatFilters::modalSelectFilter('user_id')
 4. **考虑移动端** - 过滤器是响应式的，但在大屏幕上效果最佳
 5. **使用关联关系** - 按相关模型过滤时，使用 `relationship()` 方法
 
+## UI 行为
+
+### 选中态摘要（触发器）
+
+- **单选**：触发器按钮中显示已选标签
+- **多选**：显示前 2 个标签的 badge，超过 2 项时额外显示 `+N` 溢出 badge
+- 点击触发器打开弹窗；点击 badge 的 `×` 移除该项
+
+### 自动聚焦搜索框
+
+弹窗打开时自动聚焦搜索输入框，用户可以立即开始输入——在远程搜索和大数据集场景下尤其提速。
+
+### 错误处理
+
+标签加载失败（网络错误、服务器错误）时，触发器下方显示内联错误提示和**重试**按钮。重试按钮在请求进行中自动禁用，防止重复请求。已选 ID 不会丢失——仅显示标签回退为 `#id` 格式。
+
+### 加载态稳定
+
+触发器区域使用固定最小高度，避免在占位符、加载中、已选中状态切换时的布局跳动。
+
+### 无障碍
+
+- 触发器按钮：`aria-haspopup="dialog"`、动态 `aria-expanded`、`aria-label` 显示当前文本
+- 移除 badge 按钮：`aria-label="移除 {label}"`
+- 清除按钮：`aria-label="清除已选值"`
+- 错误提示：`role="alert"` 附带重试操作
+
+### 弹窗底部（响应式）
+
+窄屏（< `sm` 断点）下，弹窗底部按钮竖排显示（确定/取消在上，清空在下）。宽屏下显示为单行。
+
+### 弹窗内选中预览
+
+选中项目后，弹窗底部除了显示数量 badge，还会预览前 1-2 个已选名称。
+
 ## 浏览器兼容性
 
 ModalSelectFilter 使用现代 JavaScript 功能，兼容：
@@ -241,7 +276,7 @@ ModalSelectFilter::make('user_id')
 ```
 
 - `searchDebounce` — 延迟搜索请求，减少快速输入时的服务端压力
-- `minSearchLength` — 搜索词短于此长度时返回空结果，避免大表上的宽泛查询
+- `minSearchLength` — 搜索词短于此长度时显示"请至少输入 N 个字符"的提示而非空结果，避免大表上的宽泛查询。搜索框的 placeholder 也会体现最小长度要求。
 
 默认值可在 `config/filament-dcat-filters.php` 的 `remote_search.debounce` 和 `remote_search.min_length` 中全局配置。每个 filter 的设置会覆盖配置默认值。
 

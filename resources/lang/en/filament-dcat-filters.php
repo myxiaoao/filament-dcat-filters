@@ -71,6 +71,9 @@ return [
     'modal_select.fetch_error' => 'Failed to load selection',
     'modal_select.empty_state' => 'No records found',
     'modal_select.empty_state_description' => 'Try adjusting your search criteria',
+    'modal_select.search_too_short_heading' => 'Keep typing...',
+    'modal_select.search_too_short' => 'Please enter at least :min characters to search',
+    'modal_select.search_min_hint' => 'Type at least :min characters...',
 
     // Reset filters action
     'reset_filters.label' => 'Reset Filters',
@@ -201,6 +204,12 @@ return [
     'accessibility.error_occurred' => 'An error occurred',
     'accessibility.select_row' => 'Select row',
     'accessibility.select_option' => 'Select this option',
+    'accessibility.remove_item' => 'Remove :label',
+    'accessibility.clear_value' => 'Clear selected value',
+    'accessibility.open_modal' => 'Open :label selection dialog',
+    'accessibility.retry_fetch' => 'Retry loading labels',
+    'accessibility.fetch_error' => 'Failed to load labels. Click to retry.',
+    'accessibility.selected_summary' => ':count items selected',
 
     // AggregateFilter
     'aggregate.placeholder' => 'Enter value...',

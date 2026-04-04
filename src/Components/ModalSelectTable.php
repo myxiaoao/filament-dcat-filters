@@ -105,11 +105,29 @@ class ModalSelectTable extends Component implements HasActions, HasForms, HasTab
 
                 return $query;
             })
-            ->searchPlaceholder(__('filament-dcat-filters::filament-dcat-filters.like.placeholder'))
+            ->searchPlaceholder(
+                $minSearchLength > 1
+                    ? __('filament-dcat-filters::filament-dcat-filters.modal_select.search_min_hint', ['min' => $minSearchLength])
+                    : __('filament-dcat-filters::filament-dcat-filters.like.placeholder')
+            )
             ->striped()
             ->extremePaginationLinks()
-            ->emptyStateHeading(__('filament-dcat-filters::filament-dcat-filters.modal_select.empty_state'))
-            ->emptyStateDescription(__('filament-dcat-filters::filament-dcat-filters.modal_select.empty_state_description'));
+            ->emptyStateHeading(function () use ($minSearchLength): string {
+                $search = $this->getTableSearch();
+                if ($search !== null && $search !== '' && strlen($search) < $minSearchLength) {
+                    return __('filament-dcat-filters::filament-dcat-filters.modal_select.search_too_short_heading');
+                }
+
+                return __('filament-dcat-filters::filament-dcat-filters.modal_select.empty_state');
+            })
+            ->emptyStateDescription(function () use ($minSearchLength): string {
+                $search = $this->getTableSearch();
+                if ($search !== null && $search !== '' && strlen($search) < $minSearchLength) {
+                    return __('filament-dcat-filters::filament-dcat-filters.modal_select.search_too_short', ['min' => $minSearchLength]);
+                }
+
+                return __('filament-dcat-filters::filament-dcat-filters.modal_select.empty_state_description');
+            });
     }
 
     /**
