@@ -3,9 +3,11 @@
 use Carbon\Carbon;
 use Cooper\FilamentDcatFilters\Filters\BetweenFilter;
 use Cooper\FilamentDcatFilters\Filters\BooleanFilter;
+use Cooper\FilamentDcatFilters\Filters\ColumnCompareFilter;
 use Cooper\FilamentDcatFilters\Filters\ComparisonFilter;
 use Cooper\FilamentDcatFilters\Filters\DateComponentFilter;
 use Cooper\FilamentDcatFilters\Filters\EnumFilter;
+use Cooper\FilamentDcatFilters\Filters\ExistsFilter;
 use Cooper\FilamentDcatFilters\Filters\FilterGroup;
 use Cooper\FilamentDcatFilters\Filters\FindInSetFilter;
 use Cooper\FilamentDcatFilters\Filters\FullTextFilter;
@@ -20,6 +22,7 @@ use Cooper\FilamentDcatFilters\Filters\RangeFilter;
 use Cooper\FilamentDcatFilters\Filters\RegexFilter;
 use Cooper\FilamentDcatFilters\Filters\RelativeDateFilter;
 use Cooper\FilamentDcatFilters\Filters\ScopeFilter;
+use Cooper\FilamentDcatFilters\Filters\SoftDeleteFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -59,6 +62,31 @@ function freshQuery(string $table = 'test_items'): Builder
     if ($table !== 'test_items') {
         $model->setTable($table);
     }
+
+    return $model->newQuery();
+}
+
+/**
+ * Helper: create an Eloquent Builder for a model with a category() relationship.
+ * Needed for ExistsFilter tests that use whereHas('category', ...).
+ */
+function freshQueryWithCategory(): Builder
+{
+    $model = new class extends Model
+    {
+        protected $table = 'test_items';
+
+        public function category(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+        {
+            return $this->belongsTo(
+                (new class extends Model
+                {
+                    protected $table = 'test_categories';
+                })::class,
+                'category_id'
+            );
+        }
+    };
 
     return $model->newQuery();
 }
@@ -1389,5 +1417,136 @@ describe('FilterGroup Query', function () {
         expect($bindings)->toContain('%hello%')
             ->and($bindings)->toContain('%world%')
             ->and($bindings)->toHaveCount(2);
+    });
+});
+
+// ─── SoftDeleteFilter ────────────────────────────────────────────
+
+/**
+ * Helper: create an Eloquent Builder for a model with SoftDeletes.
+ */
+function freshSoftDeleteQuery(): Builder
+{
+    $model = new class extends Model
+    {
+        use \Illuminate\Database\Eloquent\SoftDeletes;
+
+        protected $table = 'test_items';
+    };
+
+    return $model->newQuery();
+}
+
+describe('SoftDeleteFilter Query', function () {
+    it('applies withTrashed when value is with', function () {
+        $filter = SoftDeleteFilter::make('trashed');
+        $query = applyFilterQuery($filter, freshSoftDeleteQuery(), ['trashed' => 'with']);
+
+        expect($query)->toBeInstanceOf(\Illuminate\Database\Eloquent\Builder::class);
+    });
+
+    it('does not modify query when value is empty', function () {
+        $filter = SoftDeleteFilter::make('trashed');
+        $query = applyFilterQuery($filter, freshSoftDeleteQuery(), ['trashed' => '']);
+        $sql = $query->toSql();
+
+        // Default SoftDeletes scope adds "deleted_at" is null, but empty value doesn't change anything
+        expect($query)->toBeInstanceOf(\Illuminate\Database\Eloquent\Builder::class);
+    });
+});
+
+// ─── ExistsFilter ────────────────────────────────────────────────
+
+describe('ExistsFilter Query', function () {
+    it('applies whereHas when exists is selected', function () {
+        $filter = ExistsFilter::make('has_category')
+            ->relationship('category')
+            ->select();
+        $query = applyFilterQuery($filter, freshQueryWithCategory(), ['value' => 'exists']);
+        $sql = $query->toSql();
+
+        expect($sql)->toContain('exists');
+    });
+
+    it('applies whereDoesntHave when not_exists is selected', function () {
+        $filter = ExistsFilter::make('no_category')
+            ->relationship('category')
+            ->select();
+        $query = applyFilterQuery($filter, freshQueryWithCategory(), ['value' => 'not_exists']);
+        $sql = $query->toSql();
+
+        expect($sql)->toContain('not exists');
+    });
+
+    it('does not modify query when value is empty', function () {
+        $filter = ExistsFilter::make('has_category')
+            ->relationship('category')
+            ->select();
+        $query = applyFilterQuery($filter, freshQuery(), ['value' => '']);
+        $sql = $query->toSql();
+
+        expect($sql)->not->toContain('exists');
+    });
+
+    it('applies whereHas in toggle mode when enabled', function () {
+        $filter = ExistsFilter::make('has_category')
+            ->relationship('category')
+            ->toggle();
+        $query = applyFilterQuery($filter, freshQueryWithCategory(), ['value' => true]);
+        $sql = $query->toSql();
+
+        expect($sql)->toContain('exists');
+    });
+});
+
+// ─── ColumnCompareFilter ─────────────────────────────────────────
+
+describe('ColumnCompareFilter Query', function () {
+    it('applies whereColumn in toggle mode', function () {
+        $filter = ColumnCompareFilter::make('profitable')
+            ->leftColumn('price')
+            ->rightColumn('cost')
+            ->gt();
+        $query = applyFilterQuery($filter, freshQuery(), ['enabled' => true]);
+        $sql = $query->toSql();
+
+        expect($sql)->toContain('"price"')
+            ->and($sql)->toContain('>')
+            ->and($sql)->toContain('"cost"');
+    });
+
+    it('applies whereColumn in select mode', function () {
+        $filter = ColumnCompareFilter::make('compare')
+            ->leftColumn('start_at')
+            ->rightColumn('end_at')
+            ->select();
+        $query = applyFilterQuery($filter, freshQuery(), ['operator' => '<=']);
+        $sql = $query->toSql();
+
+        expect($sql)->toContain('"start_at"')
+            ->and($sql)->toContain('<=')
+            ->and($sql)->toContain('"end_at"');
+    });
+
+    it('does not apply query for empty toggle', function () {
+        $filter = ColumnCompareFilter::make('test')
+            ->leftColumn('a')
+            ->rightColumn('b')
+            ->gt();
+        $query = applyFilterQuery($filter, freshQuery(), ['enabled' => false]);
+        $sql = $query->toSql();
+
+        expect($sql)->not->toContain('where');
+    });
+
+    it('rejects invalid operator in select mode', function () {
+        $filter = ColumnCompareFilter::make('test')
+            ->leftColumn('a')
+            ->rightColumn('b')
+            ->select();
+        $query = applyFilterQuery($filter, freshQuery(), ['operator' => 'DROP TABLE']);
+        $sql = $query->toSql();
+
+        expect($sql)->not->toContain('where');
     });
 });

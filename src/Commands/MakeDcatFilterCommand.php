@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 class MakeDcatFilterCommand extends Command
 {
     protected $signature = 'make:dcat-filter {name : The name of the filter class}
-                            {--type=basic : The filter type (basic, like, in, comparison, boolean, null, enum, range, regex, fulltext, json, between, scope, date-component, select-table, modal-select, hidden, relative-date, cascading-select, find-in-set, input-mask, geo-location, filter-group)}
+                            {--type=basic : The filter type (basic, like, in, comparison, boolean, null, enum, range, regex, fulltext, json, between, scope, date-component, select-table, modal-select, hidden, relative-date, cascading-select, find-in-set, input-mask, geo-location, filter-group, soft-delete, exists, aggregate, column-compare)}
                             {--force : Overwrite existing file}';
 
     protected $description = 'Create a new Dcat-style Filament filter class';
@@ -38,6 +38,10 @@ class MakeDcatFilterCommand extends Command
         'input-mask' => 'Cooper\FilamentDcatFilters\Filters\InputMaskFilter',
         'geo-location' => 'Cooper\FilamentDcatFilters\Filters\GeoLocationFilter',
         'filter-group' => 'Cooper\FilamentDcatFilters\Filters\FilterGroup',
+        'soft-delete' => 'Cooper\FilamentDcatFilters\Filters\SoftDeleteFilter',
+        'exists' => 'Cooper\FilamentDcatFilters\Filters\ExistsFilter',
+        'aggregate' => 'Cooper\FilamentDcatFilters\Filters\AggregateFilter',
+        'column-compare' => 'Cooper\FilamentDcatFilters\Filters\ColumnCompareFilter',
     ];
 
     public function handle(Filesystem $filesystem): int

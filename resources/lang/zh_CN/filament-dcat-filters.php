@@ -176,6 +176,17 @@ return [
     'geo.mi' => '英里',
     'geo.m' => '米',
 
+    // SoftDeleteFilter
+    'soft_delete.without_trashed' => '不含已删除',
+    'soft_delete.only_trashed' => '仅已删除',
+    'soft_delete.with_trashed' => '包含已删除',
+    'soft_delete.all' => '全部',
+
+    // ExistsFilter
+    'exists.exists' => '存在',
+    'exists.not_exists' => '不存在',
+    'exists.all' => '全部',
+
     // Accessibility
     'accessibility.selection_updated' => '选择已更新',
     'accessibility.selection_cleared' => '选择已清空',
@@ -190,5 +201,11 @@ return [
     'accessibility.error_occurred' => '发生错误',
     'accessibility.select_row' => '选择此行',
     'accessibility.select_option' => '选择此选项',
+
+    // AggregateFilter
+    'aggregate.placeholder' => '请输入数值...',
+
+    // ColumnCompareFilter
+    'column_compare.placeholder' => '选择操作符...',
 
 ];

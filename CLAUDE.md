@@ -19,8 +19,10 @@ composer analyse           # vendor/bin/phpstan analyse
 
 ```
 src/
-├── Filters/          # 22 个 Filter 类（*Filter.php）
-├── Concerns/         # 15 个 Trait（Has*.php / Persists* / Syncs*）
+├── Filters/          # 26 个 Filter 类（*Filter.php）
+├── Concerns/         # 17 个 Trait（Has*.php / Persists* / Syncs*）
+├── State/            # FilterStateDescriptor + StateType（状态协议）
+├── Exceptions/       # UnsupportedDatabaseDriverException
 ├── Actions/          # ResetFiltersAction
 ├── Commands/         # MakeDcatFilterCommand
 ├── Components/       # ModalSelectTable Livewire 组件
@@ -50,6 +52,8 @@ docs/                 # en/, zh_CN/ 用户文档; plans/ 实施计划
 | 数据库驱动差异 | `src/Concerns/HasDatabaseDriver.php` |
 | Scope badge 计数 | `src/Concerns/HasScopeBadgeCounts.php` |
 | 持久化（session/localStorage）| `src/Concerns/PersistsFiltersIn*.php` |
+| 数据库驱动兼容/fail-fast | `src/Concerns/HasDatabaseDriver.php` |
+| 状态协议/能力声明 | `src/State/FilterStateDescriptor.php` |
 
 ## Conventions
 

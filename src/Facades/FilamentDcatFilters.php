@@ -31,6 +31,10 @@ use Illuminate\Support\Facades\Facade;
  * @method static \Cooper\FilamentDcatFilters\Filters\FindInSetFilter findInSetFilter(string $name)
  * @method static \Cooper\FilamentDcatFilters\Filters\FilterGroup filterGroup(string $name)
  * @method static \Cooper\FilamentDcatFilters\Filters\HiddenFilter hiddenFilter(string $name)
+ * @method static \Cooper\FilamentDcatFilters\Filters\SoftDeleteFilter softDeleteFilter(string $name)
+ * @method static \Cooper\FilamentDcatFilters\Filters\ExistsFilter existsFilter(string $name)
+ * @method static \Cooper\FilamentDcatFilters\Filters\AggregateFilter aggregateFilter(string $name)
+ * @method static \Cooper\FilamentDcatFilters\Filters\ColumnCompareFilter columnCompareFilter(string $name)
  */
 class FilamentDcatFilters extends Facade
 {

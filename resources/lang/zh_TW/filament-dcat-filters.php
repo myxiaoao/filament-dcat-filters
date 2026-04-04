@@ -191,4 +191,21 @@ return [
     'accessibility.select_row' => '選擇此列',
     'accessibility.select_option' => '選擇此選項',
 
+    // SoftDeleteFilter
+    'soft_delete.without_trashed' => '不含已刪除',
+    'soft_delete.only_trashed' => '僅已刪除',
+    'soft_delete.with_trashed' => '包含已刪除',
+    'soft_delete.all' => '全部',
+
+    // ExistsFilter
+    'exists.exists' => '存在',
+    'exists.not_exists' => '不存在',
+    'exists.all' => '全部',
+
+    // AggregateFilter
+    'aggregate.placeholder' => '請輸入數值...',
+
+    // ColumnCompareFilter
+    'column_compare.placeholder' => '選擇操作符...',
+
 ];

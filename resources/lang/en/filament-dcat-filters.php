@@ -176,6 +176,17 @@ return [
     'geo.mi' => 'mi',
     'geo.m' => 'm',
 
+    // SoftDeleteFilter
+    'soft_delete.without_trashed' => 'Without Trashed',
+    'soft_delete.only_trashed' => 'Only Trashed',
+    'soft_delete.with_trashed' => 'With Trashed',
+    'soft_delete.all' => 'All',
+
+    // ExistsFilter
+    'exists.exists' => 'Exists',
+    'exists.not_exists' => 'Does Not Exist',
+    'exists.all' => 'All',
+
     // Accessibility
     'accessibility.selection_updated' => 'Selection updated',
     'accessibility.selection_cleared' => 'Selection cleared',
@@ -190,5 +201,11 @@ return [
     'accessibility.error_occurred' => 'An error occurred',
     'accessibility.select_row' => 'Select row',
     'accessibility.select_option' => 'Select this option',
+
+    // AggregateFilter
+    'aggregate.placeholder' => 'Enter value...',
+
+    // ColumnCompareFilter
+    'column_compare.placeholder' => 'Select operator...',
 
 ];

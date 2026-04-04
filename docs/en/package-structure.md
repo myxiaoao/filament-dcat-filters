@@ -190,7 +190,7 @@ packages/filament-dcat-filters/
 │   ├── FilamentDcatFilters.php (Main class)
 │   ├── Facades/
 │   │   └── FilamentDcatFilters.php (Facade class)
-│   ├── Filters/ (22 filter classes)
+│   ├── Filters/ (26 filter classes)
 │   │   ├── BetweenFilter.php
 │   │   ├── BooleanFilter.php
 │   │   ├── CascadingSelectFilter.php
@@ -215,7 +215,7 @@ packages/filament-dcat-filters/
 │   │   └── SelectTableFilter.php
 │   ├── Commands/
 │   │   └── MakeDcatFilterCommand.php
-│   ├── Concerns/ (16 traits)
+│   ├── Concerns/ (17 traits)
 │   │   ├── HasColumnName.php
 │   │   ├── HasDatabaseDriver.php
 │   │   ├── HasFilterExportImport.php
@@ -249,7 +249,7 @@ packages/filament-dcat-filters/
 │   └── zh_CN/ (Chinese documentation)
 ├── tests/
 │   ├── Feature/
-│   │   ├── Filters/ (22 filter test files)
+│   │   ├── Filters/ (26 filter test files)
 │   │   └── Concerns/ (6 concern test files)
 │   └── Unit/
 ├── phpstan.neon (✅ Added)
@@ -292,7 +292,7 @@ composer analyse         # Static analysis
    - Created `Facades\FilamentDcatFilters` Facade class
    - Registered as singleton in ServiceProvider
    - Configured alias in composer.json
-   - Provides 24 convenient methods (including `version()`, `config()`, and 22 filter factory methods)
+   - Provides 28 convenient methods (including `version()`, `config()`, and 26 filter factory methods)
 
 3. ✅ **Code Formatting**: Running `composer format` successfully fixed 4 code style issues in 13 files
    - Final result: **PASS 15 files** (including newly added Facade files)

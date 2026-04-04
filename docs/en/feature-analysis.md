@@ -669,3 +669,35 @@ The filament-dcat-filters package has achieved **100% implementation** of all pl
 5. **Test Coverage**: 461 tests with 630 assertions
 
 The package provides a comprehensive filtering solution that goes beyond Dcat Admin's original features while maintaining API compatibility and ease of use.
+
+---
+
+## New Filter Types (v1.5.0)
+
+### SoftDeleteFilter
+
+Built-in control for soft-deleted record visibility. See [soft-delete-filter.md](soft-delete-filter.md).
+
+### ExistsFilter
+
+Filter by whether related records exist (`whereHas` / `whereDoesntHave`). See [exists-filter.md](exists-filter.md).
+
+### AggregateFilter
+
+Filter by aggregate values of related records (`withCount` + `having`). See [aggregate-filter.md](aggregate-filter.md).
+
+### ColumnCompareFilter
+
+Filter by comparing two database columns (`whereColumn`). See [column-compare-filter.md](column-compare-filter.md).
+
+---
+
+## Infrastructure (v1.5.0)
+
+### FilterStateDescriptor
+
+Declarative state protocol for all filters. Each filter implements `describeState()` returning field names, state type, capabilities, and database support. See [capability-matrix.md](capability-matrix.md).
+
+### Database Driver Fail-Fast
+
+Filters that generate driver-specific SQL (RegexFilter, FindInSetFilter) throw `UnsupportedDatabaseDriverException` on unsupported drivers. FullTextFilter runs in degraded mode on SQLite with a warning log.

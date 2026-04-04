@@ -4,12 +4,15 @@
 
 | Filter | State Type | Fields | Relationship | Multiple | Indicator | Database Support | Limitations |
 |--------|-----------|--------|:------------:|:--------:|:---------:|----------------|-------------|
+| AggregateFilter | single | value | — | — | ✓ | mysql, pgsql, sqlite | — |
 | BetweenFilter | range | from, to | — | — | ✓ | mysql, pgsql, sqlite | — |
 | BooleanFilter | single | value | — | — | ✓ | mysql, pgsql, sqlite | — |
 | CascadingSelectFilter | composite | — | — | — | ✓ | mysql, pgsql, sqlite | — |
+| ColumnCompareFilter | toggle | enabled | — | — | ✓ | mysql, pgsql, sqlite | — |
 | ComparisonFilter | single | value | — | — | ✓ | mysql, pgsql, sqlite | — |
 | DateComponentFilter | single | value | — | — | ✓ | mysql, pgsql, sqlite | — |
 | EnumFilter | single | value | — | — | ✓ | mysql, pgsql, sqlite | — |
+| ExistsFilter | toggle | value | — | — | ✓ | mysql, pgsql, sqlite | — |
 | FilterGroup | composite | — | — | — | ✓ | mysql, pgsql, sqlite | — |
 | FindInSetFilter | single | value | — | ✓ | ✓ | mysql, pgsql | No native FIND_IN_SET on SQLite |
 | FullTextFilter | keyed | search | — | — | ✓ | mysql, pgsql | SQLite falls back to LIKE-based search |
@@ -26,3 +29,4 @@
 | RelativeDateFilter | keyed | preset | — | — | ✓ | mysql, pgsql, sqlite | — |
 | ScopeFilter | keyed | scope | — | — | ✓ | mysql, pgsql, sqlite | — |
 | SelectTableFilter | single | value | ✓ | — | ✓ | mysql, pgsql, sqlite | — |
+| SoftDeleteFilter | keyed | trashed | — | — | ✓ | mysql, pgsql, sqlite | — |

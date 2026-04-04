@@ -201,4 +201,36 @@ class FilamentDcatFilters
     {
         return Filters\HiddenFilter::make($name);
     }
+
+    /**
+     * Quick access to create a Soft Delete Filter.
+     */
+    public function softDeleteFilter(string $name): Filters\SoftDeleteFilter
+    {
+        return Filters\SoftDeleteFilter::make($name);
+    }
+
+    /**
+     * Quick access to create an Exists Filter.
+     */
+    public function existsFilter(string $name): Filters\ExistsFilter
+    {
+        return Filters\ExistsFilter::make($name);
+    }
+
+    /**
+     * Quick access to create an Aggregate Filter.
+     */
+    public function aggregateFilter(string $name): Filters\AggregateFilter
+    {
+        return Filters\AggregateFilter::make($name);
+    }
+
+    /**
+     * Quick access to create a Column Compare Filter.
+     */
+    public function columnCompareFilter(string $name): Filters\ColumnCompareFilter
+    {
+        return Filters\ColumnCompareFilter::make($name);
+    }
 }

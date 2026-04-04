@@ -4,12 +4,15 @@
 
 | 过滤器 | 状态类型 | 字段 | 关联关系 | 多选 | 指示器 | 数据库支持 | 限制 |
 |--------|---------|------|:-------:|:----:|:------:|-----------|------|
+| AggregateFilter | single | value | — | — | ✓ | mysql, pgsql, sqlite | — |
 | BetweenFilter | range | from, to | — | — | ✓ | mysql, pgsql, sqlite | — |
 | BooleanFilter | single | value | — | — | ✓ | mysql, pgsql, sqlite | — |
 | CascadingSelectFilter | composite | 动态（按级别） | — | — | ✓ | mysql, pgsql, sqlite | — |
+| ColumnCompareFilter | toggle/keyed | enabled/operator | — | — | ✓ | mysql, pgsql, sqlite | — |
 | ComparisonFilter | single | value | — | — | ✓ | mysql, pgsql, sqlite | — |
 | DateComponentFilter | single | value | — | — | ✓ | mysql, pgsql, sqlite | — |
 | EnumFilter | single/multiple | value/values | — | ✓（可选） | ✓ | mysql, pgsql, sqlite | — |
+| ExistsFilter | toggle/single | value | — | — | ✓ | mysql, pgsql, sqlite | — |
 | FilterGroup | composite | 动态（按子过滤器） | — | — | ✓ | mysql, pgsql, sqlite | — |
 | FindInSetFilter | single | value | — | ✓ | ✓ | mysql, pgsql | SQLite 无原生 FIND_IN_SET |
 | FullTextFilter | keyed | search | — | — | ✓ | mysql, pgsql | SQLite 降级为 LIKE 搜索 |
@@ -26,6 +29,7 @@
 | RelativeDateFilter | keyed | preset | — | — | ✓ | mysql, pgsql, sqlite | — |
 | ScopeFilter | keyed | scope | — | — | ✓ | mysql, pgsql, sqlite | — |
 | SelectTableFilter | single/multiple | value/values | ✓ | ✓（可选） | ✓ | mysql, pgsql, sqlite | — |
+| SoftDeleteFilter | keyed/toggle | trashed | — | — | ✓ | mysql, pgsql, sqlite | — |
 
 ## 状态类型说明
 

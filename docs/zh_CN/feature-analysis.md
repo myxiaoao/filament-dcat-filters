@@ -669,3 +669,35 @@ filament-dcat-filters 包已实现**所有计划功能的 100%**：
 5. **测试覆盖**：461 个测试，630 个断言
 
 该包提供了全面的过滤解决方案，超越了 Dcat Admin 的原有功能，同时保持 API 兼容性和易用性。
+
+---
+
+## 新增过滤器类型 (v1.5.0)
+
+### SoftDeleteFilter
+
+内置软删除记录可见性控制。详见 [soft-delete-filter.md](soft-delete-filter.md)。
+
+### ExistsFilter
+
+按关联记录是否存在过滤（`whereHas` / `whereDoesntHave`）。详见 [exists-filter.md](exists-filter.md)。
+
+### AggregateFilter
+
+按关联记录聚合值过滤（`withCount` + `having`）。详见 [aggregate-filter.md](aggregate-filter.md)。
+
+### ColumnCompareFilter
+
+按两个数据库列的关系过滤（`whereColumn`）。详见 [column-compare-filter.md](column-compare-filter.md)。
+
+---
+
+## 基础设施 (v1.5.0)
+
+### FilterStateDescriptor
+
+所有过滤器的声明式状态协议。每个过滤器实现 `describeState()` 返回字段名、状态类型、能力和数据库支持。详见 [capability-matrix.md](capability-matrix.md)。
+
+### 数据库驱动 Fail-Fast
+
+生成驱动特定 SQL 的过滤器（RegexFilter、FindInSetFilter）在不支持的驱动上抛出 `UnsupportedDatabaseDriverException`。FullTextFilter 在 SQLite 上以降级模式运行并记录 warning 日志。

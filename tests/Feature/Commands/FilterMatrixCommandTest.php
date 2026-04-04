@@ -52,7 +52,7 @@ it('lists all 22 filters in the matrix', function () {
         ->assertExitCode(0);
 
     $data = json_decode(file_get_contents($outputPath), true);
-    expect($data)->toHaveCount(22);
+    expect($data)->toHaveCount(26);
 
     @unlink($outputPath);
 });
