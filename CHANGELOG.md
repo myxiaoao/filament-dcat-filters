@@ -2,6 +2,63 @@
 
 All notable changes to `filament-dcat-filters` will be documented in this file.
 
+## v2.1.0 - 2026-04-07
+
+### Fixed — 4 Functional Defects
+
+- **[High] LocalStorage restore broken** — `restoreFiltersFromLocalStorage()` was missing Livewire `#[On]` attribute, so dispatched events never reached the PHP method. Added `#[On('restoreFiltersFromLocalStorage')]` to complete the event chain.
+- **[High] ModalSelectFilter initial state not synced** — when filters were restored via URL, session, or default state, the trigger UI showed empty while the query was active. Alpine `init()` now reads the hidden input value and fetches labels; the child Livewire component receives `$getState()` instead of a hardcoded empty array.
+- **[Medium] Reset cleared all resources' LocalStorage** — `ResetFiltersAction` dispatched a generic event without a key, causing all `filament-dcat-filters:*` localStorage entries to be deleted. Now passes the component-specific key; JS clears only that key.
+- **[Medium] FullTextFilter SQL error with relation columns in fulltext mode** — `searchIn(['title', 'department.name'])->fullText()` passed dot-path columns directly into `MATCH()` / `to_tsvector()`. New `applyFullTextWithRelations()` separates local columns (fulltext) from relation columns (LIKE + `whereHas`).
+
+### Added — ModalSelectFilter UX Enhancements
+
+- **Selection summary** — multi-select trigger shows first 2 labels as badges with `+N` overflow count; single-select shows label with full-text tooltip on truncation
+- **Auto-confirm on select** — new `autoConfirmOnSelect()` method: in single-select mode, selecting a row immediately confirms and closes the modal (no effect in multi-select)
+- **Error state with retry** — `fetchLabels` failures show inline error message with a retry button (disabled during loading to prevent duplicate requests)
+- **Loading stability** — trigger area uses fixed `min-h-[2rem]` to prevent layout shifts between placeholder / loading / selected states
+- **Auto-focus search** — modal search input is automatically focused on open via `requestAnimationFrame`
+- **Search too short hint** — when `minSearchLength > 1`, empty state shows "Please enter at least N characters" instead of generic "No records found"; search placeholder also reflects the minimum
+- **Clear notice** — clearing selection shows a 2-second transient "Selection cleared" message (`role="status"`)
+- **Responsive modal footer** — buttons stack vertically on mobile (`flex-col-reverse`), single row on `sm:+`
+- **Selection preview in modal** — footer shows count badge plus first 1–2 selected names with full-list tooltip
+- **Overflow tooltip** — `+N` badge and truncated labels show complete text on hover
+
+### Added — Accessibility
+
+- Trigger button: `title` with localized "Open {label} selection dialog"
+- Remove badge buttons: dynamic `aria-label="Remove {label}"` and `title`
+- Clear button: `aria-label="Clear selected value"` and `title`
+- Error alert: `role="alert"` with retry action
+- 6 new accessibility translation keys across en / zh_CN / zh_TW
+
+### Added — Tooling
+
+- **PHPStan level 5** — new `phpstan.neon.dist` with larastan + deprecation-rules; baseline locks 200 framework-compatibility errors; 58 fixable errors resolved (`nullCoalesce.expr`, `function.alreadyNarrowedType`, `argument.type`, etc.)
+- **`composer analyse` fixed** — script now works out of the box (previously failed with no analysis paths)
+
+### Changed
+
+- `PersistsFiltersInLocalStorage::getLocalStorageKey()` visibility changed from `protected` to `public` (needed by `ResetFiltersAction`)
+- `ModalSelectTable::searchDebounce()` now passes `(string)` cast to satisfy Filament's type signature
+- `ModalSelectTable::emptyStateHeading()` and `emptyStateDescription()` are now dynamic closures that detect search-too-short state
+
+### Documentation
+
+- ModalSelectFilter docs (en + zh_CN) — new "UI Behavior" section covering all UX enhancements
+- CLAUDE.md — added ModalSelect protocol boundaries, debugging guide entries, verification checklist items
+- `.claude/rules/php-conventions.md` — added Blade view conventions
+
+### Tests
+
+- Total: **1115 tests** with **1680 assertions** (all passing)
+- New: ModalSelectTable Livewire integration tests (26 tests) — mount, single/multi select, toggle, auto-confirm, confirm/cancel/clear, query builder, full lifecycle, table configuration
+- New: FullTextFilter relation column separation tests (2 tests)
+- New: LocalStorage `#[On]` attribute verification test
+- New: ResetFiltersAction `resolveLocalStorageKey` tests (2 tests)
+- New: ModalSelectFilter `autoConfirmOnSelect` tests (4 tests)
+- New: Accessibility translation tests for zh_TW + 6 new keys across en/zh_CN/zh_TW
+
 ## v2.0.0 - 2026-04-04
 
 ### Breaking Changes
