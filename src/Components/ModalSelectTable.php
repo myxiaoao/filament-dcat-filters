@@ -52,6 +52,8 @@ class ModalSelectTable extends Component implements HasActions, HasForms, HasTab
 
     public int $minSearchLength = 1;
 
+    public bool $autoConfirmOnSelect = false;
+
     /**
      * Mount the component.
      */
@@ -65,7 +67,8 @@ class ModalSelectTable extends Component implements HasActions, HasForms, HasTab
         array $selected = [],
         string $filterKey = '',
         int $searchDebounce = 300,
-        int $minSearchLength = 1
+        int $minSearchLength = 1,
+        bool $autoConfirmOnSelect = false
     ): void {
         $this->modelClass = $modelClass;
         $this->titleColumn = $titleColumn;
@@ -78,6 +81,7 @@ class ModalSelectTable extends Component implements HasActions, HasForms, HasTab
         $this->selectedSet = array_flip($this->selected);
         $this->searchDebounce = $searchDebounce;
         $this->minSearchLength = $minSearchLength;
+        $this->autoConfirmOnSelect = $autoConfirmOnSelect;
     }
 
     /**
@@ -95,7 +99,7 @@ class ModalSelectTable extends Component implements HasActions, HasForms, HasTab
             ->paginated(config('filament-dcat-filters.modal_select.pagination_options', [10, 25, 50]))
             ->defaultPaginationPageOption(config('filament-dcat-filters.modal_select.default_pagination', 10))
             ->searchable($this->searchColumns ? true : false)
-            ->searchDebounce($this->searchDebounce)
+            ->searchDebounce((string) $this->searchDebounce)
             ->modifyQueryUsing(function (Builder $query) use ($minSearchLength) {
                 // Enforce minimum search length: if search term is too short, exclude all results
                 $search = $this->getTableSearch();
@@ -163,6 +167,7 @@ class ModalSelectTable extends Component implements HasActions, HasForms, HasTab
         // Add selection column (first column)
         $columns[] = ViewColumn::make('_select')
             ->label('')
+            /** @phpstan-ignore argument.type (view-string is a larastan type constraint) */
             ->view('filament-dcat-filters::components.select-column')
             ->state(fn ($record) => [
                 'key' => $record->{$this->keyColumn},
@@ -220,6 +225,11 @@ class ModalSelectTable extends Component implements HasActions, HasForms, HasTab
             $this->selected = [$key];
         }
         $this->selectedSet = array_flip($this->selected);
+
+        // Auto-confirm in single-select mode when enabled
+        if ($this->autoConfirmOnSelect && ! $this->multiple) {
+            $this->confirm();
+        }
     }
 
     /**
@@ -263,6 +273,7 @@ class ModalSelectTable extends Component implements HasActions, HasForms, HasTab
      */
     public function render(): View
     {
+        /** @phpstan-ignore argument.type (view-string is a larastan type constraint) */
         return view('filament-dcat-filters::components.modal-select-table');
     }
 }

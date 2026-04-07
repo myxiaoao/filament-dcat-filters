@@ -32,6 +32,12 @@
 - 可配置的默认值放 `config/filament-dcat-filters.php`，不硬编码
 - 通过 `config('filament-dcat-filters.xxx')` 读取
 
+## Blade 视图
+
+- ModalSelectFilter 视图分两层：`filters/modal-select.blade.php`（触发器 + Alpine 状态）和 `components/modal-select-table.blade.php`（弹窗内容）
+- 修改表现层（class、aria、文案）安全；不要改 hidden input 的 `wire:model` 绑定和值格式（逗号分隔）
+- 新增 JS 行为用 `Livewire.on()` 监听，不要发明新的自定义事件名
+
 ## 代码风格
 
 - 遵循 Laravel preset（Pint），提交前运行 `composer format`

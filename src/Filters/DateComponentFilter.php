@@ -52,6 +52,7 @@ class DateComponentFilter extends Filter
             $years[$i] = (string) $i;
         }
 
+        /** @phpstan-ignore nullCoalesce.expr (Filament's getLabel() can return null at runtime) */
         $labelResolver = fn (): string => $this->getLabel() ?? __('filament-dcat-filters::filament-dcat-filters.date_component.year');
 
         $select = Select::make('value')
@@ -92,6 +93,7 @@ class DateComponentFilter extends Filter
             '12' => __('filament-dcat-filters::filament-dcat-filters.months.12'),
         ];
 
+        /** @phpstan-ignore nullCoalesce.expr (Filament's getLabel() can return null at runtime) */
         $labelResolver = fn (): string => $this->getLabel() ?? __('filament-dcat-filters::filament-dcat-filters.date_component.month');
 
         $select = Select::make('value')
@@ -123,6 +125,7 @@ class DateComponentFilter extends Filter
             $days[$day] = $day;
         }
 
+        /** @phpstan-ignore nullCoalesce.expr (Filament's getLabel() can return null at runtime) */
         $labelResolver = fn (): string => $this->getLabel() ?? __('filament-dcat-filters::filament-dcat-filters.date_component.day');
 
         $select = Select::make('value')
@@ -174,6 +177,7 @@ class DateComponentFilter extends Filter
                 return [];
             }
 
+            /** @phpstan-ignore nullCoalesce.expr (Filament's getLabel() can return null at runtime) */
             $label = $this->getLabel() ?? ucfirst($this->component);
 
             return [

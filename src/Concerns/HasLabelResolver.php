@@ -6,6 +6,7 @@ trait HasLabelResolver
 {
     protected function resolveLabel(): string
     {
+        /** @phpstan-ignore nullCoalesce.expr (Filament's getLabel() can return null at runtime) */
         return $this->getLabel() ?? ucfirst(str_replace('_', ' ', $this->getName()));
     }
 

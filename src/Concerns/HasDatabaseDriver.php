@@ -59,6 +59,7 @@ trait HasDatabaseDriver
      */
     protected function assertDriverSupported(Builder $query): void
     {
+        /** @phpstan-ignore function.alreadyNarrowedType (defensive check — trait may be used without HasFilterState) */
         if (! method_exists($this, 'getStateDescriptor')) {
             return;
         }

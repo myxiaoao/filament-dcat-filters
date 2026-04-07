@@ -32,6 +32,7 @@ trait HasRangeQuery
         }
 
         // Only 'to' value is provided
+        /** @phpstan-ignore booleanNot.alwaysTrue (explicit guard for readability) */
         if ($fromEmpty && ! $toEmpty) {
             return $query->where($column, '<=', $to);
         }

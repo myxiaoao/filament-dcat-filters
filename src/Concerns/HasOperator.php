@@ -24,6 +24,7 @@ trait HasOperator
 
         $this->operator = $operator;
 
+        /** @phpstan-ignore function.alreadyNarrowedType (defensive check — trait may be used without configureQuery) */
         if (method_exists($this, 'configureQuery')) {
             $this->configureQuery();
         }

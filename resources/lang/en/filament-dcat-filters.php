@@ -74,6 +74,7 @@ return [
     'modal_select.search_too_short_heading' => 'Keep typing...',
     'modal_select.search_too_short' => 'Please enter at least :min characters to search',
     'modal_select.search_min_hint' => 'Type at least :min characters...',
+    'modal_select.cleared_notice' => 'Selection cleared — you can re-select anytime',
 
     // Reset filters action
     'reset_filters.label' => 'Reset Filters',

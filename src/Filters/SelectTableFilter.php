@@ -44,7 +44,7 @@ class SelectTableFilter extends Filter
             ->fields($this->multiple ? ['values'] : ['value'])
             ->type($this->multiple ? StateType::Multiple : StateType::Single)
             ->emptyWhen(fn (array $data) => $this->multiple
-                ? (! is_array($data['values'] ?? null) || count($data['values'] ?? []) === 0)
+                ? (! is_array($data['values'] ?? null) || count($data['values'] ?? []) === 0) /** @phpstan-ignore-line nullCoalesce.offset */
                 : ($data['value'] ?? '') === '')
             ->capabilities(array_filter(['relationship', 'indicator', $this->multiple ? 'multiple' : null]))
             ->databaseSupport(['mysql', 'pgsql', 'sqlite']);

@@ -36,6 +36,7 @@ class BetweenFilter extends RangeFilter
      */
     protected function buildBetweenForm(): void
     {
+        /** @phpstan-ignore nullCoalesce.expr (Filament's getLabel() can return null at runtime) */
         $labelResolver = fn (): string => $this->getLabel() ?? ucfirst($this->getName());
 
         $fromInput = TextInput::make('from')

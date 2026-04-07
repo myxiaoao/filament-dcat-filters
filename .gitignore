@@ -14,7 +14,6 @@ docs/superpowers/
 .php-cs-fixer.cache
 composer.lock
 phpstan.neon
-phpstan-baseline.neon
 Homestead.json
 Homestead.yaml
 auth.json

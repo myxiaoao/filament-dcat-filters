@@ -32,7 +32,23 @@
                         $overflow = count($selected) - $previewCount;
                     @endphp
                     @if(!empty($previewLabels))
-                        <span class="text-xs text-primary-600 dark:text-primary-300 truncate max-w-48">
+                        @php
+                            $allPreviewLabels = [];
+                            if ($modelClass && class_exists($modelClass)) {
+                                try {
+                                    $allPreviewLabels = $modelClass::query()
+                                        ->whereIn($keyColumn, $selected)
+                                        ->pluck($titleColumn)
+                                        ->toArray();
+                                } catch (\Throwable) {
+                                    $allPreviewLabels = $previewLabels;
+                                }
+                            }
+                        @endphp
+                        <span
+                            class="text-xs text-primary-600 dark:text-primary-300 truncate max-w-48"
+                            title="{{ implode(', ', $allPreviewLabels) }}"
+                        >
                             ({{ implode(', ', $previewLabels) }}{{ $overflow > 0 ? ' …' : '' }})
                         </span>
                     @endif

@@ -1,0 +1,721 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Trait Cooper\\FilamentDcatFilters\\Concerns\\HasFilterExportImport is used zero times and is not analysed\.$#'
+			identifier: trait.unused
+			count: 1
+			path: src/Concerns/HasFilterExportImport.php
+
+		-
+			message: '#^Trait Cooper\\FilamentDcatFilters\\Concerns\\HasFilterPresets is used zero times and is not analysed\.$#'
+			identifier: trait.unused
+			count: 1
+			path: src/Concerns/HasFilterPresets.php
+
+		-
+			message: '#^Trait Cooper\\FilamentDcatFilters\\Concerns\\HasResetFilters is used zero times and is not analysed\.$#'
+			identifier: trait.unused
+			count: 1
+			path: src/Concerns/HasResetFilters.php
+
+		-
+			message: '#^Trait Cooper\\FilamentDcatFilters\\Concerns\\HasScopeBadgeCounts is used zero times and is not analysed\.$#'
+			identifier: trait.unused
+			count: 1
+			path: src/Concerns/HasScopeBadgeCounts.php
+
+		-
+			message: '#^Trait Cooper\\FilamentDcatFilters\\Concerns\\HasSortPresets is used zero times and is not analysed\.$#'
+			identifier: trait.unused
+			count: 1
+			path: src/Concerns/HasSortPresets.php
+
+		-
+			message: '#^Trait Cooper\\FilamentDcatFilters\\Concerns\\PersistsFiltersInLocalStorage is used zero times and is not analysed\.$#'
+			identifier: trait.unused
+			count: 1
+			path: src/Concerns/PersistsFiltersInLocalStorage.php
+
+		-
+			message: '#^Trait Cooper\\FilamentDcatFilters\\Concerns\\PersistsFiltersInSession is used zero times and is not analysed\.$#'
+			identifier: trait.unused
+			count: 1
+			path: src/Concerns/PersistsFiltersInSession.php
+
+		-
+			message: '#^Trait Cooper\\FilamentDcatFilters\\Concerns\\SyncsFiltersToUrl is used zero times and is not analysed\.$#'
+			identifier: trait.unused
+			count: 1
+			path: src/Concerns/SyncsFiltersToUrl.php
+
+		-
+			message: '#^Trait Cooper\\FilamentDcatFilters\\Concerns\\SyncsFiltersToUrlWithoutHistory is used zero times and is not analysed\.$#'
+			identifier: trait.unused
+			count: 1
+			path: src/Concerns/SyncsFiltersToUrlWithoutHistory.php
+
+		-
+			message: '#^Access to constant Footer on an unknown class Filament\\Tables\\Enums\\FiltersResetActionPosition\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/FilamentDcatFiltersServiceProvider.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Tables\\Table\:\:filtersResetActionPosition\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/FilamentDcatFiltersServiceProvider.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:hiddenLabel\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: src/Filters/AdvancedJsonFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:prefix\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Filters/AdvancedJsonFilter.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\ConnectionInterface\:\:getDriverName\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Filters/AdvancedJsonFilter.php
+
+		-
+			message: '''
+				#^Call to deprecated method form\(\) of class Filament\\Tables\\Filters\\BaseFilter\:
+				Use `schema\(\)` instead\.$#
+			'''
+			identifier: method.deprecated
+			count: 2
+			path: src/Filters/AdvancedJsonFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:hiddenLabel\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: src/Filters/AggregateFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:prefix\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Filters/AggregateFilter.php
+
+		-
+			message: '''
+				#^Call to deprecated method form\(\) of class Filament\\Tables\\Filters\\BaseFilter\:
+				Use `schema\(\)` instead\.$#
+			'''
+			identifier: method.deprecated
+			count: 1
+			path: src/Filters/AggregateFilter.php
+
+		-
+			message: '''
+				#^Call to deprecated method form\(\) of class Filament\\Tables\\Filters\\BaseFilter\:
+				Use `schema\(\)` instead\.$#
+			'''
+			identifier: method.deprecated
+			count: 1
+			path: src/Filters/BetweenFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:hiddenLabel\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: src/Filters/BooleanFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:prefix\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Filters/BooleanFilter.php
+
+		-
+			message: '''
+				#^Call to deprecated method form\(\) of class Filament\\Tables\\Filters\\BaseFilter\:
+				Use `schema\(\)` instead\.$#
+			'''
+			identifier: method.deprecated
+			count: 1
+			path: src/Filters/BooleanFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:hiddenLabel\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: src/Filters/CascadingSelectFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:prefix\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Filters/CascadingSelectFilter.php
+
+		-
+			message: '''
+				#^Call to deprecated method form\(\) of class Filament\\Tables\\Filters\\BaseFilter\:
+				Use `schema\(\)` instead\.$#
+			'''
+			identifier: method.deprecated
+			count: 1
+			path: src/Filters/CascadingSelectFilter.php
+
+		-
+			message: '#^Cannot call static method query\(\) on \(int\|string\)\.$#'
+			identifier: staticMethod.nonObject
+			count: 1
+			path: src/Filters/CascadingSelectFilter.php
+
+		-
+			message: '#^Invoking callable on an unknown class Filament\\Forms\\Get\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Filters/CascadingSelectFilter.php
+
+		-
+			message: '#^Parameter \$get of anonymous function has invalid type Filament\\Forms\\Get\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Filters/CascadingSelectFilter.php
+
+		-
+			message: '#^Parameter \$get of method Cooper\\FilamentDcatFilters\\Filters\\CascadingSelectFilter\:\:getOptionsForLevel\(\) has invalid type Filament\\Forms\\Get\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Filters/CascadingSelectFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:hiddenLabel\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: src/Filters/ColumnCompareFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:prefix\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Filters/ColumnCompareFilter.php
+
+		-
+			message: '''
+				#^Call to deprecated method form\(\) of class Filament\\Tables\\Filters\\BaseFilter\:
+				Use `schema\(\)` instead\.$#
+			'''
+			identifier: method.deprecated
+			count: 2
+			path: src/Filters/ColumnCompareFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:hiddenLabel\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: src/Filters/ComparisonFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:prefix\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Filters/ComparisonFilter.php
+
+		-
+			message: '''
+				#^Call to deprecated method form\(\) of class Filament\\Tables\\Filters\\BaseFilter\:
+				Use `schema\(\)` instead\.$#
+			'''
+			identifier: method.deprecated
+			count: 4
+			path: src/Filters/ComparisonFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:hiddenLabel\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: src/Filters/DateComponentFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:prefix\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Filters/DateComponentFilter.php
+
+		-
+			message: '''
+				#^Call to deprecated method form\(\) of class Filament\\Tables\\Filters\\BaseFilter\:
+				Use `schema\(\)` instead\.$#
+			'''
+			identifier: method.deprecated
+			count: 3
+			path: src/Filters/DateComponentFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:hiddenLabel\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: src/Filters/EnumFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:prefix\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Filters/EnumFilter.php
+
+		-
+			message: '''
+				#^Call to deprecated method form\(\) of class Filament\\Tables\\Filters\\BaseFilter\:
+				Use `schema\(\)` instead\.$#
+			'''
+			identifier: method.deprecated
+			count: 1
+			path: src/Filters/EnumFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:hiddenLabel\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: src/Filters/ExistsFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:prefix\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Filters/ExistsFilter.php
+
+		-
+			message: '''
+				#^Call to deprecated method form\(\) of class Filament\\Tables\\Filters\\BaseFilter\:
+				Use `schema\(\)` instead\.$#
+			'''
+			identifier: method.deprecated
+			count: 2
+			path: src/Filters/ExistsFilter.php
+
+		-
+			message: '''
+				#^Call to deprecated method form\(\) of class Filament\\Tables\\Filters\\BaseFilter\:
+				Use `schema\(\)` instead\.$#
+			'''
+			identifier: method.deprecated
+			count: 1
+			path: src/Filters/FilterGroup.php
+
+		-
+			message: '''
+				#^Call to deprecated method getFormSchema\(\) of class Filament\\Tables\\Filters\\BaseFilter\:
+				Use `getSchemaComponents\(\)` instead\.$#
+			'''
+			identifier: method.deprecated
+			count: 1
+			path: src/Filters/FilterGroup.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:hiddenLabel\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: src/Filters/FindInSetFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:prefix\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Filters/FindInSetFilter.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\ConnectionInterface\:\:getDriverName\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Filters/FindInSetFilter.php
+
+		-
+			message: '''
+				#^Call to deprecated method form\(\) of class Filament\\Tables\\Filters\\BaseFilter\:
+				Use `schema\(\)` instead\.$#
+			'''
+			identifier: method.deprecated
+			count: 1
+			path: src/Filters/FindInSetFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:hiddenLabel\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: src/Filters/FullTextFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:prefix\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Filters/FullTextFilter.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\ConnectionInterface\:\:getDriverName\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Filters/FullTextFilter.php
+
+		-
+			message: '''
+				#^Call to deprecated method form\(\) of class Filament\\Tables\\Filters\\BaseFilter\:
+				Use `schema\(\)` instead\.$#
+			'''
+			identifier: method.deprecated
+			count: 1
+			path: src/Filters/FullTextFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:hiddenLabel\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: src/Filters/GeoLocationFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:prefix\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Filters/GeoLocationFilter.php
+
+		-
+			message: '''
+				#^Call to deprecated method form\(\) of class Filament\\Tables\\Filters\\BaseFilter\:
+				Use `schema\(\)` instead\.$#
+			'''
+			identifier: method.deprecated
+			count: 1
+			path: src/Filters/GeoLocationFilter.php
+
+		-
+			message: '''
+				#^Call to deprecated method form\(\) of class Filament\\Tables\\Filters\\BaseFilter\:
+				Use `schema\(\)` instead\.$#
+			'''
+			identifier: method.deprecated
+			count: 2
+			path: src/Filters/HiddenFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:hiddenLabel\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: src/Filters/InFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:prefix\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Filters/InFilter.php
+
+		-
+			message: '''
+				#^Call to deprecated method form\(\) of class Filament\\Tables\\Filters\\BaseFilter\:
+				Use `schema\(\)` instead\.$#
+			'''
+			identifier: method.deprecated
+			count: 1
+			path: src/Filters/InFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:hiddenLabel\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: src/Filters/InputMaskFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:prefix\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Filters/InputMaskFilter.php
+
+		-
+			message: '''
+				#^Call to deprecated method form\(\) of class Filament\\Tables\\Filters\\BaseFilter\:
+				Use `schema\(\)` instead\.$#
+			'''
+			identifier: method.deprecated
+			count: 1
+			path: src/Filters/InputMaskFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:hiddenLabel\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: src/Filters/JsonFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:prefix\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Filters/JsonFilter.php
+
+		-
+			message: '''
+				#^Call to deprecated method form\(\) of class Filament\\Tables\\Filters\\BaseFilter\:
+				Use `schema\(\)` instead\.$#
+			'''
+			identifier: method.deprecated
+			count: 1
+			path: src/Filters/JsonFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:hiddenLabel\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: src/Filters/LikeFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:prefix\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Filters/LikeFilter.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\ConnectionInterface\:\:getDriverName\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Filters/LikeFilter.php
+
+		-
+			message: '''
+				#^Call to deprecated method form\(\) of class Filament\\Tables\\Filters\\BaseFilter\:
+				Use `schema\(\)` instead\.$#
+			'''
+			identifier: method.deprecated
+			count: 1
+			path: src/Filters/LikeFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:hiddenLabel\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: src/Filters/ModalSelectFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:prefix\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Filters/ModalSelectFilter.php
+
+		-
+			message: '''
+				#^Call to deprecated method form\(\) of class Filament\\Tables\\Filters\\BaseFilter\:
+				Use `schema\(\)` instead\.$#
+			'''
+			identifier: method.deprecated
+			count: 1
+			path: src/Filters/ModalSelectFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:hiddenLabel\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: src/Filters/MorphRelationFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:prefix\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Filters/MorphRelationFilter.php
+
+		-
+			message: '''
+				#^Call to deprecated method form\(\) of class Filament\\Tables\\Filters\\BaseFilter\:
+				Use `schema\(\)` instead\.$#
+			'''
+			identifier: method.deprecated
+			count: 2
+			path: src/Filters/MorphRelationFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:hiddenLabel\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: src/Filters/NullFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:prefix\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Filters/NullFilter.php
+
+		-
+			message: '''
+				#^Call to deprecated method form\(\) of class Filament\\Tables\\Filters\\BaseFilter\:
+				Use `schema\(\)` instead\.$#
+			'''
+			identifier: method.deprecated
+			count: 1
+			path: src/Filters/NullFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:hiddenLabel\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: src/Filters/RangeFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:prefix\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Filters/RangeFilter.php
+
+		-
+			message: '''
+				#^Call to deprecated method form\(\) of class Filament\\Tables\\Filters\\BaseFilter\:
+				Use `schema\(\)` instead\.$#
+			'''
+			identifier: method.deprecated
+			count: 5
+			path: src/Filters/RangeFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:hiddenLabel\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: src/Filters/RegexFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:prefix\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Filters/RegexFilter.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\ConnectionInterface\:\:getDriverName\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Filters/RegexFilter.php
+
+		-
+			message: '''
+				#^Call to deprecated method form\(\) of class Filament\\Tables\\Filters\\BaseFilter\:
+				Use `schema\(\)` instead\.$#
+			'''
+			identifier: method.deprecated
+			count: 2
+			path: src/Filters/RegexFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:hiddenLabel\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: src/Filters/RelativeDateFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:prefix\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Filters/RelativeDateFilter.php
+
+		-
+			message: '''
+				#^Call to deprecated method form\(\) of class Filament\\Tables\\Filters\\BaseFilter\:
+				Use `schema\(\)` instead\.$#
+			'''
+			identifier: method.deprecated
+			count: 1
+			path: src/Filters/RelativeDateFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:hiddenLabel\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: src/Filters/ScopeFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:prefix\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Filters/ScopeFilter.php
+
+		-
+			message: '''
+				#^Call to deprecated method form\(\) of class Filament\\Tables\\Filters\\BaseFilter\:
+				Use `schema\(\)` instead\.$#
+			'''
+			identifier: method.deprecated
+			count: 1
+			path: src/Filters/ScopeFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:hiddenLabel\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: src/Filters/SelectTableFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:prefix\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Filters/SelectTableFilter.php
+
+		-
+			message: '''
+				#^Call to deprecated method form\(\) of class Filament\\Tables\\Filters\\BaseFilter\:
+				Use `schema\(\)` instead\.$#
+			'''
+			identifier: method.deprecated
+			count: 1
+			path: src/Filters/SelectTableFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:hiddenLabel\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: src/Filters/SoftDeleteFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:prefix\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Filters/SoftDeleteFilter.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\:\:onlyTrashed\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Filters/SoftDeleteFilter.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\:\:withTrashed\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Filters/SoftDeleteFilter.php
+
+		-
+			message: '''
+				#^Call to deprecated method form\(\) of class Filament\\Tables\\Filters\\BaseFilter\:
+				Use `schema\(\)` instead\.$#
+			'''
+			identifier: method.deprecated
+			count: 2
+			path: src/Filters/SoftDeleteFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:hiddenLabel\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: src/Filters/TimezoneAwareDateFilter.php
+
+		-
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:prefix\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Filters/TimezoneAwareDateFilter.php
+
+		-
+			message: '''
+				#^Call to deprecated method form\(\) of class Filament\\Tables\\Filters\\BaseFilter\:
+				Use `schema\(\)` instead\.$#
+			'''
+			identifier: method.deprecated
+			count: 1
+			path: src/Filters/TimezoneAwareDateFilter.php
+
+		-
+			message: '#^Unsafe usage of new static\(\)\.$#'
+			identifier: new.static
+			count: 1
+			path: src/State/FilterStateDescriptor.php

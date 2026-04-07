@@ -246,6 +246,7 @@ class GeoLocationFilter extends Filter
             if ((float) $radius <= 0) {
                 return [];
             }
+            /** @phpstan-ignore nullCoalesce.expr (Filament's getLabel() can return null at runtime) */
             $label = $this->getLabel() ?? __('filament-dcat-filters::filament-dcat-filters.geo.location');
             $from = __('filament-dcat-filters::filament-dcat-filters.geo.from');
 

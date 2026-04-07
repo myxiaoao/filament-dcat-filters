@@ -20,6 +20,7 @@
             loading: false,
             _fetchController: null,
             error: null,
+            clearNotice: false,
 
             init() {
                 this._handleConfirmed = (event) => {
@@ -127,7 +128,9 @@
                 this.selected = [];
                 this.selectedLabels = [];
                 this.error = null;
+                this.clearNotice = true;
                 this.updateInput();
+                setTimeout(() => { this.clearNotice = false; }, 2000);
             },
 
             removeItem(index) {
@@ -215,8 +218,9 @@
                                 <span
                                     x-show="selectedLabels.length > 2"
                                     x-cloak
-                                    class="fi-badge fi-color fi-color-gray fi-size-sm"
+                                    class="fi-badge fi-color fi-color-gray fi-size-sm cursor-default"
                                     x-text="'+' + (selectedLabels.length - 2)"
+                                    :title="selectedLabels.slice(2).join(', ')"
                                     :aria-label="selectedLabels.length + ' {{ __('filament-dcat-filters::filament-dcat-filters.accessibility.selected_summary', ['count' => '']) }}'"
                                 ></span>
                             </div>
@@ -239,6 +243,7 @@
                                 x-cloak
                                 class="fi-select-input-value-label truncate"
                                 x-text="selectedLabels.join(', ')"
+                                :title="selectedLabels.join(', ')"
                             ></span>
                         </div>
                     @endif
@@ -304,6 +309,16 @@
             </button>
         </div>
 
+        {{-- Clear notice --}}
+        <div
+            x-show="clearNotice"
+            x-cloak
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:leave="transition ease-in duration-150"
+            class="mt-1 text-xs text-gray-500 dark:text-gray-400"
+            role="status"
+        >{{ __('filament-dcat-filters::filament-dcat-filters.modal_select.cleared_notice') }}</div>
+
         {{-- Hidden input with Livewire binding --}}
         <input
             type="hidden"
@@ -339,6 +354,7 @@
                     :filterKey="$filterName"
                     :searchDebounce="$searchDebounce"
                     :minSearchLength="$minSearchLength"
+                    :autoConfirmOnSelect="$autoConfirmOnSelect ?? false"
                     :key="$filterName"
                 />
             @endif

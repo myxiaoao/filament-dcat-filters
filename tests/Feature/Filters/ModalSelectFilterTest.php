@@ -274,6 +274,39 @@ describe('Search Configuration', function () {
     });
 });
 
+describe('Auto Confirm On Select', function () {
+    it('is disabled by default', function () {
+        $filter = ModalSelectFilter::make('user_id');
+
+        expect($filter->shouldAutoConfirmOnSelect())->toBeFalse();
+    });
+
+    it('can be enabled for single select', function () {
+        $filter = ModalSelectFilter::make('user_id')
+            ->autoConfirmOnSelect();
+
+        expect($filter->shouldAutoConfirmOnSelect())->toBeTrue();
+    });
+
+    it('has no effect when multiple is enabled', function () {
+        $filter = ModalSelectFilter::make('user_id')
+            ->multiple()
+            ->autoConfirmOnSelect();
+
+        expect($filter->shouldAutoConfirmOnSelect())->toBeFalse();
+    });
+
+    it('can be chained with other configuration', function () {
+        $filter = ModalSelectFilter::make('user_id')
+            ->model('App\\Models\\User', 'name', 'id')
+            ->autoConfirmOnSelect()
+            ->dialogTitle('Quick Select');
+
+        expect($filter->shouldAutoConfirmOnSelect())->toBeTrue();
+        expect($filter->getDialogTitle())->toBe('Quick Select');
+    });
+});
+
 describe('Chained Configuration', function () {
     it('can chain all configuration methods', function () {
         $filter = ModalSelectFilter::make('user_id')

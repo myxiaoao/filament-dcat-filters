@@ -145,6 +145,7 @@ class ResetFiltersAction extends Action
                 if ($this->hasNonEmptyValues($value)) {
                     return true;
                 }
+                /** @phpstan-ignore notIdentical.alwaysTrue (defensive check — $value is already narrowed to non-array) */
             } elseif ($value !== null && $value !== '' && $value !== []) {
                 return true;
             }

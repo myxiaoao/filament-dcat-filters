@@ -51,6 +51,8 @@ class ModalSelectFilter extends Filter
 
     protected ?int $minSearchLength = null;
 
+    protected bool $autoConfirmOnSelect = false;
+
     protected function describeState(): FilterStateDescriptor
     {
         return FilterStateDescriptor::make()
@@ -83,10 +85,13 @@ class ModalSelectFilter extends Filter
         $shouldInline = $this->shouldInlineLabel();
 
         $viewField = ViewField::make('value')
+            /** @phpstan-ignore nullCoalesce.expr (Filament's getLabel() can return null at runtime) */
             ->label(fn () => $this->evaluate($this->getLabel()) ?? $filterKey)
+            /** @phpstan-ignore argument.type (view-string is a larastan type constraint) */
             ->view('filament-dcat-filters::filters.modal-select')
             ->viewData(fn () => [
                 'filterName' => $filterKey,
+                /** @phpstan-ignore nullCoalesce.expr (Filament's getLabel() can return null at runtime) */
                 'label' => $this->evaluate($this->getLabel()) ?? $filterKey,
                 'modelClass' => $this->modelClass,
                 'titleColumn' => $this->titleColumn,
@@ -98,6 +103,7 @@ class ModalSelectFilter extends Filter
                 'displayColumns' => $this->displayColumns,
                 'searchDebounce' => $this->getSearchDebounce(),
                 'minSearchLength' => $this->getMinSearchLength(),
+                'autoConfirmOnSelect' => $this->shouldAutoConfirmOnSelect(),
                 'inlineLabel' => $shouldInline,
             ])
             ->columnSpanFull();
@@ -263,6 +269,25 @@ class ModalSelectFilter extends Filter
     }
 
     /**
+     * Auto-confirm and close modal on single selection.
+     *
+     * In single-select mode, selecting a row will immediately confirm
+     * and close the modal without requiring the user to click "Confirm".
+     * Has no effect in multiple-select mode.
+     */
+    public function autoConfirmOnSelect(bool $autoConfirm = true): static
+    {
+        $this->autoConfirmOnSelect = $autoConfirm;
+
+        return $this;
+    }
+
+    public function shouldAutoConfirmOnSelect(): bool
+    {
+        return $this->autoConfirmOnSelect && ! $this->multiple;
+    }
+
+    /**
      * Customize table query.
      */
     public function modifyQueryUsing(?Closure $callback): static
@@ -326,6 +351,7 @@ class ModalSelectFilter extends Filter
                 return [];
             }
 
+            /** @phpstan-ignore nullCoalesce.expr (Filament's getLabel() can return null at runtime) */
             $label = $this->evaluate($this->getLabel()) ?? $this->getName();
             $model = $this->modelClass;
 
@@ -387,6 +413,7 @@ class ModalSelectFilter extends Filter
 
         $label = $this->evaluate($this->getLabel());
 
+        /** @phpstan-ignore nullCoalesce.variable (label can be null when no label is configured) */
         return $label ?? __('filament-dcat-filters::filament-dcat-filters.modal_select.default_title');
     }
 

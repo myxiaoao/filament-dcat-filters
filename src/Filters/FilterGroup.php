@@ -131,7 +131,7 @@ class FilterGroup extends Filter
             // Wrap each filter's fields in a Fieldset keyed by filter name
             // This creates a nested state: data[filterName][fieldName]
             $formComponents[] = Fieldset::make(
-                $filter->getLabel() ?? ucfirst(str_replace('_', ' ', $filterName))
+                $filter->getLabel() ?? ucfirst(str_replace('_', ' ', $filterName)) /** @phpstan-ignore-line nullCoalesce.expr (Filament's getLabel() can return null at runtime) */
             )
                 ->schema($schema)
                 ->statePath($filterName)
@@ -228,6 +228,7 @@ class FilterGroup extends Filter
                 }
 
                 $filterData = $data[$filterName] ?? [];
+                /** @phpstan-ignore nullCoalesce.expr (Filament's getLabel() can return null at runtime) */
                 $label = $filter->getLabel() ?? ucfirst(str_replace('_', ' ', $filterName));
 
                 if (is_array($filterData)) {

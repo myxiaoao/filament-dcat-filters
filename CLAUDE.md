@@ -40,6 +40,8 @@ docs/                 # en/, zh_CN/ 用户文档; plans/ 实施计划
 - **跨切面 UI 行为在 Concerns/ trait 中**：label、prefix、placeholder、operator 等由 trait 统一控制，不在单个 Filter 类中
 - **数据库驱动兼容**：`HasDatabaseDriver` trait 处理 MySQL/PostgreSQL/SQLite 的 SQL 差异
 - **配置驱动默认值**：`config/filament-dcat-filters.php` 控制全局行为（inline_label、persistence、date_format 等）
+- **ModalSelectFilter 协议边界**：hidden input 用逗号分隔字符串，事件名 `modal-select-confirmed` / `filament-dcat-filters::filters-reset` / `restoreFiltersFromLocalStorage` 已稳定，修改前端展示时不要碰这些
+- **i18n 三语同步**：`resources/lang/` 下 en / zh_CN / zh_TW 三个语言文件必须键对齐，新增翻译键时三个文件一起改
 
 ## Debugging Guide
 
@@ -54,6 +56,9 @@ docs/                 # en/, zh_CN/ 用户文档; plans/ 实施计划
 | 持久化（session/localStorage）| `src/Concerns/PersistsFiltersIn*.php` |
 | 数据库驱动兼容/fail-fast | `src/Concerns/HasDatabaseDriver.php` |
 | 状态协议/能力声明 | `src/State/FilterStateDescriptor.php` |
+| ModalSelect 前端行为 | `resources/views/filters/modal-select.blade.php`（Alpine 状态）+ `resources/views/components/modal-select-table.blade.php`（弹窗内表格/footer） |
+| ModalSelect 后端组件 | `src/Components/ModalSelectTable.php` + `src/Http/Controllers/` |
+| LocalStorage 持久化 JS | `resources/js/filter-persistence.js` |
 
 ## Conventions
 
@@ -69,3 +74,5 @@ docs/                 # en/, zh_CN/ 用户文档; plans/ 实施计划
 1. `composer test` — 所有测试通过
 2. `composer format` — 代码风格一致
 3. 如果修改了 trait，检查所有使用该 trait 的 Filter 类是否受影响
+4. 如果新增翻译键，确认 `tests/Feature/AccessibilityTest.php` 中有断言覆盖（en + zh_CN + zh_TW）
+5. 如果修改 Blade 视图，确认不影响 hidden input 值格式和 Livewire 事件名

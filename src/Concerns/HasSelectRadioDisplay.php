@@ -67,6 +67,7 @@ trait HasSelectRadioDisplay
             ->placeholder($placeholder)
             ->columnSpanFull();
 
+        /** @phpstan-ignore function.alreadyNarrowedType (defensive check — trait may be used without HasInlineLabel) */
         if (method_exists($this, 'applyInlineLabel')) {
             $this->applyInlineLabel($select, $labelResolver);
         }

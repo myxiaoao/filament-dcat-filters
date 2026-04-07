@@ -156,6 +156,7 @@ class RelativeDateFilter extends Filter
         $this->query(function (Builder $query, array $data): Builder {
             $preset = $data['preset'] ?? null;
 
+            /** @phpstan-ignore identical.alwaysFalse (defensive check — $preset may be empty string from form state) */
             if (! $preset || $preset === '') {
                 return $query;
             }
@@ -175,6 +176,7 @@ class RelativeDateFilter extends Filter
         $this->indicateUsing(function (array $data): array {
             $preset = $data['preset'] ?? null;
 
+            /** @phpstan-ignore identical.alwaysFalse (defensive check — $preset may be empty string from form state) */
             if (! $preset || $preset === '') {
                 return [];
             }

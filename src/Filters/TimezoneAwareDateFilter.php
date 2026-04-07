@@ -140,6 +140,7 @@ class TimezoneAwareDateFilter extends Filter
                 ->live(onBlur: true);
         }
 
+        /** @phpstan-ignore function.alreadyNarrowedType (defensive check — method comes from HasInlineLabel trait) */
         if (method_exists($this, 'applyRangeInlineLabels')) {
             $this->applyRangeInlineLabels($from, $to, $labelResolver);
         } else {

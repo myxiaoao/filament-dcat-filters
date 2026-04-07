@@ -111,6 +111,7 @@ class FullTextFilter extends Filter
     protected function configureForm(): void
     {
         $placeholder = $this->placeholder ?? __('filament-dcat-filters::filament-dcat-filters.fulltext.placeholder');
+        /** @phpstan-ignore nullCoalesce.expr (Filament's getLabel() can return null at runtime) */
         $labelResolver = fn (): string => $this->getLabel() ?? __('filament-dcat-filters::filament-dcat-filters.fulltext.label');
 
         $input = TextInput::make('search')
@@ -159,6 +160,7 @@ class FullTextFilter extends Filter
                 return [];
             }
 
+            /** @phpstan-ignore nullCoalesce.expr (Filament's getLabel() can return null at runtime) */
             $label = $this->getLabel() ?? __('filament-dcat-filters::filament-dcat-filters.fulltext.label');
 
             return [

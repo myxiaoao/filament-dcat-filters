@@ -135,6 +135,7 @@ class JsonFilter extends Filter
 
     protected function configureForm(): void
     {
+        /** @phpstan-ignore nullCoalesce.expr (Filament's getLabel() can return null at runtime) */
         $labelResolver = fn (): string => ($this->getLabel() ?? ucfirst(str_replace('_', ' ', $this->getName()))).($this->jsonPath ? " ({$this->jsonPath})" : '');
 
         $component = TextInput::make('value')
@@ -178,6 +179,7 @@ class JsonFilter extends Filter
                 return [];
             }
 
+            /** @phpstan-ignore nullCoalesce.expr (Filament's getLabel() can return null at runtime) */
             $label = $this->getLabel() ?? ucfirst(str_replace('_', ' ', $this->getName()));
 
             return [

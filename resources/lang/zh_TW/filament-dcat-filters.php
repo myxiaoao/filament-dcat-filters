@@ -74,6 +74,7 @@ return [
     'modal_select.search_too_short_heading' => '繼續輸入...',
     'modal_select.search_too_short' => '請至少輸入 :min 個字元進行搜尋',
     'modal_select.search_min_hint' => '請輸入至少 :min 個字元...',
+    'modal_select.cleared_notice' => '已清除選擇，可隨時重新選擇',
 
     // Reset filters action
     'reset_filters.label' => '重設篩選',

@@ -74,6 +74,7 @@ return [
     'modal_select.search_too_short_heading' => '继续输入...',
     'modal_select.search_too_short' => '请至少输入 :min 个字符进行搜索',
     'modal_select.search_min_hint' => '请输入至少 :min 个字符...',
+    'modal_select.cleared_notice' => '已清空选择，可随时重新选择',
 
     // Reset filters action
     'reset_filters.label' => '重置筛选器',
