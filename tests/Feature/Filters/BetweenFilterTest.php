@@ -18,7 +18,7 @@ it('extends RangeFilter', function () {
 it('has correct default column span', function () {
     $filter = BetweenFilter::make('price');
 
-    expect($filter->getColumnSpan())->toBe(1);
+    expect($filter->getColumnSpan())->toBe(2);
 });
 
 it('defaults to integer type', function () {

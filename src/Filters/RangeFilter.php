@@ -45,12 +45,15 @@ class RangeFilter extends Filter
 
     /**
      * Setup default configuration.
+     *
+     * Range filters default to spanning 2 columns so the label and the
+     * from/to inputs have room to breathe in narrow toolbar grids.
      */
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->columnSpan(1);
+        $this->columnSpan(2);
     }
 
     /**

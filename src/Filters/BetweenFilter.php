@@ -23,7 +23,7 @@ class BetweenFilter extends RangeFilter
 
         // Set range type without calling integer() to avoid default form
         $filter->rangeType = 'integer';
-        $filter->columnSpan(1);
+        $filter->columnSpan(2);
 
         // Build the custom form
         $filter->buildBetweenForm();

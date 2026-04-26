@@ -12,7 +12,7 @@ it('can be instantiated', function () {
 it('has correct default column span', function () {
     $filter = RangeFilter::make('price');
 
-    expect($filter->getColumnSpan())->toBe(1);
+    expect($filter->getColumnSpan())->toBe(2);
 });
 
 describe('Numeric Range', function () {
