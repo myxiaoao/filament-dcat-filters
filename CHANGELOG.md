@@ -2,20 +2,6 @@
 
 All notable changes to `filament-dcat-filters` will be documented in this file.
 
-## v2.1.1 — RangeFilter 默认占两格 - 2026-04-26
-
-### Changed
-
-- **RangeFilter / BetweenFilter 默认 `columnSpan` 由 1 改为 2** — 在窄栅格 toolbar（例如 `filtersFormColumns(3)`）下，inline label + from/to 三段塞进单格会过度拥挤；默认占两格让输入框拥有合理宽度。如需保留旧行为可显式 `->columnSpan(1)` 覆盖。
-- 受影响：`RangeFilter` 的 `date()` / `datetime()` / `time()` / `numeric()` / `integer()` 五种类型，以及 `BetweenFilter` 全部模式。
-
-### Tests
-
-- 同步更新 `RangeFilterTest` / `BetweenFilterTest` 的 `default column span` 断言。
-- 总计：**1115 tests / 1680 assertions**，全部通过。
-
-**Full Changelog**: https://github.com/myxiaoao/filament-dcat-filters/compare/v2.1.0...v2.1.1
-
 ## v2.1.1 - 2026-04-26
 
 ### Changed
