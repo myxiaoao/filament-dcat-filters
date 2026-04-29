@@ -2,6 +2,23 @@
 
 All notable changes to `filament-dcat-filters` will be documented in this file.
 
+## v2.1.2 — RangeFilter date 模式归一化全天边界 - 2026-04-29
+
+### Fixed
+
+- **RangeFilter date 模式归一化全天边界** —
+  date 模式查询 datetime 列时，`to=2024-01-15` 之前会生成
+  `<= '2024-01-15'`，漏掉当天 00:00:01 之后的记录。
+  现在 from 自动对齐到 `00:00:00`、to 对齐到 `23:59:59`，
+  覆盖整天；from > to 时自动调换。
+  影响 `dateColumn()` 的 query / indicator 与 `toTimestamp()` 路径。
+
+### Tests
+
+- 新增 4 个 RangeFilter date 模式用例
+- 修正 QueryBehaviorTest 的 bindings 期望
+- 总计：1119 tests / 1692 assertions
+
 ## v2.1.1 - 2026-04-26
 
 ### Changed
@@ -274,11 +291,13 @@ Label
 
 
 
+
 ```
 **After (dcat-admin style):**
 
 ```
 [ Label | label text ]
+
 
 
 
@@ -316,6 +335,7 @@ Fully backward compatible. To restore Filament default behavior:
 
 // Or per-filter
 LikeFilter::make('name')->inlineLabel(false)
+
 
 
 
