@@ -552,7 +552,7 @@ describe('RangeFilter Query', function () {
 
         expect($sql)->toContain('"created_at"')
             ->and($sql)->toContain('between')
-            ->and($query->getBindings())->toEqual(['2024-01-01', '2024-12-31']);
+            ->and($query->getBindings())->toEqual(['2024-01-01 00:00:00', '2024-12-31 23:59:59']);
     });
 
     it('applies numeric range query', function () {
@@ -1452,8 +1452,8 @@ describe('FilterGroup Query', function () {
             ->and($sql)->toContain('between');
 
         $bindings = $query->getBindings();
-        expect($bindings)->toContain('2024-01-01')
-            ->and($bindings)->toContain('2024-12-31')
+        expect($bindings)->toContain('2024-01-01 00:00:00')
+            ->and($bindings)->toContain('2024-12-31 23:59:59')
             ->and($bindings)->toContain('10')
             ->and($bindings)->toContain('100');
     });

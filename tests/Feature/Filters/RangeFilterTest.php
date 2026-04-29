@@ -1,5 +1,6 @@
 <?php
 
+use Carbon\Carbon;
 use Cooper\FilamentDcatFilters\Filters\RangeFilter;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -54,6 +55,73 @@ describe('Date Range', function () {
             ->format('d/m/Y');
 
         expect($filter)->toBeInstanceOf(RangeFilter::class);
+    });
+});
+
+describe('Date Query', function () {
+    it('normalizes date range query bounds to full days', function () {
+        $filter = RangeFilter::make('created_at')->date();
+
+        $mockQuery = Mockery::mock(Builder::class);
+        $capturedData = null;
+
+        $mockQuery->shouldReceive('whereBetween')
+            ->once()
+            ->andReturnUsing(function ($column, $range) use (&$capturedData, $mockQuery) {
+                $capturedData = ['column' => $column, 'range' => $range];
+
+                return $mockQuery;
+            });
+
+        $filter->apply($mockQuery, [
+            'from' => '2024-01-01',
+            'to' => '2024-01-15',
+        ]);
+
+        expect($capturedData['range'][0])->toBe('2024-01-01 00:00:00');
+        expect($capturedData['range'][1])->toBe('2024-01-15 23:59:59');
+    });
+
+    it('normalizes date upper bound when only to is set', function () {
+        $filter = RangeFilter::make('created_at')->date();
+
+        $mockQuery = Mockery::mock(Builder::class);
+        $capturedData = null;
+
+        $mockQuery->shouldReceive('where')
+            ->once()
+            ->andReturnUsing(function ($column, $operator, $value) use (&$capturedData, $mockQuery) {
+                $capturedData = compact('column', 'operator', 'value');
+
+                return $mockQuery;
+            });
+
+        $filter->apply($mockQuery, [
+            'from' => null,
+            'to' => '2024-01-15 00:00:00',
+        ]);
+
+        expect($capturedData['operator'])->toBe('<=');
+        expect($capturedData['value'])->toBe('2024-01-15 23:59:59');
+    });
+
+    it('normalizes date range indicators to full days', function () {
+        $filter = RangeFilter::make('created_at')->date();
+
+        $reflection = new ReflectionClass($filter);
+        $indicateProp = $reflection->getProperty('indicateUsing');
+        $indicateProp->setAccessible(true);
+        $indicateFn = $indicateProp->getValue($filter);
+
+        $bound = Closure::bind($indicateFn, $filter, get_class($filter));
+        $result = $bound([
+            'from' => '2024-01-01',
+            'to' => '2024-01-15 00:00:00',
+        ]);
+
+        expect($result)->toHaveCount(2);
+        expect($result[0]->getLabel())->toContain('2024-01-01 00:00:00');
+        expect($result[1]->getLabel())->toContain('2024-01-15 23:59:59');
     });
 });
 
@@ -129,6 +197,31 @@ describe('Timestamp Conversion', function () {
             ->toTimestamp();
 
         expect($filter)->toBeInstanceOf(RangeFilter::class);
+    });
+
+    it('normalizes date bounds before converting to timestamp', function () {
+        $filter = RangeFilter::make('created_at')
+            ->date()
+            ->toTimestamp();
+
+        $mockQuery = Mockery::mock(Builder::class);
+        $capturedData = null;
+
+        $mockQuery->shouldReceive('whereBetween')
+            ->once()
+            ->andReturnUsing(function ($column, $range) use (&$capturedData, $mockQuery) {
+                $capturedData = ['column' => $column, 'range' => $range];
+
+                return $mockQuery;
+            });
+
+        $filter->apply($mockQuery, [
+            'from' => '2024-01-01',
+            'to' => '2024-01-15',
+        ]);
+
+        expect($capturedData['range'][0])->toBe(Carbon::parse('2024-01-01 00:00:00')->timestamp);
+        expect($capturedData['range'][1])->toBe(Carbon::parse('2024-01-15 23:59:59')->timestamp);
     });
 });
 

@@ -306,12 +306,20 @@ class RangeFilter extends Filter
         $this->query(function (Builder $query, array $data): Builder {
             $column = $this->resolveColumnName();
 
+            if ($this->rangeType === 'date') {
+                $data = $this->normalizeDateRangeData($data);
+            }
+
             return $this->applyRangeQuery($query, $column, $data);
         });
 
         $this->indicateUsing(function (array $data): array {
             $label = $this->resolveLabel();
             $indicators = [];
+
+            if ($this->rangeType === 'date') {
+                $data = $this->normalizeDateRangeData($data);
+            }
 
             foreach ($this->generateRangeIndicators($data, $label) as $text) {
                 $indicators[] = Indicator::make($text);
@@ -322,12 +330,73 @@ class RangeFilter extends Filter
     }
 
     /**
+     * Date-only ranges target full-day boundaries for datetime columns.
+     */
+    protected function normalizeDateRangeData(array $data): array
+    {
+        $from = $data['from'] ?? null;
+        $to = $data['to'] ?? null;
+        $fromDate = $this->parseRangeDate($from);
+        $toDate = $this->parseRangeDate($to);
+
+        if ($fromDate !== null && $toDate !== null && $fromDate->greaterThan($toDate)) {
+            [$fromDate, $toDate] = [$toDate, $fromDate];
+        }
+
+        if ($fromDate !== null) {
+            $data['from'] = $fromDate->copy()->startOfDay()->format('Y-m-d H:i:s');
+        }
+
+        if ($toDate !== null) {
+            $data['to'] = $toDate->copy()->endOfDay()->format('Y-m-d H:i:s');
+        }
+
+        return $data;
+    }
+
+    protected function parseRangeDate(mixed $value): ?Carbon
+    {
+        if ($this->isRangeValueEmpty($value)) {
+            return null;
+        }
+
+        if ($value instanceof \DateTimeInterface) {
+            return Carbon::instance($value);
+        }
+
+        if (! is_scalar($value)) {
+            return null;
+        }
+
+        $value = (string) $value;
+
+        if ($this->dateFormat !== null) {
+            try {
+                return Carbon::createFromFormat($this->dateFormat, $value);
+            } catch (\Exception) {
+                // Fall back to Carbon's parser for values restored with a time component.
+            }
+        }
+
+        try {
+            return Carbon::parse($value);
+        } catch (\Exception) {
+            return null;
+        }
+    }
+
+    /**
      * Convert to timestamp (useful for datetime columns stored as integers).
      */
     public function toTimestamp(): static
     {
         $this->query(function (Builder $query, array $data): Builder {
             $column = $this->resolveColumnName();
+
+            if ($this->rangeType === 'date') {
+                $data = $this->normalizeDateRangeData($data);
+            }
+
             $from = $data['from'] ?? null;
             $to = $data['to'] ?? null;
 
