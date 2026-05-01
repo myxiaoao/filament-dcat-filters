@@ -89,8 +89,8 @@ A modern collection of enhanced filters inspired by [Dcat Admin](https://github.
 
 | Filament | Filament Dcat Filters | PHP    | Laravel |
 |----------|----------------------|--------|---------|
-| 5.x      | 2.x                  | ^8.3   | ^12.0   |
-| 4.x      | 2.x                  | ^8.3   | ^12.0   |
+| 5.x      | 2.x                  | ^8.3   | ^12.0 \| ^13.0 |
+| 4.x      | 2.x                  | ^8.3   | ^12.0 \| ^13.0 |
 
 ## Installation
 
