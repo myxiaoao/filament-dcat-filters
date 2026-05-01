@@ -29,13 +29,13 @@ This document records the optimization of the `filament-dcat-filters` package st
   - ❌ Removed `illuminate/contracts` - Already included in Filament
   - ❌ Removed `livewire/livewire` - Already included in Filament
   - ✅ Added `spatie/laravel-package-tools` - For ServiceProvider refactoring
-- **require-dev**: Only supports Laravel 12+ (sorted alphabetically)
+- **require-dev**: Supports Laravel 12 and Laravel 13 (sorted alphabetically)
   - `laravel/pint: ^1.0`
-  - `nunomaduro/larastan: ^3.0` (Laravel 12+ only)
-  - `orchestra/testbench: ^10.0` (corresponding to Laravel 12+)
+  - `nunomaduro/larastan: ^3.0` (Laravel 12+)
+  - `orchestra/testbench: ^10.0` (Laravel 12) / `^11.0` (Laravel 13)
   - `pestphp/pest: ^4.0`
   - `pestphp/pest-plugin-arch: ^3.0`
-  - `pestphp/pest-plugin-laravel: ^4.0` (Laravel 12+ only)
+  - `pestphp/pest-plugin-laravel: ^4.0` (Laravel 12+)
   - `phpstan/phpstan: ^2.0` (latest version)
   - `phpstan/phpstan-deprecation-rules: ^2.0` (latest version)
 

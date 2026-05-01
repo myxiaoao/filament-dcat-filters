@@ -4,14 +4,14 @@
 
 **Bring Dcat Admin's powerful filter features to Filament**
 
-Built with PHP 8.3+ for Laravel 12 and Filament v4/v5
+Built with PHP 8.3+ for Laravel 12/13 and Filament v4/v5
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/cooper/filament-dcat-filters.svg?style=flat-square)](https://packagist.org/packages/cooper/filament-dcat-filters)
 [![Total Downloads](https://img.shields.io/packagist/dt/cooper/filament-dcat-filters.svg?style=flat-square)](https://packagist.org/packages/cooper/filament-dcat-filters)
 [![run-tests](https://github.com/myxiaoao/filament-dcat-filters/actions/workflows/run-tests.yml/badge.svg)](https://github.com/myxiaoao/filament-dcat-filters/actions/workflows/run-tests.yml)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![PHP](https://img.shields.io/badge/php-8.3+-purple.svg)](https://www.php.net)
-[![Laravel](https://img.shields.io/badge/laravel-12.x-red.svg)](https://laravel.com)
+[![Laravel](https://img.shields.io/badge/laravel-12.x%20%7C%2013.x-red.svg)](https://laravel.com)
 [![Filament](https://img.shields.io/badge/filament-4.x%20%7C%205.x-orange.svg)](https://filamentphp.com)
 
 <img src="./art/filters.png" alt="Filament Dcat Filters Screenshot" width="800">

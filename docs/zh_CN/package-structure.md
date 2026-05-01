@@ -103,7 +103,7 @@ packages/filament-dcat-filters/
   - ❌ 移除 `illuminate/contracts` - Filament 已包含
   - ❌ 移除 `livewire/livewire` - Filament 已包含
   - ✅ 添加 `spatie/laravel-package-tools` - 用于 ServiceProvider 重构
-- **require-dev**：仅支持 Laravel 12+ (按字母顺序排序)
+- **require-dev**：支持 Laravel 12 和 Laravel 13 (按字母顺序排序)
   - `laravel/pint: ^1.0`
   - `nunomaduro/larastan: ^3.0`
   - `orchestra/testbench: ^10.0`
